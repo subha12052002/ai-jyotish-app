@@ -4,3 +4,4 @@ python-dotenv
 pyswisseph
 google-genai
 geopy
+gunicorn
