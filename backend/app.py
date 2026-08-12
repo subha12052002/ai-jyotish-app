@@ -8,6 +8,7 @@ from flask import (
 from flask_cors import CORS
 
 from kundli import calculate_kundli
+from ai_astrologer import ask_astrologer
 
 import os
 import traceback
@@ -109,11 +110,14 @@ def create_kundli():
 
         if not data:
 
-            print("ERROR: No JSON data received.")
+            print(
+                "ERROR: No JSON data received."
+            )
 
             return jsonify({
                 "success": False,
-                "error": "No JSON data received."
+                "error":
+                    "No JSON data received."
             }), 400
 
 
@@ -122,7 +126,7 @@ def create_kundli():
 
 
         # =================================================
-        # READ USER NAME
+        # READ NAME
         # =================================================
 
         name = str(
@@ -135,12 +139,6 @@ def create_kundli():
 
         # =================================================
         # READ DATE
-        #
-        # Accept BOTH:
-        #
-        # date
-        # date_of_birth
-        #
         # =================================================
 
         date = str(
@@ -156,12 +154,6 @@ def create_kundli():
 
         # =================================================
         # READ TIME
-        #
-        # Accept BOTH:
-        #
-        # time
-        # time_of_birth
-        #
         # =================================================
 
         time = str(
@@ -210,12 +202,6 @@ def create_kundli():
 
         # =================================================
         # READ TIMEZONE
-        #
-        # Accept BOTH:
-        #
-        # timezone
-        # timezone_offset
-        #
         # =================================================
 
         timezone_offset = data.get(
@@ -228,35 +214,42 @@ def create_kundli():
 
 
         # =================================================
-        # PRINT NORMALIZED DATA
+        # PRINT DATA
         # =================================================
 
         print("")
         print("Normalized data:")
+
         print(
             "Name:",
             name
         )
+
         print(
             "Date:",
             date
         )
+
         print(
             "Time:",
             time
         )
+
         print(
             "Place:",
             place
         )
+
         print(
             "Latitude:",
             latitude
         )
+
         print(
             "Longitude:",
             longitude
         )
+
         print(
             "Timezone:",
             timezone_offset
@@ -271,7 +264,8 @@ def create_kundli():
 
             return jsonify({
                 "success": False,
-                "error": "Name is required."
+                "error":
+                    "Name is required."
             }), 400
 
 
@@ -279,7 +273,8 @@ def create_kundli():
 
             return jsonify({
                 "success": False,
-                "error": "Date of birth is required."
+                "error":
+                    "Date of birth is required."
             }), 400
 
 
@@ -287,7 +282,8 @@ def create_kundli():
 
             return jsonify({
                 "success": False,
-                "error": "Time of birth is required."
+                "error":
+                    "Time of birth is required."
             }), 400
 
 
@@ -295,7 +291,8 @@ def create_kundli():
 
             return jsonify({
                 "success": False,
-                "error": "Birth place is required."
+                "error":
+                    "Birth place is required."
             }), 400
 
 
@@ -303,7 +300,8 @@ def create_kundli():
 
             return jsonify({
                 "success": False,
-                "error": "Latitude is required."
+                "error":
+                    "Latitude is required."
             }), 400
 
 
@@ -311,7 +309,8 @@ def create_kundli():
 
             return jsonify({
                 "success": False,
-                "error": "Longitude is required."
+                "error":
+                    "Longitude is required."
             }), 400
 
 
@@ -349,7 +348,10 @@ def create_kundli():
         # VALIDATE LATITUDE
         # =================================================
 
-        if latitude < -90 or latitude > 90:
+        if (
+            latitude < -90
+            or latitude > 90
+        ):
 
             return jsonify({
                 "success": False,
@@ -362,7 +364,10 @@ def create_kundli():
         # VALIDATE LONGITUDE
         # =================================================
 
-        if longitude < -180 or longitude > 180:
+        if (
+            longitude < -180
+            or longitude > 180
+        ):
 
             return jsonify({
                 "success": False,
@@ -375,7 +380,10 @@ def create_kundli():
         # VALIDATE TIMEZONE
         # =================================================
 
-        if timezone_offset < -14 or timezone_offset > 14:
+        if (
+            timezone_offset < -14
+            or timezone_offset > 14
+        ):
 
             return jsonify({
                 "success": False,
@@ -389,7 +397,9 @@ def create_kundli():
         # =================================================
 
         print("")
-        print("Calculating Kundli...")
+        print(
+            "Calculating Kundli..."
+        )
 
 
         result = calculate_kundli(
@@ -459,7 +469,9 @@ def create_kundli():
 
         print("")
         print("=" * 70)
-        print("KUNDLI CALCULATED SUCCESSFULLY")
+        print(
+            "KUNDLI CALCULATED SUCCESSFULLY"
+        )
         print("=" * 70)
 
         print(
@@ -527,7 +539,9 @@ def create_kundli():
 
         print("")
         print("=" * 70)
-        print("KUNDLI VALIDATION ERROR")
+        print(
+            "KUNDLI VALIDATION ERROR"
+        )
         print("=" * 70)
 
         print(
@@ -555,7 +569,9 @@ def create_kundli():
 
         print("")
         print("=" * 70)
-        print("KUNDLI SERVER ERROR")
+        print(
+            "KUNDLI SERVER ERROR"
+        )
         print("=" * 70)
 
         print(
@@ -563,7 +579,9 @@ def create_kundli():
         )
 
         print("")
-        print("FULL TRACEBACK:")
+        print(
+            "FULL TRACEBACK:"
+        )
 
         traceback.print_exc()
 
@@ -581,6 +599,242 @@ def create_kundli():
                 str(error)
 
         }), 500
+
+
+# =========================================================
+# AI ASTROLOGER API
+# =========================================================
+
+@app.route(
+    "/api/ai",
+    methods=["POST"]
+)
+def ai_astrologer():
+
+    print("\n")
+    print("=" * 70)
+    print(
+        "AI ASTROLOGER REQUEST"
+    )
+    print("=" * 70)
+
+    try:
+
+        # =================================================
+        # GET JSON
+        # =================================================
+
+        data = request.get_json(
+            silent=True
+        )
+
+        if not data:
+
+            print(
+                "ERROR: No JSON data received."
+            )
+
+            return jsonify({
+                "success": False,
+                "message":
+                    "No JSON data received."
+            }), 400
+
+
+        # =================================================
+        # QUESTION
+        # =================================================
+
+        question = str(
+            data.get(
+                "question",
+                ""
+            )
+        ).strip()
+
+
+        if not question:
+
+            return jsonify({
+                "success": False,
+                "message":
+                    "Question is required."
+            }), 400
+
+
+        # =================================================
+        # KUNDLI
+        # =================================================
+
+        kundli = data.get(
+            "kundli"
+        )
+
+
+        if not kundli:
+
+            return jsonify({
+                "success": False,
+                "message":
+                    "Kundli data is required."
+            }), 400
+
+
+        print(
+            "Question:",
+            question
+        )
+
+        print("")
+        print(
+            "Sending question to Gemini..."
+        )
+
+
+        # =================================================
+        # ASK ASTROLOGER
+        # =================================================
+
+        result = ask_astrologer(
+            question,
+            kundli
+        )
+
+
+        # =================================================
+        # CHECK RESULT
+        # =================================================
+
+        if not result:
+
+            return jsonify({
+                "success": False,
+                "message":
+                    "AI returned no response."
+            }), 500
+
+
+        if result.get(
+            "success"
+        ) is not True:
+
+            print(
+                "AI ERROR:",
+                result.get(
+                    "message"
+                )
+            )
+
+            return jsonify({
+
+                "success": False,
+
+                "message":
+                    result.get(
+                        "message",
+                        "AI could not generate an answer."
+                    )
+
+            }), 500
+
+
+        # =================================================
+        # SUCCESS
+        # =================================================
+
+        answer = result.get(
+            "answer",
+            ""
+        )
+
+
+        if not answer:
+
+            return jsonify({
+                "success": False,
+                "message":
+                    "AI returned an empty answer."
+            }), 500
+
+
+        print("")
+        print(
+            "AI ANSWER GENERATED SUCCESSFULLY"
+        )
+
+        print("=" * 70)
+
+
+        return jsonify({
+
+            "success": True,
+
+            "answer": answer
+
+        }), 200
+
+
+    # =====================================================
+    # UNEXPECTED ERROR
+    # =====================================================
+
+    except Exception as error:
+
+        print("")
+        print("=" * 70)
+        print(
+            "AI ASTROLOGER SERVER ERROR"
+        )
+        print("=" * 70)
+
+        print(
+            str(error)
+        )
+
+        print("")
+        print(
+            "FULL TRACEBACK:"
+        )
+
+        traceback.print_exc()
+
+        print("=" * 70)
+
+
+        return jsonify({
+
+            "success": False,
+
+            "message":
+                "Unable to generate AI answer.",
+
+            "details":
+                str(error)
+
+        }), 500
+
+
+# =========================================================
+# HEALTH CHECK
+# =========================================================
+
+@app.route(
+    "/api/health",
+    methods=["GET"]
+)
+def health():
+
+    return jsonify({
+
+        "success": True,
+
+        "message":
+            "AI Jyotish API is running.",
+
+        "swisseph":
+            "available"
+
+    }), 200
 
 
 # =========================================================
@@ -615,29 +869,6 @@ def serve_static(path):
 
 
 # =========================================================
-# HEALTH CHECK
-# =========================================================
-
-@app.route(
-    "/api/health",
-    methods=["GET"]
-)
-def health():
-
-    return jsonify({
-
-        "success": True,
-
-        "message":
-            "AI Jyotish API is running.",
-
-        "swisseph":
-            "available"
-
-    }), 200
-
-
-# =========================================================
 # RUN SERVER
 # =========================================================
 
@@ -645,8 +876,12 @@ if __name__ == "__main__":
 
     print("")
     print("=" * 70)
-    print("                         AI JYOTISH")
-    print("                    Vedic Astrology Backend")
+    print(
+        "                         AI JYOTISH"
+    )
+    print(
+        "                    Vedic Astrology Backend"
+    )
     print("=" * 70)
 
     print("")
@@ -680,6 +915,15 @@ if __name__ == "__main__":
 
     print(
         "POST /api/kundli"
+    )
+
+    print("")
+    print(
+        "AI API:"
+    )
+
+    print(
+        "POST /api/ai"
     )
 
     print("")
