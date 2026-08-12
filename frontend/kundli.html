@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Your Kundli • AI Jyotish</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<header class="navbar">
+
+    <div class="nav-container">
+
+        <a
+            href="index.html"
+            class="brand"
+        >
+            ✦ AI Jyotish
+        </a>
+
+
+        <nav class="nav-links">
+
+            <a href="index.html">
+                Home
+            </a>
+
+            <a
+                href="birth-form.html"
+                class="nav-button"
+            >
+                Create New
+            </a>
+
+        </nav>
+
+    </div>
+
+</header>
+
+
+
+<main class="page-container">
+
+
+<!-- PROFILE -->
+
+<section class="profile-header">
+
+    <div>
+
+        <p class="eyebrow">
+            YOUR COSMIC BLUEPRINT
+        </p>
+
+        <h1 id="personName">
+            Your Kundli
+        </h1>
+
+        <p
+            id="personInfo"
+            class="person-info"
+        >
+            Loading birth details...
+        </p>
+
+    </div>
+
+
+    <div class="profile-badges">
+
+        <div class="badge">
+
+            <span>
+                LAGNA
+            </span>
+
+            <strong id="ascendantSign">
+                —
+            </strong>
+
+        </div>
+
+
+        <div class="badge">
+
+            <span>
+                AYANAMSA
+            </span>
+
+            <strong>
+                Lahiri
+            </strong>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- CHARTS -->
+
+<section class="section">
+
+    <div class="section-heading">
+
+        <p class="eyebrow">
+            RASHI CHARTS
+        </p>
+
+        <h2>
+            Vedic Birth Charts
+        </h2>
+
+        <p>
+            North Indian style Rashi charts.
+        </p>
+
+    </div>
+
+
+    <div class="charts-grid">
+
+
+        <!-- LAGNA -->
+
+        <div class="chart-card">
+
+            <div class="chart-title">
+
+                <span>
+                    LAGNA KUNDLI
+                </span>
+
+                <strong id="lagnaChartSign">
+                    —
+                </strong>
+
+            </div>
+
+
+            <div
+                id="lagnaChart"
+                class="kundli-chart"
+            ></div>
+
+        </div>
+
+
+
+        <!-- CHANDRA -->
+
+        <div class="chart-card">
+
+            <div class="chart-title">
+
+                <span>
+                    CHANDRA KUNDLI
+                </span>
+
+                <strong id="chandraChartSign">
+                    —
+                </strong>
+
+            </div>
+
+
+            <div
+                id="chandraChart"
+                class="kundli-chart"
+            ></div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- QUICK DETAILS -->
+
+<section class="quick-grid">
+
+
+    <div class="info-card">
+
+        <span class="card-label">
+            Ascendant
+        </span>
+
+        <strong id="ascendantValue">
+            —
+        </strong>
+
+        <small id="ascendantDegree">
+            —
+        </small>
+
+    </div>
+
+
+    <div class="info-card">
+
+        <span class="card-label">
+            Sun Sign
+        </span>
+
+        <strong id="sunSign">
+            —
+        </strong>
+
+    </div>
+
+
+    <div class="info-card">
+
+        <span class="card-label">
+            Moon Sign
+        </span>
+
+        <strong id="moonSign">
+            —
+        </strong>
+
+        <small id="moonNakshatra">
+            —
+        </small>
+
+    </div>
+
+
+    <div class="info-card">
+
+        <span class="card-label">
+            Moon Degree
+        </span>
+
+        <strong id="moonDegree">
+            —
+        </strong>
+
+    </div>
+
+</section>
+
+
+
+<!-- PLANETS -->
+
+<section class="section">
+
+    <div class="section-heading">
+
+        <p class="eyebrow">
+            PLANETS
+        </p>
+
+        <h2>
+            Planetary Positions
+        </h2>
+
+        <p>
+            Exact planetary positions at birth.
+        </p>
+
+    </div>
+
+
+    <div class="table-card">
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Planet</th>
+                        <th>Sign</th>
+                        <th>Degree</th>
+                        <th>Nakshatra</th>
+                        <th>House</th>
+                        <th>Motion</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="planetTable">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- GRAHA YUTI -->
+
+<section class="section">
+
+    <div class="section-heading">
+
+        <p class="eyebrow">
+            GRAHA YUTI
+        </p>
+
+        <h2>
+            Planetary Conjunctions
+        </h2>
+
+        <p>
+            Planets placed together in the same zodiac sign.
+        </p>
+
+    </div>
+
+
+    <div
+        id="yutiContent"
+        class="yoga-grid"
+    ></div>
+
+</section>
+
+
+
+<!-- PLANETARY STRENGTH -->
+
+<section class="section">
+
+    <div class="section-heading">
+
+        <p class="eyebrow">
+            PLANETARY CONDITION
+        </p>
+
+        <h2>
+            Planetary Strength
+        </h2>
+
+        <p>
+            Basic dignity and condition of the planets.
+        </p>
+
+    </div>
+
+
+    <div
+        id="strengthContent"
+        class="strength-grid"
+    ></div>
+
+</section>
+
+
+
+<!-- HOUSES -->
+
+<section class="section">
+
+    <div class="section-heading">
+
+        <p class="eyebrow">
+            HOUSES
+        </p>
+
+        <h2>
+            House Overview
+        </h2>
+
+        <p>
+            Twelve houses and their planetary placements.
+        </p>
+
+    </div>
+
+
+    <div
+        id="houseCards"
+        class="house-grid"
+    ></div>
+
+</section>
+
+
+
+<!-- ASPECTS -->
+
+<section class="section">
+
+    <div class="section-heading">
+
+        <p class="eyebrow">
+            DRISHTI
+        </p>
+
+        <h2>
+            Planetary Aspects
+        </h2>
+
+        <p>
+            Traditional Vedic planetary aspects.
+        </p>
+
+    </div>
+
+
+    <div
+        id="aspectContent"
+        class="aspect-grid"
+    ></div>
+
+</section>
+
+
+
+<!-- NAKSHATRA -->
+
+<section class="section">
+
+    <div class="section-heading">
+
+        <p class="eyebrow">
+            NAKSHATRA
+        </p>
+
+        <h2>
+            Birth Nakshatra
+        </h2>
+
+    </div>
+
+
+    <div
+        id="nakshatraContent"
+        class="nakshatra-card"
+    ></div>
+
+</section>
+
+
+
+<!-- YOGA -->
+
+<section class="section">
+
+    <div class="section-heading">
+
+        <p class="eyebrow">
+            YOGA
+        </p>
+
+        <h2>
+            Important Yogas
+        </h2>
+
+        <p>
+            Basic planetary combinations detected from
+            the available birth chart data.
+        </p>
+
+    </div>
+
+
+    <div
+        id="yogaContent"
+        class="yoga-grid"
+    ></div>
+
+</section>
+
+
+
+<!-- AI -->
+
+<section class="ai-card">
+
+    <p class="eyebrow">
+        AI ASTROLOGER
+    </p>
+
+    <h2>
+        Ask About Your Chart
+    </h2>
+
+    <p>
+        Ask a question about your planetary positions
+        or birth chart.
+    </p>
+
+
+    <div
+        id="aiMessages"
+        class="ai-messages"
+    ></div>
+
+
+    <form
+        id="aiForm"
+        class="ai-form"
+    >
+
+        <input
+            id="aiQuestion"
+            type="text"
+            placeholder="Ask something about your Kundli..."
+            autocomplete="off"
+        >
+
+        <button type="submit">
+            Ask
+        </button>
+
+    </form>
+
+</section>
+
+
+</main>
+
+
+
+<footer class="footer">
+
+    <p>
+        ✦ AI Jyotish
+    </p>
+
+    <span>
+        Traditional wisdom • Modern experience
+    </span>
+
+</footer>
+
+
+<script src="js/script.js"></script>
+
+</body>
+</html>

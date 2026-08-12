@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Create Kundli • AI Jyotish</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<header class="navbar">
+
+    <div class="nav-container">
+
+        <a
+            href="index.html"
+            class="brand"
+        >
+            ✦ AI Jyotish
+        </a>
+
+        <nav class="nav-links">
+
+            <a href="index.html">
+                Home
+            </a>
+
+        </nav>
+
+    </div>
+
+</header>
+
+
+
+<main class="form-page">
+
+    <section class="form-card">
+
+        <div class="form-heading">
+
+            <p class="eyebrow">
+                BIRTH INFORMATION
+            </p>
+
+            <h1>
+                Create Your Kundli
+            </h1>
+
+            <p>
+                Enter your exact birth details to calculate
+                your Vedic birth chart.
+            </p>
+
+        </div>
+
+
+        <form id="birthForm">
+
+
+            <div class="form-group">
+
+                <label for="name">
+                    Full Name
+                </label>
+
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    placeholder="Enter your name"
+                    required
+                >
+
+            </div>
+
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="date">
+                        Date of Birth
+                    </label>
+
+                    <input
+                        type="date"
+                        id="date"
+                        name="date"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="time">
+                        Time of Birth
+                    </label>
+
+                    <input
+                        type="time"
+                        id="time"
+                        name="time"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+
+            <div class="form-group">
+
+                <label for="place">
+                    Birth Place
+                </label>
+
+                <input
+                    type="text"
+                    id="place"
+                    name="place"
+                    placeholder="Example: Kolkata, India"
+                    required
+                >
+
+            </div>
+
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="latitude">
+                        Latitude
+                    </label>
+
+                    <input
+                        type="number"
+                        id="latitude"
+                        name="latitude"
+                        step="any"
+                        placeholder="Example: 22.5726"
+                        required
+                    >
+
+                    <small>
+                        North = positive, South = negative
+                    </small>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="longitude">
+                        Longitude
+                    </label>
+
+                    <input
+                        type="number"
+                        id="longitude"
+                        name="longitude"
+                        step="any"
+                        placeholder="Example: 88.3639"
+                        required
+                    >
+
+                    <small>
+                        East = positive, West = negative
+                    </small>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="form-group">
+
+                <label for="timezone">
+                    Timezone
+                </label>
+
+                <select
+                    id="timezone"
+                    name="timezone"
+                >
+
+                    <option value="5.5">
+                        India Standard Time (UTC +5:30)
+                    </option>
+
+                    <option value="0">
+                        UTC
+                    </option>
+
+                    <option value="-5">
+                        UTC -5
+                    </option>
+
+                    <option value="-4">
+                        UTC -4
+                    </option>
+
+                    <option value="1">
+                        UTC +1
+                    </option>
+
+                    <option value="2">
+                        UTC +2
+                    </option>
+
+                    <option value="3">
+                        UTC +3
+                    </option>
+
+                    <option value="4">
+                        UTC +4
+                    </option>
+
+                    <option value="5">
+                        UTC +5
+                    </option>
+
+                    <option value="5.5" selected>
+                        UTC +5:30
+                    </option>
+
+                    <option value="6">
+                        UTC +6
+                    </option>
+
+                    <option value="7">
+                        UTC +7
+                    </option>
+
+                    <option value="8">
+                        UTC +8
+                    </option>
+
+                    <option value="9">
+                        UTC +9
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <div
+                id="formError"
+                class="form-error"
+            ></div>
+
+
+            <button
+                type="submit"
+                id="createKundliButton"
+                class="primary-button full-button"
+            >
+
+                <span id="buttonText">
+                    Create Kundli
+                </span>
+
+                <span id="buttonLoader" class="loader hidden">
+                    Calculating...
+                </span>
+
+            </button>
+
+
+        </form>
+
+    </section>
+
+</main>
+
+
+<footer class="footer">
+
+    <p>
+        ✦ AI Jyotish
+    </p>
+
+    <span>
+        Traditional wisdom • Modern experience
+    </span>
+
+</footer>
+
+
+<script src="js/script.js"></script>
+
+</body>
+</html>

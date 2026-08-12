@@ -1,0 +1,803 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --bg: #f7f4ed;
+    --card: #fffdf8;
+    --text: #201b16;
+    --muted: #756d63;
+    --line: #ddd5c9;
+    --accent: #8b5e34;
+    --accent-dark: #5e3b1f;
+    --gold: #b58a48;
+}
+
+body {
+    font-family: Georgia, "Times New Roman", serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+button,
+input,
+select {
+    font: inherit;
+}
+
+
+/* =========================
+   NAVBAR
+========================= */
+
+.navbar {
+    border-bottom: 1px solid var(--line);
+    background: rgba(255, 253, 248, 0.95);
+}
+
+.nav-container {
+    max-width: 1180px;
+    margin: auto;
+    min-height: 76px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 24px;
+}
+
+.brand {
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+}
+
+.nav-links a {
+    color: #4c453d;
+}
+
+.nav-button {
+    padding: 11px 18px;
+    border: 1px solid var(--line);
+    border-radius: 30px;
+}
+
+
+/* =========================
+   HERO
+========================= */
+
+.hero {
+    max-width: 1180px;
+    min-height: 620px;
+    margin: auto;
+
+    padding: 90px 24px;
+
+    display: grid;
+    grid-template-columns: 1.3fr 0.7fr;
+    align-items: center;
+    gap: 70px;
+}
+
+.eyebrow {
+    letter-spacing: 3px;
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--accent);
+    margin-bottom: 12px;
+}
+
+.hero h1 {
+    font-size: clamp(48px, 7vw, 82px);
+    line-height: 1.05;
+    margin-bottom: 28px;
+}
+
+.hero h1 span {
+    display: block;
+    color: var(--accent);
+}
+
+.hero-text {
+    max-width: 650px;
+    color: var(--muted);
+    font-size: 18px;
+    margin-bottom: 35px;
+}
+
+.primary-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+
+    background: var(--accent-dark);
+    color: white;
+
+    border: 0;
+    border-radius: 8px;
+
+    padding: 15px 24px;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.primary-button:hover {
+    transform: translateY(-2px);
+    opacity: 0.92;
+}
+
+.hero-card {
+    min-height: 390px;
+
+    border: 1px solid var(--line);
+    background: var(--card);
+
+    border-radius: 18px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    box-shadow: 0 20px 50px rgba(80, 55, 30, 0.08);
+}
+
+.hero-symbol {
+    font-size: 80px;
+    color: var(--gold);
+    margin-bottom: 20px;
+}
+
+.hero-card h3 {
+    font-size: 28px;
+}
+
+.hero-card p {
+    color: var(--muted);
+}
+
+.mini-orbit {
+    display: flex;
+    gap: 18px;
+    margin-top: 35px;
+    font-size: 26px;
+    color: var(--accent);
+}
+
+
+/* =========================
+   FEATURES
+========================= */
+
+.features {
+    max-width: 1180px;
+    margin: auto;
+    padding: 80px 24px;
+}
+
+.center {
+    text-align: center;
+}
+
+.section-heading {
+    margin-bottom: 35px;
+}
+
+.section-heading h2 {
+    font-size: 42px;
+    line-height: 1.15;
+    margin-bottom: 8px;
+}
+
+.section-heading p:not(.eyebrow) {
+    color: var(--muted);
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+}
+
+.feature-card {
+    padding: 28px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+}
+
+.feature-icon {
+    font-size: 32px;
+    color: var(--gold);
+    margin-bottom: 20px;
+}
+
+.feature-card h3 {
+    margin-bottom: 8px;
+}
+
+.feature-card p {
+    color: var(--muted);
+}
+
+
+/* =========================
+   FORM
+========================= */
+
+.form-page {
+    max-width: 760px;
+    margin: auto;
+    padding: 70px 24px;
+}
+
+.form-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 45px;
+    box-shadow: 0 20px 50px rgba(80, 55, 30, 0.08);
+}
+
+.form-heading {
+    margin-bottom: 35px;
+}
+
+.form-heading h1 {
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+.form-heading p:not(.eyebrow) {
+    color: var(--muted);
+}
+
+.form-group {
+    margin-bottom: 22px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 14px 15px;
+
+    background: white;
+
+    border: 1px solid var(--line);
+    border-radius: 8px;
+
+    outline: none;
+}
+
+input:focus,
+select:focus {
+    border-color: var(--accent);
+}
+
+small {
+    display: block;
+    color: var(--muted);
+    margin-top: 5px;
+}
+
+.full-button {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.form-error {
+    color: #a52c2c;
+    margin-bottom: 10px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.loader {
+    color: white;
+}
+
+
+/* =========================
+   KUNDLI PAGE
+========================= */
+
+.page-container {
+    max-width: 1180px;
+    margin: auto;
+    padding: 55px 24px 100px;
+}
+
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 30px;
+
+    margin-bottom: 50px;
+}
+
+.profile-header h1 {
+    font-size: 52px;
+}
+
+.person-info {
+    color: var(--muted);
+}
+
+.profile-badges {
+    display: flex;
+    gap: 12px;
+}
+
+.badge {
+    min-width: 120px;
+    padding: 14px;
+
+    border: 1px solid var(--line);
+    background: var(--card);
+
+    border-radius: 10px;
+
+    text-align: center;
+}
+
+.badge span {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted);
+}
+
+.badge strong {
+    display: block;
+    margin-top: 5px;
+    color: var(--accent-dark);
+}
+
+
+/* =========================
+   SECTIONS
+========================= */
+
+.section {
+    margin-top: 70px;
+}
+
+
+/* =========================
+   TWO CHARTS
+========================= */
+
+.charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+}
+
+.chart-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 20px;
+
+    overflow: hidden;
+}
+
+.chart-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 5px 10px 18px;
+
+    border-bottom: 1px solid var(--line);
+}
+
+.chart-title span {
+    font-size: 12px;
+    letter-spacing: 2px;
+    font-weight: bold;
+    color: var(--muted);
+}
+
+.chart-title strong {
+    color: var(--accent-dark);
+}
+
+
+/* =========================
+   NORTH INDIAN CHART
+========================= */
+
+.kundli-chart {
+    width: 100%;
+    max-width: 560px;
+    aspect-ratio: 1;
+    margin: auto;
+    padding: 12px;
+}
+
+.kundli-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.chart-border {
+    fill: #fffdf8;
+    stroke: #806848;
+    stroke-width: 2;
+}
+
+.chart-line {
+    fill: none;
+    stroke: #806848;
+    stroke-width: 1.5;
+}
+
+.chart-center {
+    fill: #fbf8f0;
+}
+
+.chart-house-number {
+    font-family: Georgia, serif;
+    font-size: 15px;
+    fill: #9b6e36;
+    text-anchor: middle;
+    dominant-baseline: middle;
+    font-weight: bold;
+}
+
+.chart-planet {
+    font-family: Georgia, serif;
+    font-size: 13px;
+    fill: #211b16;
+    text-anchor: middle;
+    dominant-baseline: middle;
+    font-weight: bold;
+}
+
+
+/* =========================
+   QUICK CARDS
+========================= */
+
+.quick-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+
+    margin-top: 25px;
+}
+
+.info-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+
+    padding: 22px;
+}
+
+.card-label {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 7px;
+}
+
+.info-card strong {
+    display: block;
+    font-size: 24px;
+}
+
+
+/* =========================
+   TABLE
+========================= */
+
+.table-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 17px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+}
+
+th {
+    background: #f1ede4;
+    font-size: 12px;
+    letter-spacing: 1px;
+}
+
+td {
+    color: #4b443c;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+
+/* =========================
+   CARDS
+========================= */
+
+.yoga-grid,
+.strength-grid,
+.house-grid,
+.aspect-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.yoga-card,
+.strength-card,
+.house-card,
+.aspect-card,
+.nakshatra-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 24px;
+}
+
+.yoga-card h3,
+.strength-card h3,
+.house-card h3,
+.aspect-card h3 {
+    margin-bottom: 8px;
+}
+
+.muted {
+    color: var(--muted);
+}
+
+.strength-bar {
+    height: 7px;
+    background: #e6dfd4;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-top: 14px;
+}
+
+.strength-fill {
+    height: 100%;
+    background: var(--accent);
+}
+
+
+/* =========================
+   NAKSHATRA
+========================= */
+
+.nakshatra-card {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.nakshatra-item span {
+    display: block;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.nakshatra-item strong {
+    font-size: 20px;
+}
+
+
+/* =========================
+   AI
+========================= */
+
+.ai-card {
+    margin-top: 75px;
+
+    background: #eee7da;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+
+    padding: 40px;
+}
+
+.ai-card h2 {
+    font-size: 38px;
+    margin-bottom: 8px;
+}
+
+.ai-card > p:not(.eyebrow) {
+    color: var(--muted);
+}
+
+.ai-messages {
+    min-height: 50px;
+    margin: 25px 0;
+}
+
+.ai-message {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 10px;
+}
+
+.ai-form {
+    display: flex;
+    gap: 10px;
+}
+
+.ai-form input {
+    flex: 1;
+}
+
+.ai-form button {
+    border: none;
+    background: var(--accent-dark);
+    color: white;
+    padding: 0 24px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
+.footer {
+    border-top: 1px solid var(--line);
+    padding: 35px 24px;
+
+    display: flex;
+    justify-content: space-between;
+
+    max-width: 1180px;
+    margin: auto;
+
+    color: var(--muted);
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 900px) {
+
+    .hero {
+        grid-template-columns: 1fr;
+        padding-top: 60px;
+    }
+
+    .feature-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .quick-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .yoga-grid,
+    .strength-grid,
+    .house-grid,
+    .aspect-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .nakshatra-card {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+
+@media (max-width: 600px) {
+
+    .nav-links a:not(.nav-button) {
+        display: none;
+    }
+
+    .hero h1 {
+        font-size: 48px;
+    }
+
+    .feature-grid,
+    .form-row,
+    .quick-grid,
+    .yoga-grid,
+    .strength-grid,
+    .house-grid,
+    .aspect-grid,
+    .nakshatra-card {
+        grid-template-columns: 1fr;
+    }
+
+    .form-card {
+        padding: 25px;
+    }
+
+    .profile-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .profile-header h1 {
+        font-size: 40px;
+    }
+
+    .profile-badges {
+        width: 100%;
+    }
+
+    .badge {
+        flex: 1;
+    }
+
+    .ai-form {
+        flex-direction: column;
+    }
+
+    .ai-form button {
+        padding: 14px;
+    }
+
+    .footer {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
