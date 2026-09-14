@@ -1,44 +1,194 @@
-def detect_yogas(kundli):
+def detect_yogas(chart):
 
-    planets = kundli.get(
-        "planets",
-        {}
-    )
+    planets = {
+
+        planet["name"]: planet
+
+        for planet in chart["planets"]
+
+    }
+
 
     yogas = []
 
-    # -----------------------------------------------
-    # Basic Gaja Kesari foundation
-    # -----------------------------------------------
 
-    moon = planets.get("Moon")
-    jupiter = planets.get("Jupiter")
+    # =====================================================
+    # GAJA KESARI YOGA
+    # =====================================================
 
-    if moon and jupiter:
+    moon_house = planets[
+        "Moon"
+    ]["house"]
 
-        moon_house = moon.get(
-            "house"
-        )
 
-        jupiter_house = jupiter.get(
-            "house"
-        )
+    jupiter_house = planets[
+        "Jupiter"
+    ]["house"]
 
-        if moon_house and jupiter_house:
 
-            distance = (
-                jupiter_house
-                - moon_house
-            ) % 12
+    distance = (
 
-            if distance in [0, 4, 8]:
+        (
+            jupiter_house
+            - moon_house
+        ) % 12
 
-                yogas.append({
-                    "name":
-                        "Gaja Kesari Yoga",
+    ) + 1
 
-                    "description":
-                        "A traditional Jyotish combination involving Jupiter and Moon."
-                })
+
+    if distance in (
+        1,
+        4,
+        7,
+        10
+    ):
+
+        yogas.append({
+
+            "name":
+                "Gaja Kesari Yoga",
+
+            "type":
+                "Prosperity",
+
+            "description":
+                (
+                    "Jupiter is placed in a kendra "
+                    "from the Moon, traditionally "
+                    "associated with wisdom, reputation "
+                    "and supportive growth."
+                )
+
+        })
+
+
+    # =====================================================
+    # BUDHA ADITYA YOGA
+    # =====================================================
+
+    if (
+
+        planets["Sun"]["sign_index"]
+
+        ==
+
+        planets["Mercury"]["sign_index"]
+
+    ):
+
+        yogas.append({
+
+            "name":
+                "Budha Aditya Yoga",
+
+            "type":
+                "Intelligence",
+
+            "description":
+                (
+                    "Sun and Mercury occupy the same "
+                    "sign, traditionally associated "
+                    "with intellect, communication "
+                    "and analytical ability."
+                )
+
+        })
+
+
+    # =====================================================
+    # CHANDRA MANGALA YOGA
+    # =====================================================
+
+    if (
+
+        planets["Moon"]["sign_index"]
+
+        ==
+
+        planets["Mars"]["sign_index"]
+
+    ):
+
+        yogas.append({
+
+            "name":
+                "Chandra Mangala Yoga",
+
+            "type":
+                "Finance",
+
+            "description":
+                (
+                    "Moon and Mars share a sign, "
+                    "traditionally associated with "
+                    "initiative, enterprise and "
+                    "material drive."
+                )
+
+        })
+
+
+    # =====================================================
+    # 9TH HOUSE EMPHASIS
+    # =====================================================
+
+    ninth_house_planets = [
+
+        planet["name"]
+
+        for planet in chart["planets"]
+
+        if planet["house"] == 9
+
+    ]
+
+
+    if ninth_house_planets:
+
+        yogas.append({
+
+            "name":
+                "Dharma Focus",
+
+            "type":
+                "Purpose",
+
+            "description":
+                (
+                    "Planetary emphasis appears in "
+                    f"the 9th house "
+                    f"({', '.join(ninth_house_planets)}), "
+                    "traditionally connected with "
+                    "learning, principles and "
+                    "long-distance horizons."
+                )
+
+        })
+
+
+    # =====================================================
+    # NO SIMPLIFIED YOGA
+    # =====================================================
+
+    if not yogas:
+
+        yogas.append({
+
+            "name":
+                "Chart Highlights",
+
+            "type":
+                "General",
+
+            "description":
+                (
+                    "No simplified named yoga was "
+                    "detected by this starter rule set. "
+                    "A complete Jyotish engine can add "
+                    "many more classical conditions."
+                )
+
+        })
+
 
     return yogas

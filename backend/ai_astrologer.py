@@ -1,211 +1,393 @@
+"""
+AI JYOTISH
+Gemini AI Astrologer
+
+Uses Google Gemini 3.7 Flash.
+"""
+
 import os
 import json
-
 from dotenv import load_dotenv
 from google import genai
 
-
-# =========================================================
-# LOAD ENVIRONMENT VARIABLES
-# =========================================================
-
+# Load .env BEFORE reading environment variables
 load_dotenv()
 
 
-# =========================================================
-# GEMINI API KEY
-# =========================================================
+# ============================================================
+# CONFIGURATION
+# ============================================================
 
-api_key = os.getenv(
-    "GEMINI_API_KEY"
+API_KEY = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+
+MODEL = os.getenv(
+    "GEMINI_MODEL",
+    "gemini-3.5-flash"
 )
 
 
-# =========================================================
+# ============================================================
 # GEMINI CLIENT
-# =========================================================
+# ============================================================
 
 client = None
 
+if API_KEY:
+    try:
+        client = genai.Client(api_key=API_KEY)
+        print("[OK] Gemini client initialized")
+        print(f"[OK] Gemini model: {MODEL}")
+    except Exception as exc:
+        print("[WARNING] Gemini client initialization failed")
+        print(f"Error: {type(exc).__name__}: {exc}")
+        client = None
+else:
+    print("[WARNING] GEMINI_API_KEY is not configured")
 
-if api_key:
 
-    client = genai.Client(
-        api_key=api_key
+# ============================================================
+# CHART CLEANER
+# ============================================================
+
+def make_json_safe(data):
+    """
+    Convert chart data into JSON-safe Python objects.
+    """
+
+    if data is None:
+        return None
+
+    if isinstance(data, (str, int, float, bool)):
+        return data
+
+    if isinstance(data, dict):
+        return {
+            str(key): make_json_safe(value)
+            for key, value in data.items()
+        }
+
+    if isinstance(data, (list, tuple)):
+        return [
+            make_json_safe(value)
+            for value in data
+        ]
+
+    try:
+        return float(data)
+    except Exception:
+        return str(data)
+
+
+# ============================================================
+# CHART SUMMARY
+# ============================================================
+
+def build_chart_context(chart):
+    """
+    Convert complete Kundli + analysis into a clean JSON context
+    for Gemini.
+    """
+
+    safe_chart = make_json_safe(chart)
+
+    return json.dumps(
+        safe_chart,
+        indent=2,
+        ensure_ascii=False
     )
 
 
-# =========================================================
-# AI ASTROLOGER
-# =========================================================
+# ============================================================
+# SYSTEM PROMPT
+# ============================================================
 
-def ask_astrologer(
-    user_question,
-    kundli
-):
+def build_system_prompt():
+    return """
+You are AI Jyotish, an advanced Vedic astrology assistant.
 
-    # =====================================================
-    # CHECK API KEY
-    # =====================================================
+You analyze a person's Kundli using traditional Vedic astrology
+principles.
 
-    if client is None:
+The chart data provided to you may contain:
 
-        return {
-
-            "success": False,
-
-            "message":
-                "Gemini API key is not configured."
-
-        }
-
-
-    # =====================================================
-    # CONVERT KUNDLI TO JSON
-    # =====================================================
-
-    try:
-
-        chart_json = json.dumps(
-            kundli,
-            indent=2,
-            default=str
-        )
-
-    except Exception:
-
-        chart_json = str(
-            kundli
-        )
-
-
-    # =====================================================
-    # AI PROMPT
-    # =====================================================
-
-    prompt = f"""
-You are AI Jyotish, an assistant specializing
-in traditional Indian/Vedic astrology.
-
-Use the following calculated Kundli data
-to answer the user's question.
-
-KUNDLI DATA:
-
-{chart_json}
-
-
-USER QUESTION:
-
-{user_question}
-
+- Birth details
+- Ascendant
+- Planetary positions
+- Houses
+- Nakshatras
+- Planetary dignity
+- Combustion
+- Aspects
+- Shadbala
+- Ashtakavarga
+- Navamsa
+- Vimshottari Dasha
+- Yogas
+- Other calculated astrology information
 
 IMPORTANT RULES:
 
-- Present astrology as a traditional or spiritual
-  interpretation, not scientific certainty.
-- Do not make medical, legal or financial guarantees.
-- Do not frighten the user.
-- Do not claim unavoidable death or disaster.
-- Do not invent planetary positions that are not
-  present in the supplied Kundli data.
-- Explain important chart factors clearly.
-- Keep the answer friendly and practical.
-- If the available chart data is insufficient,
-  clearly say so instead of inventing information.
+1. Use the supplied calculated chart data.
+2. Do not invent planetary positions.
+3. Do not invent birth information.
+4. Do not claim calculations that are not present in the chart.
+5. Clearly distinguish calculated facts from interpretation.
+6. Give explanations in simple language.
+7. When discussing timing, use the supplied Dasha information.
+8. Consider the Ascendant, Moon, Sun, houses, lords, aspects,
+   dignity, Nakshatra, Navamsa, Yogas and Dashas together.
+9. Avoid absolute guarantees about the future.
+10. Present astrology as traditional/spiritual guidance rather
+    than scientific certainty.
 
+When answering a user's question:
 
-ANSWER STRUCTURE:
+- First understand the question.
+- Identify the relevant chart factors.
+- Explain the astrological reasoning.
+- Give a practical interpretation.
+- If the chart does not contain enough information, say so.
 
-1. Short answer
-2. Astrological interpretation
-3. Important chart factors
-4. Practical guidance
-
-
-Keep the answer easy to understand.
-
-Answer the user's actual question directly.
+You are an astrology assistant, not a medical, legal or financial
+professional.
 """
 
 
-    # =====================================================
-    # CALL GEMINI
-    # =====================================================
+# ============================================================
+# BUILD USER PROMPT
+# ============================================================
+
+def build_user_prompt(question, chart):
+    chart_context = build_chart_context(chart)
+
+    return f"""
+Here is the person's complete Vedic astrology chart:
+
+================ CHART DATA ================
+
+{chart_context}
+
+================ USER QUESTION ================
+
+{question}
+
+================ INSTRUCTIONS ================
+
+Answer the user's question using the supplied Kundli.
+
+Explain:
+
+1. What chart factors are relevant.
+2. What those factors traditionally indicate.
+3. How those factors relate to the user's question.
+4. The overall interpretation.
+5. Any important limitations or uncertainty.
+
+Do not invent information that is not present in the chart.
+
+Give the answer in a clear and natural way.
+"""
+
+
+# ============================================================
+# GEMINI REQUEST
+# ============================================================
+
+def ask_gemini(prompt):
+    """
+    Send a prompt to Gemini.
+    """
+
+    if not API_KEY:
+        return {
+            "success": False,
+            "answer": (
+                "Gemini API key is not configured. "
+                "Please configure GEMINI_API_KEY in your .env file."
+            ),
+            "error": "GEMINI_API_KEY missing"
+        }
+
+    if client is None:
+        return {
+            "success": False,
+            "answer": (
+                "Gemini client could not be initialized."
+            ),
+            "error": "Gemini client unavailable"
+        }
 
     try:
 
         response = client.models.generate_content(
-
-            model="gemini-3.6-flash",
-
+            model=MODEL,
             contents=prompt
-
         )
 
+        text = getattr(response, "text", None)
 
-        # =================================================
-        # GET TEXT
-        # =================================================
-
-        answer = getattr(
-            response,
-            "text",
-            None
-        )
-
-
-        if not answer:
-
+        if not text:
             return {
-
                 "success": False,
-
-                "message":
-                    "Gemini returned an empty response."
-
+                "answer": "Gemini returned an empty response.",
+                "error": "Empty Gemini response"
             }
 
-
-        # =================================================
-        # SUCCESS
-        # =================================================
-
         return {
-
             "success": True,
-
-            "answer":
-                answer.strip()
-
+            "answer": text.strip(),
+            "error": None
         }
 
+    except Exception as exc:
 
-    # =====================================================
-    # GEMINI ERROR
-    # =====================================================
-
-    except Exception as error:
-
-        print("")
-        print("=" * 70)
-        print(
-            "GEMINI API ERROR"
-        )
-        print("=" * 70)
-
-        print(
-            str(error)
-        )
-
-        print("=" * 70)
-
+        print()
+        print("[WARNING] Gemini request failed")
+        print(f"Error: {type(exc).__name__}: {exc}")
+        print()
 
         return {
-
             "success": False,
-
-            "message":
-                str(error)
-
+            "answer": (
+                "I could not contact Gemini right now. "
+                "Please try again."
+            ),
+            "error": f"{type(exc).__name__}: {str(exc)}"
         }
+
+
+# ============================================================
+# MAIN AI ASTROLOGER FUNCTION
+# ============================================================
+
+def answer_question(question, chart):
+    """
+    Main function used by Flask /api/ai/ask.
+
+    Parameters:
+        question: User's astrology question
+        chart: Complete Kundli dictionary
+
+    Returns:
+        Dictionary containing Gemini answer.
+    """
+
+    # --------------------------------------------------------
+    # Validate question
+    # --------------------------------------------------------
+
+    if not question:
+        return {
+            "success": False,
+            "answer": "Please enter a question.",
+            "error": "Question is empty"
+        }
+
+    if not isinstance(question, str):
+        question = str(question)
+
+    question = question.strip()
+
+    if not question:
+        return {
+            "success": False,
+            "answer": "Please enter a question.",
+            "error": "Question is empty"
+        }
+
+    # --------------------------------------------------------
+    # Validate chart
+    # --------------------------------------------------------
+
+    if not isinstance(chart, dict):
+        return {
+            "success": False,
+            "answer": "A valid Kundli is required.",
+            "error": "Invalid chart"
+        }
+
+    # --------------------------------------------------------
+    # Build prompt
+    # --------------------------------------------------------
+
+    try:
+
+        prompt = build_system_prompt()
+
+        prompt += "\n\n"
+
+        prompt += build_user_prompt(
+            question,
+            chart
+        )
+
+    except Exception as exc:
+
+        return {
+            "success": False,
+            "answer": "Could not prepare the astrology analysis.",
+            "error": f"{type(exc).__name__}: {str(exc)}"
+        }
+
+    # --------------------------------------------------------
+    # Ask Gemini
+    # --------------------------------------------------------
+
+    result = ask_gemini(prompt)
+
+    return result
+
+
+# ============================================================
+# SIMPLE TEST
+# ============================================================
+
+def test_gemini():
+    """
+    Simple Gemini connection test.
+    """
+
+    result = ask_gemini(
+        "Say exactly: AI Jyotish Gemini connection successful."
+    )
+
+    print()
+    print("=" * 60)
+    print("GEMINI TEST")
+    print("=" * 60)
+
+    if result["success"]:
+        print("[OK] Gemini response:")
+        print(result["answer"])
+    else:
+        print("[FAILED]")
+        print(result["error"])
+
+    print("=" * 60)
+    print()
+
+
+# ============================================================
+# DIRECT TEST
+# ============================================================
+
+if __name__ == "__main__":
+
+    print()
+    print("=" * 60)
+    print("AI JYOTISH - AI ASTROLOGER TEST")
+    print("=" * 60)
+
+    print()
+    print("Gemini API configured:", bool(API_KEY))
+    print("Gemini model:", MODEL)
+    print("answer_question:", callable(answer_question))
+
+    print()
+
+    if API_KEY:
+        test_gemini()
+    else:
+        print("[WARNING] Add GEMINI_API_KEY to .env first.")
+
+    print("=" * 60)

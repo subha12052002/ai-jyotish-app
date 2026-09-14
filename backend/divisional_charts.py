@@ -1,64 +1,120 @@
-def get_d9_sign(longitude):
-    """
-    Basic Navamsa sign calculation.
+from ephemeris import SIGNS
 
-    This is a foundation for the D9 chart.
-    """
 
-    longitude = float(longitude) % 360
+# =========================================================
+# NAVAMSA SIGN
+# =========================================================
+
+def navamsa_sign(longitude):
+
+    # -----------------------------------------------------
+    # RASHI
+    # -----------------------------------------------------
 
     sign_index = int(
-        longitude // 30
+
+        (longitude % 360) // 30
+
     )
+
+
+    # -----------------------------------------------------
+    # DEGREE INSIDE SIGN
+    # -----------------------------------------------------
 
     degree = longitude % 30
 
-    navamsa_number = int(
+
+    # -----------------------------------------------------
+    # NAVAMSA PART
+    # -----------------------------------------------------
+
+    part = int(
+
         degree / (30 / 9)
+
     )
 
-    navamsa_sign = (
-        sign_index * 9
-        + navamsa_number
+
+    # -----------------------------------------------------
+    # SIGN TYPE
+    #
+    # 0 = movable
+    # 1 = fixed
+    # 2 = dual
+    # -----------------------------------------------------
+
+    element_type = sign_index % 3
+
+
+    if element_type == 0:
+
+        # Movable
+
+        start = sign_index
+
+
+    elif element_type == 1:
+
+        # Fixed
+
+        start = (
+            sign_index + 8
+        ) % 12
+
+
+    else:
+
+        # Dual
+
+        start = (
+            sign_index + 4
+        ) % 12
+
+
+    # -----------------------------------------------------
+    # NAVAMSA SIGN
+    # -----------------------------------------------------
+
+    nav_index = (
+
+        start + part
+
     ) % 12
 
-    signs = [
-        "Aries",
-        "Taurus",
-        "Gemini",
-        "Cancer",
-        "Leo",
-        "Virgo",
-        "Libra",
-        "Scorpio",
-        "Sagittarius",
-        "Capricorn",
-        "Aquarius",
-        "Pisces"
-    ]
 
-    return signs[
-        navamsa_sign
-    ]
+    return {
+
+        "sign":
+            SIGNS[nav_index],
+
+        "sign_index":
+            nav_index,
+
+        "navamsa":
+            part + 1
+
+    }
 
 
-def create_navamsa(planets):
+# =========================================================
+# BUILD NAVAMSA
+# =========================================================
 
-    result = {}
+def build_navamsa(planets):
 
-    for name, data in planets.items():
+    return [
 
-        longitude = data.get(
-            "longitude"
-        )
+        {
 
-        if longitude is None:
-            continue
+            "name": planet["name"],
 
-        result[name] = {
-            "sign": get_d9_sign(
-                longitude
+            **navamsa_sign(
+                planet["longitude"]
             )
+
         }
 
-    return result
+        for planet in planets
+
+    ]

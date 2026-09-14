@@ -1,38 +1,91 @@
+# =========================================================
+# AI JYOTISH - FLASK BACKEND
+# app.py
+# =========================================================
+
+import os
+import json
+import traceback
+
+from datetime import datetime
+from functools import wraps
+
+from dotenv import load_dotenv
+
 from flask import (
     Flask,
-    request,
     jsonify,
-    send_from_directory
+    request,
+    send_from_directory,
+    session
 )
 
 from flask_cors import CORS
 
-from kundli import calculate_kundli
-from ai_astrologer import ask_astrologer
+from database import db
 
-import os
-import traceback
+from models import (
+    User,
+    BirthProfile,
+    SavedChart
+)
+
+from auth import (
+    hash_password,
+    verify_password
+)
+
+from kundli import (
+    generate_kundli
+)
+
+from analysis_engine import (
+    attach_complete_analysis
+)
+
+from ai_astrologer import (
+    answer_question
+)
+
+
+# =========================================================
+# LOAD ENVIRONMENT
+# =========================================================
+
+load_dotenv()
 
 
 # =========================================================
 # PATHS
 # =========================================================
 
-BASE_DIR = os.path.dirname(
+BACKEND_DIR = os.path.dirname(
     os.path.abspath(__file__)
 )
 
-FRONTEND_DIR = os.path.abspath(
-    os.path.join(
-        BASE_DIR,
-        "..",
-        "frontend"
-    )
+BASE_DIR = os.path.dirname(
+    BACKEND_DIR
+)
+
+FRONTEND_DIR = os.path.join(
+    BASE_DIR,
+    "frontend"
+)
+
+INSTANCE_DIR = os.path.join(
+    BACKEND_DIR,
+    "instance"
+)
+
+
+os.makedirs(
+    INSTANCE_DIR,
+    exist_ok=True
 )
 
 
 # =========================================================
-# FLASK APP
+# FLASK APPLICATION
 # =========================================================
 
 app = Flask(
@@ -41,15 +94,137 @@ app = Flask(
     static_url_path=""
 )
 
-CORS(app)
+
+# =========================================================
+# SECRET KEY
+# =========================================================
+
+app.config["SECRET_KEY"] = os.getenv(
+    "SECRET_KEY",
+    "change-this-secret-key"
+)
 
 
 # =========================================================
-# HOME PAGE
+# DATABASE
 # =========================================================
 
-@app.route("/")
-def home():
+DATABASE_URL = os.getenv(
+    "DATABASE_URL"
+)
+
+
+if DATABASE_URL:
+
+    app.config[
+        "SQLALCHEMY_DATABASE_URI"
+    ] = DATABASE_URL
+
+else:
+
+    app.config[
+        "SQLALCHEMY_DATABASE_URI"
+    ] = (
+        "sqlite:///"
+        + os.path.join(
+            INSTANCE_DIR,
+            "ai_jyotish.db"
+        )
+    )
+
+
+app.config[
+    "SQLALCHEMY_TRACK_MODIFICATIONS"
+] = False
+
+
+# =========================================================
+# SESSION SETTINGS
+# =========================================================
+
+app.config[
+    "SESSION_COOKIE_HTTPONLY"
+] = True
+
+app.config[
+    "SESSION_COOKIE_SAMESITE"
+] = "Lax"
+
+# Local development.
+# Change to True when using HTTPS in production.
+
+app.config[
+    "SESSION_COOKIE_SECURE"
+] = False
+
+
+# =========================================================
+# DATABASE INITIALIZATION
+# =========================================================
+
+db.init_app(
+    app
+)
+
+
+# =========================================================
+# CORS
+# =========================================================
+
+CORS(
+    app,
+    supports_credentials=True
+)
+
+
+# =========================================================
+# CREATE DATABASE TABLES
+# =========================================================
+
+with app.app_context():
+
+    db.create_all()
+
+
+# =========================================================
+# LOGIN REQUIRED
+# =========================================================
+
+def login_required(function):
+
+    @wraps(function)
+    def wrapper(
+        *args,
+        **kwargs
+    ):
+
+        if not session.get(
+            "user_id"
+        ):
+
+            return jsonify({
+
+                "error":
+                    "Authentication required"
+
+            }), 401
+
+
+        return function(
+            *args,
+            **kwargs
+        )
+
+
+    return wrapper
+
+
+# =========================================================
+# FRONTEND - HOME
+# =========================================================
+
+@app.get("/")
+def index():
 
     return send_from_directory(
         FRONTEND_DIR,
@@ -58,814 +233,1215 @@ def home():
 
 
 # =========================================================
-# BIRTH FORM
+# FRONTEND - ALL FILES
 # =========================================================
 
-@app.route("/birth-form.html")
-def birth_form():
+@app.get("/<path:filename>")
+def frontend_file(
+    filename
+):
+
+    full_path = os.path.join(
+        FRONTEND_DIR,
+        filename
+    )
+
+
+    if os.path.isfile(
+        full_path
+    ):
+
+        return send_from_directory(
+            FRONTEND_DIR,
+            filename
+        )
+
 
     return send_from_directory(
         FRONTEND_DIR,
-        "birth-form.html"
+        "index.html"
     )
 
 
 # =========================================================
-# KUNDLI PAGE
+# REGISTER
 # =========================================================
 
-@app.route("/kundli.html")
-def kundli_page():
+@app.post("/api/register")
+def register():
 
-    return send_from_directory(
-        FRONTEND_DIR,
-        "kundli.html"
-    )
-
-
-# =========================================================
-# KUNDLI API
-# =========================================================
-
-@app.route(
-    "/api/kundli",
-    methods=["POST"]
-)
-def create_kundli():
-
-    print("\n")
-    print("=" * 70)
-    print("KUNDLI API REQUEST")
-    print("=" * 70)
-
-    try:
-
-        # =================================================
-        # GET JSON
-        # =================================================
-
-        data = request.get_json(
+    data = (
+        request.get_json(
             silent=True
         )
-
-        if not data:
-
-            print(
-                "ERROR: No JSON data received."
-            )
-
-            return jsonify({
-                "success": False,
-                "error":
-                    "No JSON data received."
-            }), 400
+        or {}
+    )
 
 
-        print("Received data:")
-        print(data)
+    name = str(
+        data.get(
+            "name",
+            ""
+        )
+    ).strip()
 
 
-        # =================================================
-        # READ NAME
-        # =================================================
-
-        name = str(
-            data.get(
-                "name",
-                ""
-            )
-        ).strip()
+    email = str(
+        data.get(
+            "email",
+            ""
+        )
+    ).strip().lower()
 
 
-        # =================================================
-        # READ DATE
-        # =================================================
+    password = data.get(
+        "password",
+        ""
+    )
 
-        date = str(
-            data.get(
-                "date",
-                data.get(
-                    "date_of_birth",
-                    ""
+
+    # -----------------------------------------------------
+    # VALIDATION
+    # -----------------------------------------------------
+
+    if (
+        not name
+        or not email
+        or not isinstance(
+            password,
+            str
+        )
+        or len(password) < 6
+    ):
+
+        return jsonify({
+
+            "error":
+                (
+                    "Name, valid email and "
+                    "password of at least "
+                    "6 characters are required."
                 )
-            )
-        ).strip()
+
+        }), 400
 
 
-        # =================================================
-        # READ TIME
-        # =================================================
+    # -----------------------------------------------------
+    # CHECK EXISTING USER
+    # -----------------------------------------------------
 
-        time = str(
-            data.get(
-                "time",
-                data.get(
-                    "time_of_birth",
-                    ""
+    existing_user = (
+
+        User.query
+
+        .filter_by(
+            email=email
+        )
+
+        .first()
+
+    )
+
+
+    if existing_user:
+
+        return jsonify({
+
+            "error":
+                (
+                    "An account with this "
+                    "email already exists."
                 )
-            )
-        ).strip()
+
+        }), 409
 
 
-        # =================================================
-        # READ PLACE
-        # =================================================
+    # -----------------------------------------------------
+    # CREATE USER
+    # -----------------------------------------------------
 
-        place = str(
-            data.get(
-                "place",
-                data.get(
-                    "birth_place",
-                    ""
-                )
-            )
-        ).strip()
+    user = User(
 
+        name=name,
 
-        # =================================================
-        # READ LATITUDE
-        # =================================================
+        email=email,
 
-        latitude = data.get(
-            "latitude"
-        )
-
-
-        # =================================================
-        # READ LONGITUDE
-        # =================================================
-
-        longitude = data.get(
-            "longitude"
-        )
-
-
-        # =================================================
-        # READ TIMEZONE
-        # =================================================
-
-        timezone_offset = data.get(
-            "timezone",
-            data.get(
-                "timezone_offset",
-                5.5
-            )
-        )
-
-
-        # =================================================
-        # PRINT DATA
-        # =================================================
-
-        print("")
-        print("Normalized data:")
-
-        print(
-            "Name:",
-            name
-        )
-
-        print(
-            "Date:",
-            date
-        )
-
-        print(
-            "Time:",
-            time
-        )
-
-        print(
-            "Place:",
-            place
-        )
-
-        print(
-            "Latitude:",
-            latitude
-        )
-
-        print(
-            "Longitude:",
-            longitude
-        )
-
-        print(
-            "Timezone:",
-            timezone_offset
-        )
-
-
-        # =================================================
-        # REQUIRED FIELDS
-        # =================================================
-
-        if not name:
-
-            return jsonify({
-                "success": False,
-                "error":
-                    "Name is required."
-            }), 400
-
-
-        if not date:
-
-            return jsonify({
-                "success": False,
-                "error":
-                    "Date of birth is required."
-            }), 400
-
-
-        if not time:
-
-            return jsonify({
-                "success": False,
-                "error":
-                    "Time of birth is required."
-            }), 400
-
-
-        if not place:
-
-            return jsonify({
-                "success": False,
-                "error":
-                    "Birth place is required."
-            }), 400
-
-
-        if latitude is None:
-
-            return jsonify({
-                "success": False,
-                "error":
-                    "Latitude is required."
-            }), 400
-
-
-        if longitude is None:
-
-            return jsonify({
-                "success": False,
-                "error":
-                    "Longitude is required."
-            }), 400
-
-
-        # =================================================
-        # CONVERT NUMBERS
-        # =================================================
-
-        try:
-
-            latitude = float(
-                latitude
+        password_hash=
+            hash_password(
+                password
             )
 
-            longitude = float(
-                longitude
-            )
-
-            timezone_offset = float(
-                timezone_offset
-            )
-
-        except (
-            TypeError,
-            ValueError
-        ):
-
-            return jsonify({
-                "success": False,
-                "error":
-                    "Latitude, longitude and timezone must be numbers."
-            }), 400
+    )
 
 
-        # =================================================
-        # VALIDATE LATITUDE
-        # =================================================
+    db.session.add(
+        user
+    )
 
-        if (
-            latitude < -90
-            or latitude > 90
-        ):
-
-            return jsonify({
-                "success": False,
-                "error":
-                    "Latitude must be between -90 and 90."
-            }), 400
+    db.session.commit()
 
 
-        # =================================================
-        # VALIDATE LONGITUDE
-        # =================================================
+    # -----------------------------------------------------
+    # LOGIN SESSION
+    # -----------------------------------------------------
 
-        if (
-            longitude < -180
-            or longitude > 180
-        ):
+    session[
+        "user_id"
+    ] = user.id
 
-            return jsonify({
-                "success": False,
-                "error":
-                    "Longitude must be between -180 and 180."
-            }), 400
+    session[
+        "user_name"
+    ] = user.name
 
 
-        # =================================================
-        # VALIDATE TIMEZONE
-        # =================================================
+    return jsonify({
 
-        if (
-            timezone_offset < -14
-            or timezone_offset > 14
-        ):
+        "message":
+            "Registration successful",
 
-            return jsonify({
-                "success": False,
-                "error":
-                    "Timezone offset must be between -14 and +14."
-            }), 400
+        "user":
+            user.to_dict()
+
+    }), 201
 
 
-        # =================================================
-        # CALCULATE KUNDLI
-        # =================================================
+# =========================================================
+# LOGIN
+# =========================================================
 
-        print("")
-        print(
-            "Calculating Kundli..."
+@app.post("/api/login")
+def login():
+
+    data = (
+        request.get_json(
+            silent=True
+        )
+        or {}
+    )
+
+
+    email = str(
+        data.get(
+            "email",
+            ""
+        )
+    ).strip().lower()
+
+
+    password = data.get(
+        "password",
+        ""
+    )
+
+
+    # -----------------------------------------------------
+    # FIND USER
+    # -----------------------------------------------------
+
+    user = (
+
+        User.query
+
+        .filter_by(
+            email=email
         )
 
+        .first()
 
-        result = calculate_kundli(
+    )
 
-            date_of_birth=date,
 
-            time_of_birth=time,
+    # -----------------------------------------------------
+    # VERIFY PASSWORD
+    # -----------------------------------------------------
 
-            latitude=latitude,
-
-            longitude=longitude,
-
-            timezone_offset=timezone_offset
-
+    if (
+        not user
+        or not verify_password(
+            password,
+            user.password_hash
         )
+    ):
+
+        return jsonify({
+
+            "error":
+                "Invalid email or password."
+
+        }), 401
 
 
-        # =================================================
-        # CHECK RESULT
-        # =================================================
+    # -----------------------------------------------------
+    # SESSION
+    # -----------------------------------------------------
 
-        if not result:
+    session[
+        "user_id"
+    ] = user.id
 
-            raise ValueError(
-                "Kundli calculation returned no data."
-            )
-
-
-        if "ascendant" not in result:
-
-            raise ValueError(
-                "Ascendant was not returned by calculation."
-            )
+    session[
+        "user_name"
+    ] = user.name
 
 
-        if not result["ascendant"]:
+    return jsonify({
 
-            raise ValueError(
-                "Ascendant calculation failed."
-            )
+        "message":
+            "Login successful",
 
+        "user":
+            user.to_dict()
 
-        # =================================================
-        # ADD USER INFORMATION
-        # =================================================
-
-        result["success"] = True
-
-        result["name"] = name
-
-        result["birth_date"] = date
-
-        result["birth_time"] = time
-
-        result["birth_place"] = place
-
-        result["latitude"] = latitude
-
-        result["longitude"] = longitude
-
-        result["timezone"] = timezone_offset
+    })
 
 
-        # =================================================
-        # LOG SUCCESS
-        # =================================================
+# =========================================================
+# LOGOUT
+# =========================================================
 
-        print("")
-        print("=" * 70)
-        print(
-            "KUNDLI CALCULATED SUCCESSFULLY"
-        )
-        print("=" * 70)
+@app.post("/api/logout")
+def logout():
 
-        print(
-            "Name:",
-            name
-        )
-
-        print(
-            "Birth date:",
-            date
-        )
-
-        print(
-            "Birth time:",
-            time
-        )
-
-        print(
-            "Birth place:",
-            place
-        )
-
-        print(
-            "Ascendant:",
-            result["ascendant"]
-        )
-
-        print(
-            "Planets:",
-            len(
-                result.get(
-                    "planets",
-                    {}
-                )
-            )
-        )
-
-        print(
-            "Houses:",
-            len(
-                result.get(
-                    "houses",
-                    []
-                )
-            )
-        )
-
-        print("=" * 70)
+    session.clear()
 
 
-        # =================================================
-        # RETURN JSON
-        # =================================================
+    return jsonify({
 
-        return jsonify(
-            result
-        ), 200
+        "message":
+            "Logged out"
+
+    })
 
 
-    # =====================================================
-    # VALUE ERROR
-    # =====================================================
+# =========================================================
+# CURRENT USER
+# =========================================================
 
-    except ValueError as error:
+@app.get("/api/me")
+@login_required
+def me():
 
-        print("")
-        print("=" * 70)
-        print(
-            "KUNDLI VALIDATION ERROR"
-        )
-        print("=" * 70)
+    user = db.session.get(
+        User,
+        session[
+            "user_id"
+        ]
+    )
 
-        print(
-            str(error)
-        )
 
-        print("=" * 70)
+    if not user:
+
+        session.clear()
 
 
         return jsonify({
 
-            "success": False,
+            "error":
+                "User not found"
+
+        }), 404
+
+
+    return jsonify({
+
+        "user":
+            user.to_dict()
+
+    })
+
+
+# =========================================================
+# CREATE KUNDLI
+# =========================================================
+
+@app.post("/api/kundli")
+@login_required
+def create_kundli():
+
+    data = (
+        request.get_json(
+            silent=True
+        )
+        or {}
+    )
+
+
+    # =====================================================
+    # REQUIRED FIELDS
+    # =====================================================
+
+    required_fields = [
+
+        "name",
+
+        "date",
+
+        "time",
+
+        "place",
+
+        "latitude",
+
+        "longitude",
+
+        "timezone"
+
+    ]
+
+
+    missing = [
+
+        field
+
+        for field in required_fields
+
+        if data.get(field)
+        in (
+            None,
+            ""
+        )
+
+    ]
+
+
+    if missing:
+
+        return jsonify({
 
             "error":
-                str(error)
+                (
+                    "Missing fields: "
+                    + ", ".join(
+                        missing
+                    )
+                )
 
         }), 400
 
 
     # =====================================================
-    # UNEXPECTED ERROR
+    # INPUT VALIDATION
     # =====================================================
-
-    except Exception as error:
-
-        print("")
-        print("=" * 70)
-        print(
-            "KUNDLI SERVER ERROR"
-        )
-        print("=" * 70)
-
-        print(
-            str(error)
-        )
-
-        print("")
-        print(
-            "FULL TRACEBACK:"
-        )
-
-        traceback.print_exc()
-
-        print("=" * 70)
-
-
-        return jsonify({
-
-            "success": False,
-
-            "error":
-                "Unable to calculate Kundli.",
-
-            "details":
-                str(error)
-
-        }), 500
-
-
-# =========================================================
-# AI ASTROLOGER API
-# =========================================================
-
-@app.route(
-    "/api/ai",
-    methods=["POST"]
-)
-def ai_astrologer():
-
-    print("\n")
-    print("=" * 70)
-    print(
-        "AI ASTROLOGER REQUEST"
-    )
-    print("=" * 70)
 
     try:
 
-        # =================================================
-        # GET JSON
-        # =================================================
-
-        data = request.get_json(
-            silent=True
+        latitude = float(
+            data["latitude"]
         )
 
-        if not data:
+        longitude = float(
+            data["longitude"]
+        )
 
-            print(
-                "ERROR: No JSON data received."
-            )
-
-            return jsonify({
-                "success": False,
-                "message":
-                    "No JSON data received."
-            }), 400
-
-
-        # =================================================
-        # QUESTION
-        # =================================================
-
-        question = str(
-            data.get(
-                "question",
-                ""
-            )
-        ).strip()
-
-
-        if not question:
-
-            return jsonify({
-                "success": False,
-                "message":
-                    "Question is required."
-            }), 400
-
-
-        # =================================================
-        # KUNDLI
-        # =================================================
-
-        kundli = data.get(
-            "kundli"
+        timezone_hours = float(
+            data["timezone"]
         )
 
 
-        if not kundli:
+        datetime.strptime(
 
-            return jsonify({
-                "success": False,
-                "message":
-                    "Kundli data is required."
-            }), 400
+            str(
+                data["date"]
+            ),
 
+            "%Y-%m-%d"
 
-        print(
-            "Question:",
-            question
-        )
-
-        print("")
-        print(
-            "Sending question to Gemini..."
         )
 
 
-        # =================================================
-        # ASK ASTROLOGER
-        # =================================================
+        datetime.strptime(
 
-        result = ask_astrologer(
-            question,
-            kundli
+            str(
+                data["time"]
+            ),
+
+            "%H:%M"
+
         )
 
 
-        # =================================================
-        # CHECK RESULT
-        # =================================================
-
-        if not result:
-
-            return jsonify({
-                "success": False,
-                "message":
-                    "AI returned no response."
-            }), 500
-
-
-        if result.get(
-            "success"
-        ) is not True:
-
-            print(
-                "AI ERROR:",
-                result.get(
-                    "message"
-                )
-            )
-
-            return jsonify({
-
-                "success": False,
-
-                "message":
-                    result.get(
-                        "message",
-                        "AI could not generate an answer."
-                    )
-
-            }), 500
-
-
-        # =================================================
-        # SUCCESS
-        # =================================================
-
-        answer = result.get(
-            "answer",
-            ""
-        )
-
-
-        if not answer:
-
-            return jsonify({
-                "success": False,
-                "message":
-                    "AI returned an empty answer."
-            }), 500
-
-
-        print("")
-        print(
-            "AI ANSWER GENERATED SUCCESSFULLY"
-        )
-
-        print("=" * 70)
-
+    except (
+        ValueError,
+        TypeError
+    ):
 
         return jsonify({
 
-            "success": True,
+            "error":
+                (
+                    "Invalid date, time, "
+                    "latitude, longitude "
+                    "or timezone."
+                )
 
-            "answer": answer
-
-        }), 200
+        }), 400
 
 
     # =====================================================
-    # UNEXPECTED ERROR
+    # LATITUDE VALIDATION
     # =====================================================
 
-    except Exception as error:
+    if not (
+        -90
+        <= latitude
+        <= 90
+    ):
 
-        print("")
-        print("=" * 70)
+        return jsonify({
+
+            "error":
+                "Latitude is out of range."
+
+        }), 400
+
+
+    # =====================================================
+    # LONGITUDE VALIDATION
+    # =====================================================
+
+    if not (
+        -180
+        <= longitude
+        <= 180
+    ):
+
+        return jsonify({
+
+            "error":
+                "Longitude is out of range."
+
+        }), 400
+
+
+    # =====================================================
+    # TIMEZONE VALIDATION
+    # =====================================================
+
+    if not (
+        -14
+        <= timezone_hours
+        <= 14
+    ):
+
+        return jsonify({
+
+            "error":
+                "Timezone is out of range."
+
+        }), 400
+
+
+    # =====================================================
+    # CLEAN INPUT
+    # =====================================================
+
+    name = str(
+        data["name"]
+    ).strip()
+
+
+    place = str(
+        data["place"]
+    ).strip()
+
+
+    birth_date = str(
+        data["date"]
+    )
+
+
+    birth_time = str(
+        data["time"]
+    )
+
+
+    if not name:
+
+        return jsonify({
+
+            "error":
+                "Name cannot be empty."
+
+        }), 400
+
+
+    if not place:
+
+        return jsonify({
+
+            "error":
+                "Birth place cannot be empty."
+
+        }), 400
+
+
+    # =====================================================
+    # GENERATE CHART
+    # =====================================================
+
+    try:
+
+        print()
+        print("=" * 80)
+
         print(
-            "AI ASTROLOGER SERVER ERROR"
+            "GENERATING KUNDLI"
         )
-        print("=" * 70)
+
+        print("=" * 80)
+
 
         print(
-            str(error)
+            f"Name      : {name}"
         )
 
-        print("")
+        print(
+            f"Date      : {birth_date}"
+        )
+
+        print(
+            f"Time      : {birth_time}"
+        )
+
+        print(
+            f"Place     : {place}"
+        )
+
+        print(
+            f"Latitude  : {latitude}"
+        )
+
+        print(
+            f"Longitude : {longitude}"
+        )
+
+        print(
+            f"Timezone  : UTC {timezone_hours:+g}"
+        )
+
+
+        print("=" * 80)
+
+
+        # =================================================
+        # BASIC KUNDLI
+        # =================================================
+
+        chart = generate_kundli(
+
+            name=name,
+
+            birth_date=birth_date,
+
+            birth_time=birth_time,
+
+            place=place,
+
+            latitude=latitude,
+
+            longitude=longitude,
+
+            timezone=timezone_hours
+
+        )
+
+
+        print()
+        print(
+            "✓ Basic Kundli generated"
+        )
+
+
+        # =================================================
+        # COMPLETE ANALYSIS
+        # =================================================
+
+        print()
+        print("=" * 80)
+
+        print(
+            "RUNNING COMPLETE ASTROLOGY ANALYSIS"
+        )
+
+        print("=" * 80)
+
+
+        chart = attach_complete_analysis(
+            chart
+        )
+
+
+        # =================================================
+        # ANALYSIS STATUS
+        # =================================================
+
+        analysis = chart.get(
+            "analysis",
+            {}
+        )
+
+
+        summary = analysis.get(
+            "summary",
+            {}
+        )
+
+
+        successful_modules = summary.get(
+            "successful_modules",
+            0
+        )
+
+
+        total_modules = summary.get(
+            "total_modules",
+            0
+        )
+
+
+        completion = summary.get(
+            "completion_percentage",
+            0
+        )
+
+
+        print()
+        print(
+            "✓ Complete analysis generated"
+        )
+
+
+        print(
+            f"✓ Modules: "
+            f"{successful_modules}/"
+            f"{total_modules}"
+        )
+
+
+        print(
+            f"✓ Completion: "
+            f"{completion}%"
+        )
+
+
+        # =================================================
+        # SAVE BIRTH PROFILE
+        # =================================================
+
+        profile = BirthProfile(
+
+            user_id=
+                session[
+                    "user_id"
+                ],
+
+            name=name,
+
+            birth_date=birth_date,
+
+            birth_time=birth_time,
+
+            place=place,
+
+            latitude=latitude,
+
+            longitude=longitude,
+
+            timezone=timezone_hours
+
+        )
+
+
+        db.session.add(
+            profile
+        )
+
+
+        db.session.flush()
+
+
+        # =================================================
+        # SAVE COMPLETE CHART
+        # =================================================
+
+        saved = SavedChart(
+
+            user_id=
+                session[
+                    "user_id"
+                ],
+
+            birth_profile_id=
+                profile.id,
+
+            chart_json=
+                json.dumps(
+                    chart,
+                    ensure_ascii=False
+                )
+
+        )
+
+
+        db.session.add(
+            saved
+        )
+
+
+        db.session.commit()
+
+
+        # =================================================
+        # SAVE LAST CHART
+        # =================================================
+
+        session[
+            "last_chart_id"
+        ] = saved.id
+
+
+        print()
+        print(
+            "✓ Complete chart saved to database"
+        )
+
+
+        print("=" * 80)
+
+        print(
+            "✓ KUNDLI GENERATED SUCCESSFULLY"
+        )
+
+        print("=" * 80)
+
+        print()
+
+
+        # =================================================
+        # RESPONSE
+        # =================================================
+
+        return jsonify({
+
+            "success":
+                True,
+
+            "chart":
+                chart,
+
+            "chart_id":
+                saved.id,
+
+            "analysis_complete":
+                summary.get(
+                    "complete",
+                    False
+                ),
+
+            "analysis_modules":
+                successful_modules,
+
+            "analysis_total":
+                total_modules,
+
+            "analysis_completion":
+                completion
+
+        })
+
+
+    # =====================================================
+    # ERROR HANDLING
+    # =====================================================
+
+    except Exception as exc:
+
+        db.session.rollback()
+
+
+        print()
+        print("=" * 80)
+
+        print(
+            "🔥 KUNDLI GENERATION ERROR"
+        )
+
+        print("=" * 80)
+
+
+        print(
+            f"ERROR TYPE: "
+            f"{type(exc).__name__}"
+        )
+
+
+        print(
+            f"ERROR: "
+            f"{str(exc)}"
+        )
+
+
+        print()
         print(
             "FULL TRACEBACK:"
         )
 
+
         traceback.print_exc()
 
-        print("=" * 70)
+
+        print("=" * 80)
+        print()
 
 
         return jsonify({
 
-            "success": False,
+            "success":
+                False,
 
-            "message":
-                "Unable to generate AI answer.",
-
-            "details":
-                str(error)
+            "error":
+                (
+                    "Could not generate "
+                    "the chart: "
+                    f"{type(exc).__name__}: "
+                    f"{str(exc)}"
+                )
 
         }), 500
 
+
+# =========================================================
+# GET LATEST KUNDLI
+# =========================================================
+
+@app.get("/api/kundli/latest")
+@login_required
+def latest_kundli():
+
+    saved = (
+
+        SavedChart.query
+
+        .filter_by(
+
+            user_id=
+                session[
+                    "user_id"
+                ]
+
+        )
+
+        .order_by(
+            SavedChart.created_at.desc()
+        )
+
+        .first()
+
+    )
+
+
+    if not saved:
+
+        return jsonify({
+
+            "chart":
+                None
+
+        })
+
+
+    try:
+
+        chart = json.loads(
+            saved.chart_json
+        )
+
+
+    except (
+        TypeError,
+        json.JSONDecodeError
+    ):
+
+        return jsonify({
+
+            "error":
+                "Saved chart data is corrupted."
+
+        }), 500
+
+
+    return jsonify({
+
+        "chart":
+            chart,
+
+        "chart_id":
+            saved.id
+
+    })
+
+
+# =========================================================
+# AI ASTROLOGER
+# =========================================================
+
+@app.post("/api/ai/ask")
+@login_required
+def ai_ask():
+
+    data = (
+        request.get_json(
+            silent=True
+        )
+        or {}
+    )
+
+
+    question = str(
+        data.get(
+            "question",
+            ""
+        )
+    ).strip()
+
+
+    if not question:
+
+        return jsonify({
+
+            "error":
+                "Please enter a question."
+
+        }), 400
+
+
+    # =====================================================
+    # GET LATEST CHART
+    # =====================================================
+
+    saved = (
+
+        SavedChart.query
+
+        .filter_by(
+
+            user_id=
+                session[
+                    "user_id"
+                ]
+
+        )
+
+        .order_by(
+            SavedChart.created_at.desc()
+        )
+
+        .first()
+
+    )
+
+
+    if not saved:
+
+        return jsonify({
+
+            "error":
+                "Create a Kundli first."
+
+        }), 400
+
+
+    # =====================================================
+    # LOAD CHART
+    # =====================================================
+
+    try:
+
+        chart = json.loads(
+            saved.chart_json
+        )
+
+
+    except (
+        TypeError,
+        json.JSONDecodeError
+    ):
+
+        return jsonify({
+
+            "error":
+                "Saved chart data is corrupted."
+
+        }), 500
+
+
+    # =====================================================
+    # CHECK COMPLETE ANALYSIS
+    # =====================================================
+
+    if "analysis" not in chart:
+
+        try:
+
+            print(
+                "Complete analysis missing."
+            )
+
+            print(
+                "Generating analysis for AI..."
+            )
+
+
+            chart = attach_complete_analysis(
+                chart
+            )
+
+
+        except Exception as exc:
+
+            print(
+                "Analysis generation failed:"
+            )
+
+            traceback.print_exc()
+
+
+    # =====================================================
+    # GEMINI
+    # =====================================================
+
+    try:
+
+        # answer_question() already returns a dictionary
+        # containing success, answer and optional error.
+        result = answer_question(
+            question,
+            chart
+        )
+
+        # Make sure we always return a proper JSON object.
+        if not isinstance(result, dict):
+
+            return jsonify({
+                "success": False,
+                "answer": "Invalid response received from AI Jyotish.",
+                "error": "Gemini returned an invalid response."
+            }), 500
+
+        return jsonify({
+
+            "success":
+                result.get(
+                    "success",
+                    True
+                ),
+
+            "answer":
+                result.get(
+                    "answer",
+                    "No answer was returned."
+                ),
+
+            "error":
+                result.get(
+                    "error"
+                )
+
+        })
+
+
+    except Exception as exc:
+
+        print()
+        print("=" * 80)
+
+        print(
+            "🔥 AI ASTROLOGER ERROR"
+        )
+
+        print("=" * 80)
+
+        traceback.print_exc()
+
+        print("=" * 80)
+
+        return jsonify({
+
+            "success":
+                False,
+
+            "answer":
+                "Something went wrong while generating your AI Jyotish response.",
+
+            "error":
+                str(exc)
+
+        }), 500
 
 # =========================================================
 # HEALTH CHECK
 # =========================================================
 
-@app.route(
-    "/api/health",
-    methods=["GET"]
-)
+@app.get("/api/health")
 def health():
 
     return jsonify({
 
-        "success": True,
+        "status":
+            "ok",
 
-        "message":
-            "AI Jyotish API is running.",
+        "service":
+            "AI Jyotish"
 
-        "swisseph":
-            "available"
-
-    }), 200
+    })
 
 
 # =========================================================
-# STATIC FILES
+# DEBUG INFORMATION
 # =========================================================
 
-@app.route(
-    "/<path:path>"
-)
-def serve_static(path):
+@app.get("/api/debug")
+def debug_info():
 
-    requested_file = os.path.join(
-        FRONTEND_DIR,
-        path
-    )
+    return jsonify({
 
+        "application":
+            "AI Jyotish",
 
-    if os.path.isfile(
-        requested_file
-    ):
+        "backend":
+            "Flask",
 
-        return send_from_directory(
+        "frontend_directory":
             FRONTEND_DIR,
-            path
-        )
 
+        "database":
+            "SQLite",
 
-    return send_from_directory(
-        FRONTEND_DIR,
-        "index.html"
-    )
+        "gemini_configured":
+            bool(
+
+                os.getenv(
+                    "GEMINI_API_KEY"
+                )
+
+                or
+
+                os.getenv(
+                    "GOOGLE_API_KEY"
+                )
+
+            ),
+
+        "gemini_model":
+            os.getenv(
+                "GEMINI_MODEL",
+                "gemini-3.5-flash"
+            ),
+
+        "analysis_engine":
+            True
+
+    })
 
 
 # =========================================================
@@ -874,68 +1450,97 @@ def serve_static(path):
 
 if __name__ == "__main__":
 
-    print("")
-    print("=" * 70)
-    print(
-        "                         AI JYOTISH"
-    )
-    print(
-        "                    Vedic Astrology Backend"
-    )
-    print("=" * 70)
-
-    print("")
-    print(
-        "Frontend:",
-        FRONTEND_DIR
+    host = os.getenv(
+        "HOST",
+        "127.0.0.1"
     )
 
-    print("")
-    print(
-        "Server running at:"
+
+    port = int(
+        os.getenv(
+            "PORT",
+            "5000"
+        )
     )
 
-    print(
-        "http://127.0.0.1:5000/"
+
+    debug = (
+        os.getenv(
+            "FLASK_DEBUG",
+            "1"
+        )
+        == "1"
     )
 
-    print("")
+
+    print()
+    print("=" * 60)
     print(
-        "Health check:"
+        "        AI JYOTISH"
     )
+    print("=" * 60)
+
 
     print(
-        "GET /api/health"
+        f"Server: "
+        f"http://{host}:{port}"
     )
 
-    print("")
-    print(
-        "Kundli API:"
-    )
 
     print(
-        "POST /api/kundli"
+        f"Frontend: "
+        f"{FRONTEND_DIR}"
     )
 
-    print("")
-    print(
-        "AI API:"
-    )
 
     print(
-        "POST /api/ai"
+        f"Debug: "
+        f"{debug}"
     )
 
-    print("")
-    print("=" * 70)
+
+    print(
+        "Gemini Model: "
+        + os.getenv(
+            "GEMINI_MODEL",
+            "gemini-3.5-flash"
+        )
+    )
+
+
+    print(
+        "Gemini API: "
+        + (
+            "Configured"
+            if (
+                os.getenv(
+                    "GEMINI_API_KEY"
+                )
+                or os.getenv(
+                    "GOOGLE_API_KEY"
+                )
+            )
+            else
+            "Not Configured"
+        )
+    )
+
+
+    print(
+        "Complete Analysis Engine: ENABLED"
+    )
+
+
+    print("=" * 60)
+    print()
 
 
     app.run(
 
-        host="127.0.0.1",
+        host=host,
 
-        port=5000,
+        port=port,
 
-        debug=True
+        debug=debug
 
     )

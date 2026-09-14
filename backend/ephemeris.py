@@ -1,75 +1,22 @@
+# =========================================================
+# AI JYOTISH
+# ephemeris.py
+#
+# Swiss Ephemeris
+# Lahiri Sidereal Zodiac
+# Whole Sign House Support
+# =========================================================
+
+from datetime import datetime, timedelta, timezone
+
 import swisseph as swe
-from datetime import datetime, timezone, timedelta
 
 
 # =========================================================
-# ZODIAC
+# SIDEREAL SETTINGS
 # =========================================================
 
-ZODIAC_SIGNS = [
-    "Aries",
-    "Taurus",
-    "Gemini",
-    "Cancer",
-    "Leo",
-    "Virgo",
-    "Libra",
-    "Scorpio",
-    "Sagittarius",
-    "Capricorn",
-    "Aquarius",
-    "Pisces"
-]
-
-ZODIAC_SIGNS_HINDI = [
-    "Mesha",
-    "Vrishabha",
-    "Mithuna",
-    "Karka",
-    "Simha",
-    "Kanya",
-    "Tula",
-    "Vrishchika",
-    "Dhanu",
-    "Makara",
-    "Kumbha",
-    "Meena"
-]
-
-
-# =========================================================
-# NAKSHATRAS
-# =========================================================
-
-NAKSHATRAS = [
-    "Ashwini",
-    "Bharani",
-    "Krittika",
-    "Rohini",
-    "Mrigashira",
-    "Ardra",
-    "Punarvasu",
-    "Pushya",
-    "Ashlesha",
-    "Magha",
-    "Purva Phalguni",
-    "Uttara Phalguni",
-    "Hasta",
-    "Chitra",
-    "Swati",
-    "Vishakha",
-    "Anuradha",
-    "Jyeshtha",
-    "Mula",
-    "Purva Ashadha",
-    "Uttara Ashadha",
-    "Shravana",
-    "Dhanishta",
-    "Shatabhisha",
-    "Purva Bhadrapada",
-    "Uttara Bhadrapada",
-    "Revati"
-]
+swe.set_sid_mode(swe.SIDM_LAHIRI)
 
 
 # =========================================================
@@ -84,281 +31,615 @@ PLANETS = {
     "Jupiter": swe.JUPITER,
     "Venus": swe.VENUS,
     "Saturn": swe.SATURN,
-    "Rahu": swe.MEAN_NODE
+    "Rahu": swe.MEAN_NODE,
 }
 
 
 # =========================================================
-# HELPERS
+# VEDIC SIGNS
 # =========================================================
 
-def normalize_degree(degree):
-    return float(degree) % 360
-
-
-def get_sign(longitude):
-
-    longitude = normalize_degree(longitude)
-
-    sign_index = int(longitude // 30)
-
-    degree_in_sign = longitude % 30
-
-    return {
-        "name": ZODIAC_SIGNS[sign_index],
-        "vedic_name": ZODIAC_SIGNS_HINDI[sign_index],
-        "index": sign_index,
-        "degree": round(degree_in_sign, 2)
-    }
-
-
-def get_nakshatra(longitude):
-
-    longitude = normalize_degree(longitude)
-
-    nakshatra_size = 360 / 27
-
-    index = int(longitude // nakshatra_size)
-
-    degree_inside = longitude % nakshatra_size
-
-    pada_size = nakshatra_size / 4
-
-    pada = int(degree_inside // pada_size) + 1
-
-    if pada > 4:
-        pada = 4
-
-    return {
-        "name": NAKSHATRAS[index],
-        "index": index,
-        "pada": pada
-    }
+SIGNS = [
+    "Mesha",
+    "Vrishabha",
+    "Mithuna",
+    "Karka",
+    "Simha",
+    "Kanya",
+    "Tula",
+    "Vrishchika",
+    "Dhanu",
+    "Makara",
+    "Kumbha",
+    "Meena",
+]
 
 
 # =========================================================
-# PLANET POSITION
+# LOCAL TIME → UTC
 # =========================================================
 
-def get_planet_position(planet_id, julian_day):
+def utc_datetime(
+    date_string,
+    time_string,
+    timezone_hours
+):
+    """
+    Convert local birth date/time into UTC.
 
-    flags = (
-        swe.FLG_SWIEPH
-        | swe.FLG_SIDEREAL
-        | swe.FLG_SPEED
+    Example:
+        India UTC+5:30
+        14:30 local
+        becomes 09:00 UTC
+    """
+
+    local_datetime = datetime.strptime(
+        f"{date_string} {time_string}",
+        "%Y-%m-%d %H:%M"
     )
 
+    offset = timezone(
+        timedelta(
+            hours=float(timezone_hours)
+        )
+    )
+
+    local_datetime = local_datetime.replace(
+        tzinfo=offset
+    )
+
+    return local_datetime.astimezone(
+        timezone.utc
+    )
+
+
+# =========================================================
+# JULIAN DAY
+# =========================================================
+
+def julian_day(
+    date_string,
+    time_string,
+    timezone_hours
+):
+    """
+    Convert birth date/time to Julian Day.
+    """
+
+    utc = utc_datetime(
+        date_string,
+        time_string,
+        timezone_hours
+    )
+
+    hour = (
+        utc.hour
+        + utc.minute / 60.0
+        + utc.second / 3600.0
+        + utc.microsecond / 3600000000.0
+    )
+
+    return swe.julday(
+        utc.year,
+        utc.month,
+        utc.day,
+        hour
+    )
+
+
+# =========================================================
+# LONGITUDE → VEDIC SIGN
+# =========================================================
+
+def sign_from_longitude(
+    longitude
+):
+    """
+    Convert 0–360 degree longitude into
+    Vedic sidereal sign information.
+    """
+
+    longitude = float(longitude) % 360.0
+
+    sign_index = int(
+        longitude // 30.0
+    )
+
+    degree = (
+        longitude
+        - sign_index * 30.0
+    )
+
+    return {
+        "sign": SIGNS[sign_index],
+
+        "sign_index": sign_index,
+
+        "degree": round(
+            degree,
+            4
+        ),
+
+        "longitude": round(
+            longitude,
+            4
+        )
+    }
+
+
+# =========================================================
+# SAFE SWISS EPHEMERIS CALCULATION
+# =========================================================
+
+def calculate_planet_position(
+    jd,
+    planet_id,
+    flags
+):
+    """
+    Calculate a planet using Swiss Ephemeris.
+
+    Important:
+    Different pyswisseph versions can return:
+
+        (values, return_flags)
+
+    OR:
+
+        (values, return_flags, warning)
+
+    The version installed on your computer is returning
+    three values, which caused:
+
+        too many values to unpack (expected 2)
+
+    Therefore we read the first item as the planetary
+    values and safely ignore any additional items.
+    """
+
     result = swe.calc_ut(
-        julian_day,
+        jd,
         planet_id,
         flags
     )
 
-    values = result[0]
+    # -----------------------------------------------------
+    # Normal Swiss Ephemeris result
+    #
+    # Example:
+    #
+    # (
+    #     (
+    #         longitude,
+    #         latitude,
+    #         distance,
+    #         speed_longitude,
+    #         speed_latitude,
+    #         speed_distance
+    #     ),
+    #     return_flags,
+    #     warning
+    # )
+    # -----------------------------------------------------
 
-    longitude = normalize_degree(values[0])
+    if (
+        isinstance(result, tuple)
+        and len(result) >= 1
+        and isinstance(
+            result[0],
+            (tuple, list)
+        )
+    ):
+        values = result[0]
 
-    speed = float(values[3])
+        return_flags = None
 
-    return longitude, speed
+        if len(result) >= 2:
+            return_flags = result[1]
+
+        return values, return_flags
+
+    # -----------------------------------------------------
+    # Fallback if the library directly returns values
+    # -----------------------------------------------------
+
+    if (
+        isinstance(
+            result,
+            (tuple, list)
+        )
+        and len(result) >= 4
+        and all(
+            isinstance(
+                value,
+                (int, float)
+            )
+            for value in result
+        )
+    ):
+        return result, None
+
+    # -----------------------------------------------------
+    # Unknown format
+    # -----------------------------------------------------
+
+    raise RuntimeError(
+        "Unexpected Swiss Ephemeris "
+        f"calc_ut() result format: {result!r}"
+    )
 
 
 # =========================================================
-# MAIN CALCULATION
+# CALCULATE PLANETS
 # =========================================================
 
-def calculate_kundli(
-    date_of_birth,
-    time_of_birth,
-    latitude,
-    longitude,
-    timezone_offset
+def calculate_planets(
+    jd
 ):
+    """
+    Calculate all major Vedic planets.
+
+    Uses:
+        - Sidereal zodiac
+        - Lahiri ayanamsha
+        - Moshier ephemeris
+        - Planetary speed for retrograde detection
+    """
+
+    # -----------------------------------------------------
+    # Make sure Lahiri is active
+    # -----------------------------------------------------
 
     swe.set_sid_mode(
         swe.SIDM_LAHIRI
     )
 
-    # -----------------------------------------------------
-    # LOCAL TIME
-    # -----------------------------------------------------
-
-    local_datetime = datetime.strptime(
-        f"{date_of_birth} {time_of_birth}",
-        "%Y-%m-%d %H:%M"
-    )
+    result = []
 
     # -----------------------------------------------------
-    # UTC
+    # FLAGS
+    #
+    # FLG_MOSEPH avoids requiring external .se1
+    # ephemeris files such as sepl_18.se1.
     # -----------------------------------------------------
 
-    offset = timedelta(
-        hours=float(timezone_offset)
-    )
-
-    utc_datetime = (
-        local_datetime - offset
-    )
-
-    utc_datetime = utc_datetime.replace(
-        tzinfo=timezone.utc
-    )
-
-    # -----------------------------------------------------
-    # JULIAN DAY
-    # -----------------------------------------------------
-
-    hour_decimal = (
-        utc_datetime.hour
-        + utc_datetime.minute / 60
-        + utc_datetime.second / 3600
-    )
-
-    julian_day = swe.julday(
-        utc_datetime.year,
-        utc_datetime.month,
-        utc_datetime.day,
-        hour_decimal
+    flags = (
+        swe.FLG_MOSEPH
+        | swe.FLG_SIDEREAL
+        | swe.FLG_SPEED
     )
 
     # -----------------------------------------------------
     # PLANETS
     # -----------------------------------------------------
 
-    planets = {}
+    for name, planet_id in PLANETS.items():
 
-    for planet_name, planet_id in PLANETS.items():
-
-        longitude_value, speed = (
-            get_planet_position(
+        values, return_flags = (
+            calculate_planet_position(
+                jd,
                 planet_id,
-                julian_day
+                flags
             )
         )
 
-        sign = get_sign(
-            longitude_value
+        # -------------------------------------------------
+        # LONGITUDE
+        # -------------------------------------------------
+
+        longitude = float(
+            values[0]
         )
 
-        nakshatra = get_nakshatra(
-            longitude_value
+        # -------------------------------------------------
+        # SPEED
+        # -------------------------------------------------
+
+        if len(values) >= 4:
+
+            speed = float(
+                values[3]
+            )
+
+        else:
+
+            speed = 0.0
+
+        # -------------------------------------------------
+        # SIGN INFORMATION
+        # -------------------------------------------------
+
+        item = sign_from_longitude(
+            longitude
         )
 
-        planets[planet_name] = {
-            "longitude": round(
-                longitude_value,
-                4
+        # -------------------------------------------------
+        # PLANET INFORMATION
+        # -------------------------------------------------
+
+        item.update({
+
+            "name": name,
+
+            "retrograde": (
+                speed < 0
             ),
-            "degree": sign["degree"],
-            "sign": sign["name"],
-            "vedic_sign": sign["vedic_name"],
-            "nakshatra": nakshatra["name"],
-            "nakshatra_pada": nakshatra["pada"],
-            "retrograde": speed < 0
-        }
 
-    # -----------------------------------------------------
+            "speed": round(
+                speed,
+                6
+            )
+
+        })
+
+        result.append(
+            item
+        )
+
+    # =====================================================
     # KETU
-    # -----------------------------------------------------
+    # =====================================================
 
-    rahu_longitude = planets["Rahu"]["longitude"]
-
-    ketu_longitude = normalize_degree(
-        rahu_longitude + 180
+    rahu = next(
+        planet
+        for planet in result
+        if planet["name"] == "Rahu"
     )
 
-    ketu_sign = get_sign(
+    # Ketu is exactly opposite Rahu
+    ketu_longitude = (
+        rahu["longitude"]
+        + 180.0
+    ) % 360.0
+
+    ketu = sign_from_longitude(
         ketu_longitude
     )
 
-    ketu_nakshatra = get_nakshatra(
-        ketu_longitude
+    ketu.update({
+
+        "name": "Ketu",
+
+        # Lunar nodes are normally treated as retrograde
+        "retrograde": True,
+
+        "speed": rahu["speed"]
+
+    })
+
+    result.append(
+        ketu
     )
 
-    planets["Ketu"] = {
-        "longitude": round(
-            ketu_longitude,
-            4
-        ),
-        "degree": ketu_sign["degree"],
-        "sign": ketu_sign["name"],
-        "vedic_sign": ketu_sign["vedic_name"],
-        "nakshatra": ketu_nakshatra["name"],
-        "nakshatra_pada": ketu_nakshatra["pada"],
-        "retrograde": True
-    }
+    return result
+
+
+# =========================================================
+# ASCENDANT
+# =========================================================
+
+def calculate_ascendant(
+    jd,
+    latitude,
+    longitude
+):
+    """
+    Calculate sidereal Ascendant using Swiss Ephemeris.
+    """
 
     # -----------------------------------------------------
-    # ASCENDANT
+    # Lahiri
     # -----------------------------------------------------
 
-    houses, ascmc = swe.houses_ex(
-        julian_day,
+    swe.set_sid_mode(
+        swe.SIDM_LAHIRI
+    )
+
+    # -----------------------------------------------------
+    # Houses
+    #
+    # W = Whole Sign style reference for this application.
+    #
+    # We use the Ascendant longitude from ascmc[0].
+    # -----------------------------------------------------
+
+    result = swe.houses_ex(
+        jd,
         float(latitude),
         float(longitude),
-        b"P",
+        b"W",
         swe.FLG_SIDEREAL
     )
 
-    ascendant_longitude = normalize_degree(
-        ascmc[0]
+    # -----------------------------------------------------
+    # houses_ex normally returns:
+    #
+    # (cusps, ascmc)
+    # -----------------------------------------------------
+
+    if (
+        isinstance(result, tuple)
+        and len(result) >= 2
+    ):
+
+        cusps = result[0]
+
+        ascmc = result[1]
+
+    else:
+
+        raise RuntimeError(
+            "Unexpected Swiss Ephemeris "
+            "houses_ex() result format."
+        )
+
+    # -----------------------------------------------------
+    # Ascendant
+    # -----------------------------------------------------
+
+    if (
+        not isinstance(
+            ascmc,
+            (tuple, list)
+        )
+        or len(ascmc) == 0
+    ):
+
+        raise RuntimeError(
+            "Swiss Ephemeris did not return "
+            "a valid Ascendant."
+        )
+
+    ascendant_longitude = (
+        float(ascmc[0])
+        % 360.0
     )
 
-    ascendant_sign = get_sign(
+    return sign_from_longitude(
         ascendant_longitude
     )
 
-    ascendant_nakshatra = get_nakshatra(
-        ascendant_longitude
-    )
 
-    ascendant = {
-        "longitude": round(
-            ascendant_longitude,
-            4
-        ),
-        "degree": ascendant_sign["degree"],
-        "sign": ascendant_sign["name"],
-        "vedic_sign": ascendant_sign["vedic_name"],
-        "nakshatra": ascendant_nakshatra["name"],
-        "nakshatra_pada": ascendant_nakshatra["pada"]
+# =========================================================
+# PLANET HOUSE
+# =========================================================
+
+def house_from_sign(
+    planet_sign_index,
+    asc_sign_index
+):
+    """
+    Whole Sign house calculation.
+
+    Ascendant sign = 1st house.
+    Next sign = 2nd house.
+    etc.
+    """
+
+    return (
+        (
+            int(planet_sign_index)
+            - int(asc_sign_index)
+        ) % 12
+    ) + 1
+
+
+# =========================================================
+# GET PLANET
+# =========================================================
+
+def get_planet(
+    planets,
+    name
+):
+    """
+    Find a planet from the calculated planet list.
+    """
+
+    for planet in planets:
+
+        if planet["name"] == name:
+
+            return planet
+
+    return None
+
+
+# =========================================================
+# GET SIGN LORD
+# =========================================================
+
+def get_sign_lord(
+    sign_index
+):
+    """
+    Traditional Vedic sign lord.
+    """
+
+    lords = {
+
+        0: "Mars",       # Mesha
+
+        1: "Venus",      # Vrishabha
+
+        2: "Mercury",    # Mithuna
+
+        3: "Moon",       # Karka
+
+        4: "Sun",        # Simha
+
+        5: "Mercury",    # Kanya
+
+        6: "Venus",      # Tula
+
+        7: "Mars",       # Vrishchika
+
+        8: "Jupiter",    # Dhanu
+
+        9: "Saturn",     # Makara
+
+        10: "Saturn",    # Kumbha
+
+        11: "Jupiter"    # Meena
+
     }
 
-    # -----------------------------------------------------
-    # HOUSES
-    # -----------------------------------------------------
+    return lords.get(
+        int(sign_index)
+    )
 
-    house_data = []
 
-    for i in range(12):
+# =========================================================
+# GET HOUSE SIGN
+# =========================================================
 
-        house_longitude = normalize_degree(
-            houses[i]
-        )
+def get_house_sign(
+    asc_sign_index,
+    house_number
+):
+    """
+    Return the sign occupying a particular
+    Whole Sign house.
+    """
 
-        house_sign = get_sign(
-            house_longitude
-        )
-
-        house_data.append({
-            "house": i + 1,
-            "longitude": round(
-                house_longitude,
-                4
-            ),
-            "sign": house_sign["name"],
-            "vedic_sign": house_sign["vedic_name"]
-        })
-
-    # -----------------------------------------------------
-    # RESULT
-    # -----------------------------------------------------
+    sign_index = (
+        int(asc_sign_index)
+        + int(house_number)
+        - 1
+    ) % 12
 
     return {
-        "julian_day": julian_day,
-        "utc_time": utc_datetime.isoformat(),
-        "ascendant": ascendant,
-        "planets": planets,
-        "houses": house_data,
-        "ayanamsa": "Lahiri"
+        "house": int(house_number),
+
+        "sign_index": sign_index,
+
+        "sign": SIGNS[sign_index]
     }
+
+
+# =========================================================
+# GET ALL HOUSES
+# =========================================================
+
+def calculate_whole_sign_houses(
+    asc_sign_index
+):
+    """
+    Generate all 12 Whole Sign houses.
+    """
+
+    houses = []
+
+    for house_number in range(
+        1,
+        13
+    ):
+
+        houses.append(
+            get_house_sign(
+                asc_sign_index,
+                house_number
+            )
+        )
+
+    return houses

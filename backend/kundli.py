@@ -1,468 +1,124 @@
-import swisseph as swe
-
-from datetime import datetime, timezone, timedelta
-
-
 # =========================================================
 # AI JYOTISH
-# VEDIC KUNDLI CALCULATION ENGINE
-# =========================================================
-
-
-# =========================================================
-# ZODIAC
-# =========================================================
-
-ZODIAC_SIGNS = [
-    "Aries",
-    "Taurus",
-    "Gemini",
-    "Cancer",
-    "Leo",
-    "Virgo",
-    "Libra",
-    "Scorpio",
-    "Sagittarius",
-    "Capricorn",
-    "Aquarius",
-    "Pisces"
-]
-
-
-ZODIAC_SIGNS_HINDI = [
-    "Mesha",
-    "Vrishabha",
-    "Mithuna",
-    "Karka",
-    "Simha",
-    "Kanya",
-    "Tula",
-    "Vrishchika",
-    "Dhanu",
-    "Makara",
-    "Kumbha",
-    "Meena"
-]
-
-
-# =========================================================
-# NAKSHATRAS
-# =========================================================
-
-NAKSHATRAS = [
-    "Ashwini",
-    "Bharani",
-    "Krittika",
-    "Rohini",
-    "Mrigashira",
-    "Ardra",
-    "Punarvasu",
-    "Pushya",
-    "Ashlesha",
-    "Magha",
-    "Purva Phalguni",
-    "Uttara Phalguni",
-    "Hasta",
-    "Chitra",
-    "Swati",
-    "Vishakha",
-    "Anuradha",
-    "Jyeshtha",
-    "Mula",
-    "Purva Ashadha",
-    "Uttara Ashadha",
-    "Shravana",
-    "Dhanishta",
-    "Shatabhisha",
-    "Purva Bhadrapada",
-    "Uttara Bhadrapada",
-    "Revati"
-]
-
-
-# =========================================================
-# NAKSHATRA LORDS
-# =========================================================
-
-NAKSHATRA_LORDS = [
-    "Ketu",
-    "Venus",
-    "Sun",
-    "Moon",
-    "Mars",
-    "Rahu",
-    "Jupiter",
-    "Saturn",
-    "Mercury"
-]
-
-
-# =========================================================
-# VIMSHOTTARI DASHA
-# =========================================================
-
-DASHA_YEARS = {
-
-    "Ketu": 7,
-
-    "Venus": 20,
-
-    "Sun": 6,
-
-    "Moon": 10,
-
-    "Mars": 7,
-
-    "Rahu": 18,
-
-    "Jupiter": 16,
-
-    "Saturn": 19,
-
-    "Mercury": 17
-
-}
-
-
-DASHA_SEQUENCE = [
-    "Ketu",
-    "Venus",
-    "Sun",
-    "Moon",
-    "Mars",
-    "Rahu",
-    "Jupiter",
-    "Saturn",
-    "Mercury"
-]
-
-
-# =========================================================
-# PLANETS
-# =========================================================
-
-PLANETS = {
-
-    "Sun": swe.SUN,
-
-    "Moon": swe.MOON,
-
-    "Mars": swe.MARS,
-
-    "Mercury": swe.MERCURY,
-
-    "Jupiter": swe.JUPITER,
-
-    "Venus": swe.VENUS,
-
-    "Saturn": swe.SATURN,
-
-    "Rahu": swe.MEAN_NODE
-
-}
-
-
-# =========================================================
-# HOUSE LORDS
-# =========================================================
-
-HOUSE_LORDS = {
-
-    "Aries": "Mars",
-
-    "Taurus": "Venus",
-
-    "Gemini": "Mercury",
-
-    "Cancer": "Moon",
-
-    "Leo": "Sun",
-
-    "Virgo": "Mercury",
-
-    "Libra": "Venus",
-
-    "Scorpio": "Mars",
-
-    "Sagittarius": "Jupiter",
-
-    "Capricorn": "Saturn",
-
-    "Aquarius": "Saturn",
-
-    "Pisces": "Jupiter"
-
-}
-
-
-# =========================================================
-# NORMALIZE DEGREE
-# =========================================================
-
-def normalize_degree(degree):
-
-    return float(degree) % 360.0
-
-
-# =========================================================
-# GET ZODIAC SIGN
-# =========================================================
-
-def get_sign(longitude):
-
-    longitude = normalize_degree(
-        longitude
-    )
-
-    sign_index = int(
-        longitude // 30
-    )
-
-    degree_in_sign = (
-        longitude % 30
-    )
-
-    return {
-
-        "name":
-            ZODIAC_SIGNS[sign_index],
-
-        "vedic_name":
-            ZODIAC_SIGNS_HINDI[sign_index],
-
-        "index":
-            sign_index,
-
-        "degree":
-            round(
-                degree_in_sign,
-                2
-            )
-
-    }
-
-
-# =========================================================
-# GET NAKSHATRA
-# =========================================================
-
-def get_nakshatra(longitude):
-
-    longitude = normalize_degree(
-        longitude
-    )
-
-    nakshatra_size = (
-        360.0 / 27.0
-    )
-
-    nakshatra_index = int(
-        longitude //
-        nakshatra_size
-    )
-
-    degree_inside = (
-        longitude %
-        nakshatra_size
-    )
-
-    pada_size = (
-        nakshatra_size / 4.0
-    )
-
-    pada = int(
-        degree_inside /
-        pada_size
-    ) + 1
-
-    pada = max(
-        1,
-        min(
-            4,
-            pada
-        )
-    )
-
-    return {
-
-        "name":
-            NAKSHATRAS[
-                nakshatra_index
-            ],
-
-        "index":
-            nakshatra_index,
-
-        "pada":
-            pada,
-
-        "lord":
-            NAKSHATRA_LORDS[
-                nakshatra_index % 9
-            ]
-
-    }
-
-
-# =========================================================
-# PLANET POSITION
-# =========================================================
-
-def get_planet_position(
-    planet_id,
-    julian_day
-):
-
-    flags = (
-        swe.FLG_SWIEPH
-        |
-        swe.FLG_SIDEREAL
-        |
-        swe.FLG_SPEED
-    )
-
-    result = swe.calc_ut(
-        julian_day,
-        planet_id,
-        flags
-    )
-
-    values = result[0]
-
-    longitude = normalize_degree(
-        values[0]
-    )
-
-    speed = float(
-        values[3]
-    )
-
-    return (
-        longitude,
-        speed
-    )
-
-
-# =========================================================
-# BUILD PLANET
-# =========================================================
-
-def build_planet(
-    planet_name,
-    planet_id,
-    julian_day
-):
-
-    longitude, speed = (
-        get_planet_position(
-            planet_id,
-            julian_day
-        )
-    )
-
-    sign = get_sign(
-        longitude
-    )
-
-    nakshatra = get_nakshatra(
-        longitude
-    )
-
-    return {
-
-        "planet":
-            planet_name,
-
-        "name":
-            planet_name,
-
-        "longitude":
-            round(
-                longitude,
-                4
-            ),
-
-        "degree":
-            round(
-                sign["degree"],
-                2
-            ),
-
-        "sign":
-            sign["name"],
-
-        "vedic_sign":
-            sign["vedic_name"],
-
-        "sign_index":
-            sign["index"],
-
-        "nakshatra":
-            nakshatra["name"],
-
-        "nakshatra_pada":
-            nakshatra["pada"],
-
-        "nakshatra_lord":
-            nakshatra["lord"],
-
-        "retrograde":
-            speed < 0
-
-    }
-
-
-# =========================================================
-# WHOLE SIGN HOUSE
+# kundli.py
 #
-# Vedic astrology commonly uses whole-sign houses:
+# Main Kundli Calculation Orchestrator
 #
-# Ascendant sign = House 1
-# Next sign       = House 2
-# ...
+# Uses:
+#   - Swiss Ephemeris
+#   - Sidereal Zodiac
+#   - Lahiri Ayanamsha
+#   - Whole Sign Houses
+#   - Vimshottari Dasha
+#   - Yoga Detection
+#   - Navamsa / D9
 # =========================================================
 
-def get_whole_sign_house(
-    planet_longitude,
-    ascendant_longitude
+
+from datetime import datetime, timezone as dt_timezone
+
+
+# =========================================================
+# EPHEMERIS
+# =========================================================
+
+from ephemeris import (
+    julian_day,
+    calculate_planets,
+    calculate_ascendant,
+    house_from_sign,
+    SIGNS,
+)
+
+
+# =========================================================
+# DASHA
+# =========================================================
+
+from dasha import (
+    get_current_dasha,
+)
+
+
+# =========================================================
+# YOGA
+# =========================================================
+
+from yoga import (
+    detect_yogas,
+)
+
+
+# =========================================================
+# DIVISIONAL CHARTS
+# =========================================================
+
+from divisional_charts import (
+    build_navamsa,
+)
+
+
+# =========================================================
+# SAFE DICTIONARY GET
+# =========================================================
+
+def safe_get(value, key, default=None):
+    """
+    Safely get a value from a dictionary.
+
+    Prevents crashes if a value is missing.
+    """
+
+    if not isinstance(value, dict):
+        return default
+
+    return value.get(
+        key,
+        default
+    )
+
+
+# =========================================================
+# FIND PLANET
+# =========================================================
+
+def find_planet(
+    planets,
+    planet_name
 ):
+    """
+    Find a planet by name.
+    """
 
-    planet_sign = int(
-        normalize_degree(
-            planet_longitude
-        ) // 30
-    )
+    for planet in planets:
 
-    ascendant_sign = int(
-        normalize_degree(
-            ascendant_longitude
-        ) // 30
-    )
+        if planet.get("name") == planet_name:
 
-    house = (
-        planet_sign
-        -
-        ascendant_sign
-    ) % 12 + 1
+            return planet
 
-    return house
+    return None
 
 
 # =========================================================
-# BUILD HOUSES
+# BUILD WHOLE SIGN HOUSES
 # =========================================================
 
 def build_whole_sign_houses(
-    ascendant_longitude
+    ascendant_sign_index
 ):
+    """
+    Build all 12 Whole Sign houses.
 
-    ascendant_sign_index = int(
-        normalize_degree(
-            ascendant_longitude
-        ) // 30
-    )
+    Ascendant sign = House 1.
+    Next sign = House 2.
+    etc.
+    """
 
     houses = []
+
+    ascendant_sign_index = int(
+        ascendant_sign_index
+    )
 
     for house_number in range(
         1,
@@ -471,47 +127,20 @@ def build_whole_sign_houses(
 
         sign_index = (
             ascendant_sign_index
-            +
-            house_number
-            -
-            1
+            + house_number
+            - 1
         ) % 12
-
-        sign_name = (
-            ZODIAC_SIGNS[
-                sign_index
-            ]
-        )
-
-        vedic_name = (
-            ZODIAC_SIGNS_HINDI[
-                sign_index
-            ]
-        )
-
-        lord = HOUSE_LORDS.get(
-            sign_name
-        )
 
         houses.append({
 
             "house":
                 house_number,
 
-            "number":
-                house_number,
-
-            "sign":
-                sign_name,
-
-            "vedic_sign":
-                vedic_name,
-
             "sign_index":
                 sign_index,
 
-            "lord":
-                lord
+            "sign":
+                SIGNS[sign_index],
 
         })
 
@@ -519,623 +148,664 @@ def build_whole_sign_houses(
 
 
 # =========================================================
-# BUILD HOUSE → PLANETS
+# ASSIGN PLANET HOUSES
 # =========================================================
 
-def build_house_planets(
-    planets
+def assign_houses_to_planets(
+    planets,
+    ascendant_sign_index
 ):
+    """
+    Assign Whole Sign house to every planet.
+    """
 
-    house_planets = {
+    for planet in planets:
 
-        1: [],
-        2: [],
-        3: [],
-        4: [],
-        5: [],
-        6: [],
-        7: [],
-        8: [],
-        9: [],
-        10: [],
-        11: [],
-        12: []
-
-    }
-
-    for planet_name, planet in (
-        planets.items()
-    ):
-
-        house = planet.get(
-            "house"
+        sign_index = planet.get(
+            "sign_index"
         )
 
-        if house in house_planets:
+        if sign_index is None:
+            continue
 
-            house_planets[
-                house
-            ].append(
-                planet_name
-            )
+        planet["house"] = house_from_sign(
 
-    return house_planets
+            sign_index,
+
+            ascendant_sign_index
+
+        )
+
+    return planets
 
 
 # =========================================================
-# BUILD VIMSHOTTARI DASHA
+# ASCENDANT DATA
 # =========================================================
 
-def calculate_vimshottari_dasha(
-    moon_longitude
+def build_ascendant_data(
+    ascendant
 ):
-
-    nakshatra = get_nakshatra(
-        moon_longitude
-    )
-
-    starting_lord = (
-        nakshatra["lord"]
-    )
-
-    starting_index = (
-        DASHA_SEQUENCE.index(
-            starting_lord
-        )
-    )
-
-    nakshatra_size = (
-        360.0 / 27.0
-    )
-
-    pada_size = (
-        nakshatra_size / 4.0
-    )
-
-    position_in_nakshatra = (
-        normalize_degree(
-            moon_longitude
-        )
-        %
-        nakshatra_size
-    )
-
-    fraction_completed = (
-        position_in_nakshatra
-        /
-        nakshatra_size
-    )
-
-    fraction_remaining = (
-        1.0 -
-        fraction_completed
-    )
-
-    first_duration = (
-        DASHA_YEARS[
-            starting_lord
-        ]
-        *
-        fraction_remaining
-    )
-
-    durations = {}
-
-    for i in range(9):
-
-        lord = DASHA_SEQUENCE[
-            (
-                starting_index
-                +
-                i
-            ) % 9
-        ]
-
-        if i == 0:
-
-            years = first_duration
-
-        else:
-
-            years = DASHA_YEARS[
-                lord
-            ]
-
-        durations[lord] = round(
-            years,
-            2
-        )
+    """
+    Create a clean Ascendant dictionary.
+    """
 
     return {
 
-        "system":
-            "Vimshottari",
+        "name":
+            safe_get(
+                ascendant,
+                "sign"
+            ),
 
-        "starting_planet":
-            starting_lord,
+        "sign":
+            safe_get(
+                ascendant,
+                "sign"
+            ),
 
-        "nakshatra":
-            nakshatra["name"],
+        "sign_index":
+            safe_get(
+                ascendant,
+                "sign_index"
+            ),
 
-        "nakshatra_pada":
-            nakshatra["pada"],
+        "degree":
+            safe_get(
+                ascendant,
+                "degree"
+            ),
 
-        "durations":
-            durations
+        "degree_dms":
+            safe_get(
+                ascendant,
+                "degree_dms"
+            ),
+
+        "longitude":
+            safe_get(
+                ascendant,
+                "longitude"
+            ),
+
+        "longitude_dms":
+            safe_get(
+                ascendant,
+                "longitude_dms"
+            ),
 
     }
 
 
 # =========================================================
-# BASIC YOGAS
+# BASIC SUMMARY
 # =========================================================
 
-def calculate_yogas(
+def build_basic_summary(
     planets,
-    houses
+    ascendant
 ):
+    """
+    Build basic chart summary.
 
-    yogas = []
+    IMPORTANT:
+    We intentionally use:
 
-    # -----------------------------------------------------
-    # Gaja Kesari Yoga
-    # Jupiter in kendra from Moon
-    # -----------------------------------------------------
+        ascendant_sign
 
-    moon = planets.get(
-        "Moon"
-    )
+    instead of:
 
-    jupiter = planets.get(
-        "Jupiter"
-    )
+        ascendant
 
-    if moon and jupiter:
+    so that the complete Ascendant dictionary is
+    never overwritten.
+    """
 
-        moon_house = moon.get(
-            "house"
-        )
-
-        jupiter_house = jupiter.get(
-            "house"
-        )
-
-        if moon_house and jupiter_house:
-
-            difference = (
-                jupiter_house
-                -
-                moon_house
-            ) % 12 + 1
-
-            if difference in [
-                1,
-                4,
-                7,
-                10
-            ]:
-
-                yogas.append({
-
-                    "name":
-                        "Gaja Kesari Yoga",
-
-                    "description":
-                        "Jupiter is positioned in a Kendra from the Moon."
-
-                })
-
-    # -----------------------------------------------------
-    # Budha Aditya Yoga
-    # Sun + Mercury same house
-    # -----------------------------------------------------
-
-    sun = planets.get(
+    sun = find_planet(
+        planets,
         "Sun"
     )
 
-    mercury = planets.get(
-        "Mercury"
+    moon = find_planet(
+        planets,
+        "Moon"
     )
 
-    if sun and mercury:
+    return {
 
-        if (
-            sun.get("house")
-            ==
-            mercury.get("house")
-        ):
+        # IMPORTANT:
+        # Do NOT use "ascendant" here.
+        "ascendant_sign":
+            safe_get(
+                ascendant,
+                "sign"
+            ),
 
-            yogas.append({
+        "ascendant_degree":
+            safe_get(
+                ascendant,
+                "degree"
+            ),
 
-                "name":
-                    "Budha Aditya Yoga",
+        "ascendant_degree_dms":
+            safe_get(
+                ascendant,
+                "degree_dms"
+            ),
 
-                "description":
-                    "Sun and Mercury are placed together."
+        "sun_sign":
+            safe_get(
+                sun,
+                "sign"
+            ),
 
-            })
+        "sun_degree":
+            safe_get(
+                sun,
+                "degree"
+            ),
 
-    return yogas
+        "sun_degree_dms":
+            safe_get(
+                sun,
+                "degree_dms"
+            ),
+
+        "moon_sign":
+            safe_get(
+                moon,
+                "sign"
+            ),
+
+        "moon_degree":
+            safe_get(
+                moon,
+                "degree"
+            ),
+
+        "moon_degree_dms":
+            safe_get(
+                moon,
+                "degree_dms"
+            ),
+
+        "moon_nakshatra":
+            safe_get(
+                moon,
+                "nakshatra"
+            ),
+
+        "moon_nakshatra_lord":
+            safe_get(
+                moon,
+                "nakshatra_lord"
+            ),
+
+        "moon_pada":
+            safe_get(
+                moon,
+                "pada"
+            ),
+
+    }
 
 
 # =========================================================
-# MAIN KUNDLI CALCULATION
+# PLANET SUMMARY
 # =========================================================
 
-def calculate_kundli(
-    date_of_birth,
-    time_of_birth,
+def build_planet_summary(
+    planets
+):
+    """
+    Create a compact summary of every planet.
+
+    Used by:
+        - Frontend
+        - AI Astrologer
+        - Future analysis modules
+    """
+
+    summary = {}
+
+    for planet in planets:
+
+        name = planet.get(
+            "name"
+        )
+
+        if not name:
+            continue
+
+        summary[name] = {
+
+            "name":
+                name,
+
+            "sign":
+                planet.get(
+                    "sign"
+                ),
+
+            "sign_english":
+                planet.get(
+                    "sign_english"
+                ),
+
+            "sign_index":
+                planet.get(
+                    "sign_index"
+                ),
+
+            "degree":
+                planet.get(
+                    "degree"
+                ),
+
+            "degree_dms":
+                planet.get(
+                    "degree_dms"
+                ),
+
+            "longitude":
+                planet.get(
+                    "longitude"
+                ),
+
+            "longitude_dms":
+                planet.get(
+                    "longitude_dms"
+                ),
+
+            "house":
+                planet.get(
+                    "house"
+                ),
+
+            "rashi_lord":
+                planet.get(
+                    "rashi_lord"
+                ),
+
+            "nakshatra":
+                planet.get(
+                    "nakshatra"
+                ),
+
+            "nakshatra_lord":
+                planet.get(
+                    "nakshatra_lord"
+                ),
+
+            "pada":
+                planet.get(
+                    "pada"
+                ),
+
+            "retrograde":
+                planet.get(
+                    "retrograde",
+                    False
+                ),
+
+            "speed":
+                planet.get(
+                    "speed"
+                ),
+
+        }
+
+    return summary
+
+
+# =========================================================
+# GENERATE KUNDLI
+# =========================================================
+
+def generate_kundli(
+    name,
+    birth_date,
+    birth_time,
+    place,
     latitude,
     longitude,
-    timezone_offset
+    timezone,
 ):
+    """
+    Generate a complete Vedic Kundli.
+
+    Parameters
+    ----------
+    name:
+        Person's name.
+
+    birth_date:
+        YYYY-MM-DD
+
+    birth_time:
+        HH:MM
+
+    place:
+        Birth place.
+
+    latitude:
+        Birth latitude.
+
+    longitude:
+        Birth longitude.
+
+    timezone:
+        Numeric UTC offset.
+
+        Example:
+            India = 5.5
+    """
 
     # =====================================================
-    # VALIDATION
+    # NORMALIZE INPUTS
     # =====================================================
 
-    if not date_of_birth:
+    name = str(
+        name
+    ).strip()
 
-        raise ValueError(
-            "Date of birth is required."
-        )
+    birth_date = str(
+        birth_date
+    ).strip()
 
-    if not time_of_birth:
+    birth_time = str(
+        birth_time
+    ).strip()
 
-        raise ValueError(
-            "Time of birth is required."
-        )
+    place = str(
+        place
+    ).strip()
 
-    try:
+    latitude = float(
+        latitude
+    )
 
-        latitude = float(
-            latitude
-        )
+    longitude = float(
+        longitude
+    )
 
-        longitude = float(
-            longitude
-        )
-
-        timezone_offset = float(
-            timezone_offset
-        )
-
-    except (
-        TypeError,
-        ValueError
-    ):
-
-        raise ValueError(
-            "Latitude, longitude and timezone must be numbers."
-        )
-
-
-    if (
-        latitude < -90
-        or
-        latitude > 90
-    ):
-
-        raise ValueError(
-            "Latitude must be between -90 and 90."
-        )
-
-
-    if (
-        longitude < -180
-        or
-        longitude > 180
-    ):
-
-        raise ValueError(
-            "Longitude must be between -180 and 180."
-        )
-
-
-    # =====================================================
-    # LAHIRI AYANAMSA
-    # =====================================================
-
-    swe.set_sid_mode(
-        swe.SIDM_LAHIRI
+    # IMPORTANT:
+    #
+    # This variable is a numeric UTC offset.
+    #
+    # Example:
+    # India = 5.5
+    #
+    # We use dt_timezone for Python's timezone
+    # class so there is no naming conflict.
+    timezone = float(
+        timezone
     )
 
 
     # =====================================================
-    # LOCAL DATE + TIME
+    # VALIDATE NAME
+    # =====================================================
+
+    if not name:
+
+        raise ValueError(
+            "Name cannot be empty."
+        )
+
+
+    # =====================================================
+    # VALIDATE PLACE
+    # =====================================================
+
+    if not place:
+
+        raise ValueError(
+            "Birth place cannot be empty."
+        )
+
+
+    # =====================================================
+    # VALIDATE LATITUDE
+    # =====================================================
+
+    if not (
+        -90.0
+        <= latitude
+        <= 90.0
+    ):
+
+        raise ValueError(
+            "Latitude must be between "
+            "-90 and 90."
+        )
+
+
+    # =====================================================
+    # VALIDATE LONGITUDE
+    # =====================================================
+
+    if not (
+        -180.0
+        <= longitude
+        <= 180.0
+    ):
+
+        raise ValueError(
+            "Longitude must be between "
+            "-180 and 180."
+        )
+
+
+    # =====================================================
+    # VALIDATE TIMEZONE
+    # =====================================================
+
+    if not (
+        -14.0
+        <= timezone
+        <= 14.0
+    ):
+
+        raise ValueError(
+            "Timezone must be between "
+            "-14 and +14."
+        )
+
+
+    # =====================================================
+    # VALIDATE DATE
     # =====================================================
 
     try:
 
-        local_datetime = datetime.strptime(
-            f"{date_of_birth} {time_of_birth}",
-            "%Y-%m-%d %H:%M"
+        datetime.strptime(
+            birth_date,
+            "%Y-%m-%d"
         )
 
     except ValueError:
 
         raise ValueError(
-            "Date/time must use YYYY-MM-DD and HH:MM format."
+            "Invalid birth date. "
+            "Expected YYYY-MM-DD."
         )
 
 
     # =====================================================
-    # LOCAL → UTC
+    # VALIDATE TIME
     # =====================================================
 
-    offset = timedelta(
-        hours=timezone_offset
-    )
+    try:
 
-    utc_datetime = (
-        local_datetime -
-        offset
-    )
-
-    utc_datetime = (
-        utc_datetime.replace(
-            tzinfo=timezone.utc
+        datetime.strptime(
+            birth_time,
+            "%H:%M"
         )
-    )
 
+    except ValueError:
 
-    # =====================================================
-    # UTC DECIMAL HOUR
-    # =====================================================
-
-    hour_decimal = (
-
-        utc_datetime.hour
-
-        +
-
-        utc_datetime.minute / 60.0
-
-        +
-
-        utc_datetime.second / 3600.0
-
-    )
+        raise ValueError(
+            "Invalid birth time. "
+            "Expected HH:MM."
+        )
 
 
     # =====================================================
     # JULIAN DAY
     # =====================================================
 
-    julian_day = swe.julday(
+    jd = julian_day(
 
-        utc_datetime.year,
+        birth_date,
 
-        utc_datetime.month,
+        birth_time,
 
-        utc_datetime.day,
-
-        hour_decimal
+        timezone
 
     )
 
 
     # =====================================================
-    # PLANETS
+    # CALCULATE PLANETS
     # =====================================================
 
-    planets = {}
+    planets = calculate_planets(
+        jd
+    )
 
+    if not planets:
 
-    for (
-        planet_name,
-        planet_id
-    ) in PLANETS.items():
-
-        planets[
-            planet_name
-        ] = build_planet(
-
-            planet_name,
-
-            planet_id,
-
-            julian_day
-
+        raise RuntimeError(
+            "Planet calculation failed."
         )
 
 
     # =====================================================
-    # KETU
+    # CALCULATE ASCENDANT
     # =====================================================
 
-    rahu_longitude = (
-        planets[
-            "Rahu"
-        ][
-            "longitude"
-        ]
-    )
+    ascendant_raw = calculate_ascendant(
 
-
-    ketu_longitude = normalize_degree(
-
-        rahu_longitude
-        +
-        180.0
-
-    )
-
-
-    ketu_sign = get_sign(
-        ketu_longitude
-    )
-
-
-    ketu_nakshatra = get_nakshatra(
-        ketu_longitude
-    )
-
-
-    planets["Ketu"] = {
-
-        "planet":
-            "Ketu",
-
-        "name":
-            "Ketu",
-
-        "longitude":
-            round(
-                ketu_longitude,
-                4
-            ),
-
-        "degree":
-            round(
-                ketu_sign["degree"],
-                2
-            ),
-
-        "sign":
-            ketu_sign["name"],
-
-        "vedic_sign":
-            ketu_sign["vedic_name"],
-
-        "sign_index":
-            ketu_sign["index"],
-
-        "nakshatra":
-            ketu_nakshatra["name"],
-
-        "nakshatra_pada":
-            ketu_nakshatra["pada"],
-
-        "nakshatra_lord":
-            ketu_nakshatra["lord"],
-
-        "retrograde":
-            True
-
-    }
-
-
-    # =====================================================
-    # ASCENDANT
-    # =====================================================
-
-    houses_raw, ascmc = swe.houses_ex(
-
-        julian_day,
+        jd,
 
         latitude,
 
-        longitude,
-
-        b"P",
-
-        swe.FLG_SIDEREAL
+        longitude
 
     )
 
+    if not ascendant_raw:
 
-    ascendant_longitude = normalize_degree(
-
-        ascmc[0]
-
-    )
-
-
-    ascendant_sign = get_sign(
-
-        ascendant_longitude
-
-    )
-
-
-    ascendant_nakshatra = get_nakshatra(
-
-        ascendant_longitude
-
-    )
-
-
-    ascendant = {
-
-        "longitude":
-            round(
-                ascendant_longitude,
-                4
-            ),
-
-        "degree":
-            round(
-                ascendant_sign["degree"],
-                2
-            ),
-
-        "sign":
-            ascendant_sign["name"],
-
-        "vedic_sign":
-            ascendant_sign["vedic_name"],
-
-        "sign_index":
-            ascendant_sign["index"],
-
-        "nakshatra":
-            ascendant_nakshatra["name"],
-
-        "nakshatra_pada":
-            ascendant_nakshatra["pada"],
-
-        "nakshatra_lord":
-            ascendant_nakshatra["lord"]
-
-    }
+        raise RuntimeError(
+            "Ascendant calculation failed."
+        )
 
 
     # =====================================================
-    # WHOLE SIGN HOUSES
+    # ASCENDANT SIGN
+    # =====================================================
+
+    ascendant_sign_index = int(
+
+        ascendant_raw[
+            "sign_index"
+        ]
+
+    )
+
+
+    # =====================================================
+    # ASSIGN PLANET HOUSES
+    # =====================================================
+
+    planets = assign_houses_to_planets(
+
+        planets,
+
+        ascendant_sign_index
+
+    )
+
+
+    # =====================================================
+    # BUILD HOUSES
     # =====================================================
 
     houses = build_whole_sign_houses(
 
-        ascendant_longitude
+        ascendant_sign_index
 
     )
 
 
     # =====================================================
-    # ASSIGN PLANETS TO HOUSES
+    # BUILD ASCENDANT
     # =====================================================
 
-    for (
-        planet_name,
-        planet
-    ) in planets.items():
+    ascendant = build_ascendant_data(
 
-        planet_longitude = (
-            planet[
-                "longitude"
-            ]
+        ascendant_raw
+
+    )
+
+
+    # =====================================================
+    # FIND SUN
+    # =====================================================
+
+    sun = find_planet(
+
+        planets,
+
+        "Sun"
+
+    )
+
+    if sun is None:
+
+        raise RuntimeError(
+            "Sun calculation failed."
         )
 
 
-        house = get_whole_sign_house(
+    # =====================================================
+    # FIND MOON
+    # =====================================================
 
-            planet_longitude,
+    moon = find_planet(
 
-            ascendant_longitude
+        planets,
 
+        "Moon"
+
+    )
+
+    if moon is None:
+
+        raise RuntimeError(
+            "Moon calculation failed."
         )
 
 
-        planet["house"] = house
+    # =====================================================
+    # BASIC SUMMARY
+    # =====================================================
+
+    summary = build_basic_summary(
+
+        planets,
+
+        ascendant_raw
+
+    )
 
 
     # =====================================================
-    # HOUSE → PLANETS
+    # PLANET SUMMARY
     # =====================================================
 
-    house_planets = build_house_planets(
+    planet_summary = build_planet_summary(
 
         planets
 
@@ -1143,76 +813,36 @@ def calculate_kundli(
 
 
     # =====================================================
-    # ADD PLANETS TO HOUSE DATA
+    # BASE CHART
+    #
+    # Used by yoga.py.
     # =====================================================
 
-    for house in houses:
+    base_chart = {
 
-        number = house[
-            "house"
-        ]
+        "name":
+            name,
 
-        house[
-            "planets"
-        ] = house_planets.get(
+        "birth_date":
+            birth_date,
 
-            number,
+        "birth_time":
+            birth_time,
 
-            []
+        "place":
+            place,
 
-        )
+        "latitude":
+            latitude,
 
+        "longitude":
+            longitude,
 
-    # =====================================================
-    # DASHA
-    # =====================================================
-
-    moon_longitude = (
-        planets[
-            "Moon"
-        ][
-            "longitude"
-        ]
-    )
-
-
-    dasha = calculate_vimshottari_dasha(
-
-        moon_longitude
-
-    )
-
-
-    # =====================================================
-    # YOGAS
-    # =====================================================
-
-    yogas = calculate_yogas(
-
-        planets,
-
-        houses
-
-    )
-
-
-    # =====================================================
-    # FINAL RESULT
-    # =====================================================
-
-    result = {
+        "timezone":
+            timezone,
 
         "julian_day":
-            julian_day,
-
-        "utc_time":
-            utc_datetime.isoformat(),
-
-        "ayanamsa":
-            "Lahiri",
-
-        "ayanamsa_system":
-            "Lahiri",
+            jd,
 
         "ascendant":
             ascendant,
@@ -1223,79 +853,892 @@ def calculate_kundli(
         "houses":
             houses,
 
-        "house_planets":
-            house_planets,
+    }
 
-        "dasha":
-            dasha,
+
+    # =====================================================
+    # VIMSHOTTARI DASHA
+    # =====================================================
+
+    try:
+
+        dashas = get_current_dasha(
+            jd
+        )
+
+    except Exception as error:
+
+        dashas = {
+
+            "available":
+                False,
+
+            "error":
+                str(error)
+
+        }
+
+
+    # =====================================================
+    # YOGAS
+    # =====================================================
+
+    try:
+
+        yogas = detect_yogas(
+
+            base_chart
+
+        )
+
+    except Exception as error:
+
+        yogas = [
+
+            {
+
+                "name":
+                    "Yoga calculation unavailable",
+
+                "type":
+                    "System",
+
+                "description":
+                    str(error)
+
+            }
+
+        ]
+
+
+    # =====================================================
+    # NAVAMSA / D9
+    # =====================================================
+
+    try:
+
+        navamsa_planets = build_navamsa(
+
+            planets
+
+        )
+
+        navamsa = {
+
+            "available":
+                True,
+
+            "name":
+                "Navamsa",
+
+            "code":
+                "D9",
+
+            "planets":
+                navamsa_planets
+
+        }
+
+    except Exception as error:
+
+        navamsa = {
+
+            "available":
+                False,
+
+            "name":
+                "Navamsa",
+
+            "code":
+                "D9",
+
+            "planets":
+                [],
+
+            "error":
+                str(error)
+
+        }
+
+
+    # =====================================================
+    # COMPLETE CHART
+    # =====================================================
+
+    chart = {
+
+        # -------------------------------------------------
+        # PERSONAL DETAILS
+        # -------------------------------------------------
+
+        "name":
+            name,
+
+        "birth_date":
+            birth_date,
+
+        "birth_time":
+            birth_time,
+
+        "place":
+            place,
+
+        "latitude":
+            latitude,
+
+        "longitude":
+            longitude,
+
+        "timezone":
+            timezone,
+
+
+        # -------------------------------------------------
+        # JULIAN DAY
+        # -------------------------------------------------
+
+        "julian_day":
+            jd,
+
+
+        # -------------------------------------------------
+        # ASCENDANT
+        #
+        # This remains a DICTIONARY.
+        #
+        # IMPORTANT:
+        # summary contains "ascendant_sign",
+        # NOT "ascendant".
+        # -------------------------------------------------
+
+        "ascendant":
+            ascendant,
+
+
+        # -------------------------------------------------
+        # BASIC SUMMARY
+        # -------------------------------------------------
+
+        **summary,
+
+
+        # -------------------------------------------------
+        # PLANETS
+        # -------------------------------------------------
+
+        "planets":
+            planets,
+
+
+        # -------------------------------------------------
+        # PLANET SUMMARY
+        # -------------------------------------------------
+
+        "planet_summary":
+            planet_summary,
+
+
+        # -------------------------------------------------
+        # HOUSES
+        # -------------------------------------------------
+
+        "houses":
+            houses,
+
+
+        # -------------------------------------------------
+        # DASHA
+        # -------------------------------------------------
+
+        "dashas":
+            dashas,
+
+
+        # -------------------------------------------------
+        # YOGAS
+        # -------------------------------------------------
 
         "yogas":
-            yogas
+            yogas,
+
+
+        # -------------------------------------------------
+        # DIVISIONAL CHARTS
+        # -------------------------------------------------
+
+        "divisional_charts": {
+
+            # ---------------------------------------------
+            # D1
+            # ---------------------------------------------
+
+            "D1": {
+
+                "name":
+                    "Rashi",
+
+                "code":
+                    "D1",
+
+                "planets":
+                    planets
+
+            },
+
+
+            # ---------------------------------------------
+            # D9
+            # ---------------------------------------------
+
+            "D9":
+                navamsa
+
+        },
+
+
+        # -------------------------------------------------
+        # CALCULATION INFORMATION
+        # -------------------------------------------------
+
+        "calculation": {
+
+            "zodiac":
+                "Sidereal",
+
+            "ayanamsha":
+                "Lahiri",
+
+            "house_system":
+                "Whole Sign",
+
+            "dasha_system":
+                "Vimshottari",
+
+            "primary_chart":
+                "D1",
+
+            "navamsa":
+                "D9",
+
+        },
+
+
+        # -------------------------------------------------
+        # ENGINE
+        # -------------------------------------------------
+
+        "engine": {
+
+            "name":
+                "AI Jyotish",
+
+            "version":
+                "1.0",
+
+            # IMPORTANT FIX:
+            #
+            # dt_timezone is Python's timezone class.
+            #
+            # timezone is the numeric birth UTC offset.
+            #
+            "generated_at":
+                datetime.now(
+                    dt_timezone.utc
+                ).isoformat()
+
+        }
 
     }
 
 
     # =====================================================
-    # SAFETY CHECK
+    # RETURN
     # =====================================================
 
-    if not result.get(
-        "ascendant"
-    ):
-
-        raise ValueError(
-            "Ascendant calculation failed."
-        )
-
-
-    if not result.get(
-        "planets"
-    ):
-
-        raise ValueError(
-            "Planet calculation failed."
-        )
-
-
-    if len(
-        result["planets"]
-    ) < 9:
-
-        raise ValueError(
-            "Not all planets were calculated."
-        )
-
-
-    return result
+    return chart
 
 
 # =========================================================
-# COMPATIBILITY WRAPPER
+# DIRECT TEST
 # =========================================================
 
-def build_kundli(
-    date_of_birth,
-    time_of_birth,
-    latitude,
-    longitude,
-    timezone_offset
-):
+if __name__ == "__main__":
 
-    return calculate_kundli(
+    print()
 
-        date_of_birth=
-            date_of_birth,
+    print("=" * 70)
 
-        time_of_birth=
-            time_of_birth,
-
-        latitude=
-            latitude,
-
-        longitude=
-            longitude,
-
-        timezone_offset=
-            timezone_offset
-
+    print(
+        "AI JYOTISH - KUNDLI ENGINE TEST"
     )
+
+    print("=" * 70)
+
+
+    try:
+
+        # =================================================
+        # TEST DATA
+        # =================================================
+
+        chart = generate_kundli(
+
+            name="Test User",
+
+            birth_date="2000-08-15",
+
+            birth_time="10:30",
+
+            place="Kolkata",
+
+            latitude=22.5726,
+
+            longitude=88.3639,
+
+            timezone=5.5
+
+        )
+
+
+        # =================================================
+        # SUCCESS
+        # =================================================
+
+        print()
+
+        print(
+            "✓ KUNDLI GENERATED SUCCESSFULLY"
+        )
+
+
+        # =================================================
+        # PERSONAL DETAILS
+        # =================================================
+
+        print()
+
+        print(
+            "Name:",
+            chart["name"]
+        )
+
+        print(
+            "Birth Date:",
+            chart["birth_date"]
+        )
+
+        print(
+            "Birth Time:",
+            chart["birth_time"]
+        )
+
+        print(
+            "Place:",
+            chart["place"]
+        )
+
+
+        # =================================================
+        # ASCENDANT
+        # =================================================
+
+        print()
+
+        print(
+            "ASCENDANT"
+        )
+
+        print("-" * 70)
+
+        print(
+            "Sign:",
+            chart["ascendant"].get(
+                "sign"
+            )
+        )
+
+        print(
+            "Sign Index:",
+            chart["ascendant"].get(
+                "sign_index"
+            )
+        )
+
+        print(
+            "Degree:",
+            chart["ascendant"].get(
+                "degree"
+            )
+        )
+
+        print(
+            "Degree DMS:",
+            chart["ascendant"].get(
+                "degree_dms"
+            )
+        )
+
+        print(
+            "Longitude:",
+            chart["ascendant"].get(
+                "longitude"
+            )
+        )
+
+
+        # =================================================
+        # SUN
+        # =================================================
+
+        print()
+
+        print(
+            "SUN"
+        )
+
+        print("-" * 70)
+
+        print(
+            "Sign:",
+            chart["sun_sign"]
+        )
+
+        print(
+            "Degree:",
+            chart["sun_degree_dms"]
+        )
+
+
+        # =================================================
+        # MOON
+        # =================================================
+
+        print()
+
+        print(
+            "MOON"
+        )
+
+        print("-" * 70)
+
+        print(
+            "Sign:",
+            chart["moon_sign"]
+        )
+
+        print(
+            "Degree:",
+            chart["moon_degree_dms"]
+        )
+
+        print(
+            "Nakshatra:",
+            chart["moon_nakshatra"]
+        )
+
+        print(
+            "Nakshatra Lord:",
+            chart["moon_nakshatra_lord"]
+        )
+
+        print(
+            "Pada:",
+            chart["moon_pada"]
+        )
+
+
+        # =================================================
+        # PLANETS
+        # =================================================
+
+        print()
+
+        print(
+            "PLANETARY POSITIONS"
+        )
+
+        print("-" * 70)
+
+        for planet in chart["planets"]:
+
+            print(
+
+                f'{planet.get("name", "-"):10} | '
+
+                f'{planet.get("sign", "-"):15} | '
+
+                f'House '
+                f'{str(planet.get("house", "-")):2} | '
+
+                f'{planet.get("degree_dms", "-"):15} | '
+
+                f'{planet.get("nakshatra", "-"):18} | '
+
+                f'Lord '
+                f'{planet.get("nakshatra_lord", "-"):10} | '
+
+                f'Pada '
+                f'{str(planet.get("pada", "-")):2} | '
+
+                f'R'
+                f'{"YES" if planet.get("retrograde") else "NO"}'
+
+            )
+
+
+        # =================================================
+        # HOUSES
+        # =================================================
+
+        print()
+
+        print(
+            "WHOLE SIGN HOUSES"
+        )
+
+        print("-" * 70)
+
+        for house in chart["houses"]:
+
+            print(
+
+                f'House '
+                f'{house["house"]:2} → '
+
+                f'{house["sign"]}'
+
+            )
+
+
+        # =================================================
+        # DASHA
+        # =================================================
+
+        print()
+
+        print(
+            "VIMSHOTTARI DASHA"
+        )
+
+        print("-" * 70)
+
+        dasha = chart["dashas"]
+
+
+        if dasha.get(
+            "available",
+            True
+        ):
+
+            print(
+
+                "Starting Lord:",
+
+                dasha.get(
+                    "starting_lord"
+                )
+
+            )
+
+            print(
+
+                "Nakshatra:",
+
+                dasha.get(
+                    "nakshatra",
+                    {}
+                ).get(
+                    "name",
+                    "-"
+                )
+
+            )
+
+            print(
+
+                "Current Mahadasha:",
+
+                dasha.get(
+                    "current_mahadasha_lord"
+                )
+
+            )
+
+            print(
+
+                "Current Antardasha:",
+
+                dasha.get(
+                    "current_antardasha_lord"
+                )
+
+            )
+
+            print()
+
+            print(
+                "Mahadasha Timeline:"
+            )
+
+            for period in dasha.get(
+                "mahadasha_timeline",
+                []
+            ):
+
+                print(
+
+                    "  ",
+                    period.get(
+                        "lord",
+                        "-"
+                    ),
+
+                    "|",
+
+                    period.get(
+                        "start",
+                        "-"
+                    ),
+
+                    "→",
+
+                    period.get(
+                        "end",
+                        "-"
+                    )
+
+                )
+
+        else:
+
+            print(
+
+                "Dasha Error:",
+
+                dasha.get(
+                    "error"
+                )
+
+            )
+
+
+        # =================================================
+        # YOGAS
+        # =================================================
+
+        print()
+
+        print(
+            "YOGAS"
+        )
+
+        print("-" * 70)
+
+        for yoga in chart["yogas"]:
+
+            print(
+
+                "-",
+
+                yoga.get(
+                    "name",
+                    "Unknown Yoga"
+                )
+
+            )
+
+            print(
+
+                "  Type:",
+
+                yoga.get(
+                    "type",
+                    "-"
+                )
+
+            )
+
+            print(
+
+                "  Description:",
+
+                yoga.get(
+                    "description",
+                    "-"
+                )
+
+            )
+
+
+        # =================================================
+        # NAVAMSA / D9
+        # =================================================
+
+        print()
+
+        print(
+            "NAVAMSA / D9"
+        )
+
+        print("-" * 70)
+
+        d9 = chart[
+            "divisional_charts"
+        ][
+            "D9"
+        ]
+
+        print(
+
+            "Available:",
+
+            d9.get(
+                "available"
+            )
+
+        )
+
+
+        if d9.get(
+            "available"
+        ):
+
+            for planet in d9.get(
+                "planets",
+                []
+            ):
+
+                print(
+
+                    f'{planet.get("name", "-"):10} → '
+
+                    f'{planet.get("sign", "-"):15} | '
+
+                    f'Navamsa Part '
+                    f'{planet.get("navamsa", "-")}'
+
+                )
+
+        else:
+
+            print(
+
+                "D9 Error:",
+
+                d9.get(
+                    "error"
+                )
+
+            )
+
+
+        # =================================================
+        # CALCULATION
+        # =================================================
+
+        print()
+
+        print(
+            "CALCULATION"
+        )
+
+        print("-" * 70)
+
+        print(
+            "Zodiac:",
+            chart["calculation"]["zodiac"]
+        )
+
+        print(
+            "Ayanamsha:",
+            chart["calculation"]["ayanamsha"]
+        )
+
+        print(
+            "House System:",
+            chart["calculation"]["house_system"]
+        )
+
+        print(
+            "Dasha System:",
+            chart["calculation"]["dasha_system"]
+        )
+
+        print(
+            "Julian Day:",
+            chart["julian_day"]
+        )
+
+
+        # =================================================
+        # ENGINE
+        # =================================================
+
+        print()
+
+        print(
+            "ENGINE"
+        )
+
+        print("-" * 70)
+
+        print(
+            "Name:",
+            chart["engine"]["name"]
+        )
+
+        print(
+            "Version:",
+            chart["engine"]["version"]
+        )
+
+        print(
+            "Generated:",
+            chart["engine"]["generated_at"]
+        )
+
+
+        # =================================================
+        # FINAL SUCCESS
+        # =================================================
+
+        print()
+
+        print("=" * 70)
+
+        print(
+            "✓ TEST COMPLETED SUCCESSFULLY"
+        )
+
+        print("=" * 70)
+
+        print()
+
+
+    except Exception as error:
+
+        # =================================================
+        # ERROR
+        # =================================================
+
+        print()
+
+        print("=" * 70)
+
+        print(
+            "✗ KUNDLI TEST FAILED"
+        )
+
+        print("=" * 70)
+
+        print()
+
+        print(
+            type(error).__name__,
+            ":",
+            error
+        )
+
+        print()
+
+        raise
