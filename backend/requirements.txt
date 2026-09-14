@@ -5,3 +5,4 @@ pyswisseph
 google-genai
 geopy
 gunicorn
+Flask-SQLAlchemy
