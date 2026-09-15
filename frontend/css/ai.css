@@ -1,0 +1,1975 @@
+/* =========================================================
+   AI JYOTISH — AI ASTROLOGER
+   Premium Cosmic Blue + Gold
+   ========================================================= */
+
+.ai-section {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(218, 176, 85, 0.2);
+    background:
+        radial-gradient(
+            circle at 90% 10%,
+            rgba(215, 173, 79, 0.08),
+            transparent 28%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(10, 42, 72, 0.94),
+            rgba(4, 20, 41, 0.97)
+        );
+}
+
+.ai-section::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(
+        180deg,
+        #e1ba67,
+        rgba(225, 186, 103, 0.05)
+    );
+}
+
+.ai-section::after {
+    content: "✦";
+    position: absolute;
+    right: 28px;
+    top: 18px;
+    color: rgba(224, 181, 91, 0.08);
+    font-size: 4.5rem;
+    pointer-events: none;
+}
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.ai-header {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    margin-bottom: 17px;
+}
+
+.ai-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 43px;
+    height: 43px;
+    flex: 0 0 43px;
+    border: 1px solid rgba(224, 183, 94, 0.34);
+    border-radius: 50%;
+    background:
+        radial-gradient(
+            circle at 35% 30%,
+            rgba(238, 204, 125, 0.2),
+            rgba(83, 58, 17, 0.1)
+        );
+    color: #e2bc6b;
+    font-family: serif;
+    font-size: 1.05rem;
+    font-weight: 800;
+    box-shadow:
+        0 0 0 5px rgba(220, 176, 84, 0.025),
+        0 0 20px rgba(220, 176, 84, 0.06);
+}
+
+.ai-title {
+    margin: 0;
+    color: #f0e4ca;
+    font-size: 1rem;
+    font-weight: 750;
+}
+
+.ai-subtitle {
+    margin: 4px 0 0;
+    color: #829ab3;
+    font-size: 0.74rem;
+    line-height: 1.45;
+}
+
+/* =========================================================
+   AI FORM
+   ========================================================= */
+
+.ai-form,
+#aiForm {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    gap: 9px;
+    margin-top: 15px;
+}
+
+.ai-input-wrapper {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+}
+
+.ai-input {
+    width: 100%;
+    min-height: 43px;
+    padding: 11px 14px;
+    border: 1px solid rgba(137, 175, 214, 0.15);
+    border-radius: 10px;
+    outline: none;
+    background: rgba(2, 16, 33, 0.66);
+    color: #dbe5ee;
+    font-family: inherit;
+    font-size: 0.8rem;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+.ai-input::placeholder {
+    color: #607991;
+}
+
+.ai-input:focus {
+    border-color: rgba(219, 177, 88, 0.45);
+    background: rgba(3, 20, 40, 0.82);
+    box-shadow:
+        0 0 0 3px rgba(218, 175, 84, 0.06),
+        0 0 20px rgba(26, 100, 157, 0.08);
+}
+
+.ai-submit,
+#aiForm button {
+    min-width: 105px;
+    min-height: 43px;
+    border: 1px solid rgba(226, 185, 98, 0.3);
+    border-radius: 10px;
+    background:
+        linear-gradient(
+            135deg,
+            #b7893d,
+            #d6ad5e
+        );
+    color: #101d2a;
+    font-size: 0.76rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+    transition:
+        transform 0.2s ease,
+        filter 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.ai-submit:hover,
+#aiForm button:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+    box-shadow: 0 9px 24px rgba(0, 0, 0, 0.23);
+}
+
+.ai-submit:active,
+#aiForm button:active {
+    transform: translateY(0);
+}
+
+.ai-submit:disabled,
+#aiForm button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* =========================================================
+   SUGGESTED QUESTIONS
+   ========================================================= */
+
+.ai-suggestions {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 11px;
+}
+
+.ai-suggestion {
+    padding: 6px 9px;
+    border: 1px solid rgba(135, 172, 210, 0.11);
+    border-radius: 999px;
+    background: rgba(5, 25, 46, 0.55);
+    color: #8fa7bf;
+    font-size: 0.65rem;
+    cursor: pointer;
+    transition:
+        color 0.2s ease,
+        border-color 0.2s ease,
+        background 0.2s ease;
+}
+
+.ai-suggestion:hover {
+    border-color: rgba(218, 176, 86, 0.25);
+    background: rgba(112, 79, 24, 0.1);
+    color: #d7b36a;
+}
+
+/* =========================================================
+   AI ANSWER
+   ========================================================= */
+
+.ai-answer,
+#answer {
+    position: relative;
+    z-index: 1;
+    margin-top: 15px;
+    padding: 17px;
+    min-height: 64px;
+    border: 1px solid rgba(134, 171, 210, 0.11);
+    border-radius: 12px;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(5, 25, 47, 0.7),
+            rgba(2, 16, 32, 0.65)
+        );
+    color: #b6c7d8;
+    font-size: 0.8rem;
+    line-height: 1.75;
+}
+
+.ai-answer:empty {
+    display: none;
+}
+
+.ai-answer p {
+    margin: 0 0 10px;
+}
+
+.ai-answer p:last-child {
+    margin-bottom: 0;
+}
+
+.ai-answer strong {
+    color: #e1bb69;
+    font-weight: 750;
+}
+
+.ai-answer ul,
+.ai-answer ol {
+    margin: 8px 0;
+    padding-left: 20px;
+}
+
+.ai-answer li {
+    margin: 4px 0;
+}
+
+/* =========================================================
+   THINKING STATE
+   ========================================================= */
+
+.ai-thinking {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #879eb7;
+    font-size: 0.73rem;
+}
+
+.ai-thinking-dots {
+    display: inline-flex;
+    gap: 4px;
+}
+
+.ai-thinking-dots span {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #d5ae61;
+    animation: aiThinking 1.2s infinite ease-in-out;
+}
+
+.ai-thinking-dots span:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.ai-thinking-dots span:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+@keyframes aiThinking {
+    0%,
+    60%,
+    100% {
+        opacity: 0.3;
+        transform: translateY(0);
+    }
+
+    30% {
+        opacity: 1;
+        transform: translateY(-3px);
+    }
+}
+
+/* =========================================================
+   RESPONSE META
+   ========================================================= */
+
+.ai-response-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 8px;
+    color: #617a94;
+    font-size: 0.61rem;
+}
+
+.ai-disclaimer {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(134, 171, 209, 0.07);
+    color: #617993;
+    font-size: 0.63rem;
+    line-height: 1.5;
+}
+
+/* =========================================================
+   ERROR
+   ========================================================= */
+
+.ai-error {
+    border-color: rgba(205, 88, 78, 0.22);
+    background: rgba(121, 45, 40, 0.08);
+    color: #dca19a;
+}
+
+.ai-success {
+    border-color: rgba(79, 158, 119, 0.2);
+    color: #91cdb0;
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+    .ai-form,
+    #aiForm {
+        flex-direction: column;
+    }
+
+    .ai-submit,
+    #aiForm button {
+        width: 100%;
+    }
+
+    .ai-header {
+        align-items: flex-start;
+    }
+
+    .ai-section::after {
+        right: 12px;
+        top: 12px;
+        font-size: 3rem;
+    }
+
+    .ai-response-meta {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    .ai-thinking-dots span {
+        animation: none;
+    }
+
+    .ai-submit,
+    #aiForm button {
+        transition: none;
+    }
+}
+
+/* =========================================================
+   PRINT
+   ========================================================= */
+
+@media print {
+    .ai-section {
+        background: #fff !important;
+        border: 1px solid #ccc !important;
+        box-shadow: none !important;
+    }
+
+    .ai-section::before,
+    .ai-section::after {
+        display: none;
+    }
+
+    .ai-title,
+    .ai-answer,
+    #answer {
+        color: #222 !important;
+    }
+
+    .ai-subtitle,
+    .ai-disclaimer {
+        color: #555 !important;
+    }
+
+    #aiForm,
+    .ai-suggestions {
+        display: none !important;
+    }
+}
+/* =========================================
+   COMPLETE BIRTH CHART ANALYSIS HEADER
+   ========================================= */
+
+.complete-analysis-header {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    width: 100%;
+    padding: 26px 28px;
+    margin-bottom: 28px;
+
+    border: 1px solid rgba(0, 204, 255, 0.35);
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(5, 55, 105, 0.95),
+            rgba(4, 35, 75, 0.92)
+        );
+
+    box-shadow:
+        0 0 25px rgba(0, 183, 255, 0.10),
+        inset 0 0 30px rgba(0, 183, 255, 0.04);
+}
+
+/* Icon */
+
+.complete-analysis-icon {
+    width: 64px;
+    height: 64px;
+
+    flex: 0 0 64px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    color: #ffd84d;
+    font-size: 30px;
+    font-weight: 700;
+
+    border: 2px solid rgba(0, 210, 255, 0.75);
+
+    background: rgba(0, 170, 255, 0.08);
+
+    box-shadow:
+        0 0 18px rgba(0, 210, 255, 0.25),
+        inset 0 0 15px rgba(0, 210, 255, 0.08);
+}
+
+/* Text area */
+
+.complete-analysis-title {
+    min-width: 0;
+}
+
+.complete-analysis-title > span {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #ffd84d;
+
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.complete-analysis-title h2 {
+    margin: 0;
+
+    color: #ffffff;
+
+    font-size: clamp(28px, 3vw, 42px);
+    font-weight: 800;
+    line-height: 1.15;
+}
+
+.complete-analysis-title p {
+    margin: 10px 0 0;
+
+    color: rgba(255, 255, 255, 0.78);
+
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+
+/* =========================================
+   MOBILE
+   ========================================= */
+
+@media (max-width: 700px) {
+
+    .complete-analysis-header {
+        gap: 14px;
+        padding: 20px;
+        border-radius: 15px;
+    }
+
+    .complete-analysis-icon {
+        width: 48px;
+        height: 48px;
+        flex-basis: 48px;
+
+        font-size: 23px;
+    }
+
+    .complete-analysis-title > span {
+        font-size: 11px;
+        letter-spacing: 1.5px;
+    }
+
+    .complete-analysis-title h2 {
+        font-size: 25px;
+    }
+
+    .complete-analysis-title p {
+        font-size: 13px;
+        margin-top: 7px;
+    }
+}
+/* =========================================
+   ANALYSIS SECTION HEADINGS
+   ========================================= */
+
+.analysis-section-heading {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    width: 100%;
+    margin: 28px 0 14px;
+    padding: 10px 4px;
+}
+
+.analysis-section-icon {
+    width: 46px;
+    height: 46px;
+
+    flex: 0 0 46px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    color: #ffd84d;
+    font-size: 20px;
+
+    border: 1.5px solid rgba(0, 210, 255, 0.65);
+
+    background: rgba(0, 170, 255, 0.08);
+
+    box-shadow:
+        0 0 15px rgba(0, 200, 255, 0.18);
+}
+
+.analysis-section-title {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.analysis-section-title span {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #ffd84d;
+
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+}
+
+.analysis-section-title h3 {
+    margin: 0;
+
+    color: #ffffff;
+
+    font-size: 25px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+
+/* =========================================
+   MOBILE
+   ========================================= */
+
+@media (max-width: 700px) {
+
+    .analysis-section-heading {
+        gap: 12px;
+        margin: 22px 0 12px;
+    }
+
+    .analysis-section-icon {
+        width: 40px;
+        height: 40px;
+        flex-basis: 40px;
+
+        font-size: 17px;
+    }
+
+    .analysis-section-title span {
+        font-size: 10px;
+        letter-spacing: 1.4px;
+    }
+
+    .analysis-section-title h3 {
+        font-size: 21px;
+    }
+}
+/* =========================================
+   PLANETARY ASPECTS / DRISHTI HEADING
+   ========================================= */
+
+.drishti-heading {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+
+    width: 100%;
+    margin: 30px 0 16px;
+    padding: 8px 6px 14px;
+
+    position: relative;
+}
+
+/* Cyan line underneath heading */
+
+.drishti-heading::after {
+    content: "";
+
+    position: absolute;
+    left: 64px;
+    right: 0;
+    bottom: 0;
+
+    height: 2px;
+
+    background: linear-gradient(
+        90deg,
+        rgba(0, 210, 255, 0.95),
+        rgba(0, 210, 255, 0.25),
+        transparent
+    );
+
+    box-shadow: 0 0 8px rgba(0, 210, 255, 0.35);
+}
+
+
+/* Icon */
+
+.drishti-icon {
+    width: 48px;
+    height: 48px;
+
+    flex: 0 0 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    color: #ffffff;
+
+    font-size: 24px;
+    font-weight: 700;
+
+    border: 2px solid rgba(0, 210, 255, 0.8);
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(0, 190, 255, 0.18),
+            rgba(0, 80, 150, 0.08)
+        );
+
+    box-shadow:
+        0 0 16px rgba(0, 210, 255, 0.22),
+        inset 0 0 12px rgba(0, 210, 255, 0.08);
+}
+
+
+/* Heading text */
+
+.drishti-heading .analysis-section-title {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.drishti-heading .analysis-section-title span {
+    margin-bottom: 4px;
+
+    color: #ffd84d;
+
+    font-size: 13px;
+    font-weight: 800;
+
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.drishti-heading .analysis-section-title h3 {
+    margin: 0;
+
+    color: #ffffff;
+
+    font-size: 30px;
+    font-weight: 800;
+
+    line-height: 1.15;
+
+    letter-spacing: -0.3px;
+}
+
+
+/* =========================================
+   MOBILE
+   ========================================= */
+
+@media (max-width: 700px) {
+
+    .drishti-heading {
+        gap: 13px;
+        margin: 22px 0 13px;
+        padding-bottom: 12px;
+    }
+
+    .drishti-heading::after {
+        left: 53px;
+    }
+
+    .drishti-icon {
+        width: 40px;
+        height: 40px;
+        flex-basis: 40px;
+
+        font-size: 19px;
+    }
+
+    .drishti-heading .analysis-section-title span {
+        font-size: 10px;
+        letter-spacing: 1.5px;
+    }
+
+    .drishti-heading .analysis-section-title h3 {
+        font-size: 23px;
+    }
+}
+/* =====================================================
+   PLANETARY ASPECTS - FINAL HEADING OVERRIDE
+   ===================================================== */
+
+.analysis-panel-heading {
+    display: flex !important;
+    align-items: center !important;
+    gap: 18px !important;
+
+    width: 100% !important;
+    box-sizing: border-box !important;
+
+    margin: 28px 0 16px !important;
+    padding: 10px 6px 16px !important;
+
+    position: relative !important;
+}
+
+
+/* Cyan underline */
+
+.analysis-panel-heading::after {
+    content: "" !important;
+
+    position: absolute !important;
+    left: 64px !important;
+    right: 0 !important;
+    bottom: 0 !important;
+
+    height: 2px !important;
+
+    background: linear-gradient(
+        90deg,
+        #00d9ff 0%,
+        rgba(0, 217, 255, 0.35) 55%,
+        transparent 100%
+    ) !important;
+
+    box-shadow: 0 0 10px rgba(0, 217, 255, 0.4) !important;
+}
+
+
+/* =====================================================
+   ICON
+   ===================================================== */
+
+.analysis-panel-heading .analysis-panel-icon {
+    width: 48px !important;
+    height: 48px !important;
+
+    min-width: 48px !important;
+    flex: 0 0 48px !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    border-radius: 50% !important;
+
+    border: 2px solid #00d9ff !important;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(0, 210, 255, 0.18),
+            rgba(0, 80, 150, 0.08)
+        ) !important;
+
+    color: #ffffff !important;
+
+    font-size: 22px !important;
+
+    box-shadow:
+        0 0 18px rgba(0, 210, 255, 0.25),
+        inset 0 0 15px rgba(0, 210, 255, 0.08) !important;
+}
+
+
+/* =====================================================
+   TEXT CONTAINER
+   ===================================================== */
+
+.analysis-panel-heading > div:last-child {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+
+    min-width: 0 !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+
+/* PLANETARY ASPECTS */
+
+.analysis-panel-heading > div:last-child > span {
+    display: block !important;
+
+    margin: 0 0 4px !important;
+    padding: 0 !important;
+
+    color: #ffd84d !important;
+
+    font-size: 13px !important;
+    font-weight: 800 !important;
+
+    letter-spacing: 2px !important;
+    line-height: 1.2 !important;
+
+    text-transform: uppercase !important;
+}
+
+
+/* DRISHTI ANALYSIS */
+
+.analysis-panel-heading > div:last-child > h3 {
+    display: block !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    color: #ffffff !important;
+
+    font-size: 30px !important;
+    font-weight: 800 !important;
+
+    line-height: 1.15 !important;
+}
+
+
+/* =====================================================
+   MOBILE
+   ===================================================== */
+
+@media (max-width: 700px) {
+
+    .analysis-panel-heading {
+        gap: 13px !important;
+        margin: 22px 0 14px !important;
+        padding: 8px 3px 13px !important;
+    }
+}
+/* =========================================================
+   PREMIUM SECTION HEADING — VIMSHOTTARI DASHA
+   ========================================================= */
+
+.dasha-section-heading {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    padding: 8px 0 24px;
+    margin-bottom: 24px;
+}
+
+.dasha-section-heading .heading-icon {
+    width: 76px;
+    height: 76px;
+    flex: 0 0 76px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 2px solid #12d9ff;
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(18, 217, 255, 0.18),
+            rgba(3, 31, 70, 0.9)
+        );
+
+    color: #ffd95a;
+    font-size: 32px;
+
+    box-shadow:
+        0 0 18px rgba(18, 217, 255, 0.28),
+        inset 0 0 18px rgba(18, 217, 255, 0.08);
+}
+
+.dasha-section-heading .heading-content {
+    min-width: 0;
+}
+
+.dasha-section-heading .heading-label {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #ffd84d;
+
+    font-size: 15px;
+    font-weight: 800;
+
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+.dasha-section-heading h2 {
+    margin: 0;
+
+    color: #ffffff;
+
+    font-family: Georgia, "Times New Roman", serif;
+
+    font-size: clamp(30px, 3vw, 44px);
+    line-height: 1.08;
+    font-weight: 700;
+
+    letter-spacing: -0.5px;
+}
+
+.dasha-section-heading .heading-description {
+    margin: 8px 0 0;
+
+    color: rgba(235, 246, 255, 0.82);
+
+    font-size: 16px;
+    line-height: 1.55;
+}
+
+
+/* Mobile */
+@media (max-width: 700px) {
+
+    .dasha-section-heading {
+        gap: 14px;
+        padding-bottom: 18px;
+    }
+
+    .dasha-section-heading .heading-icon {
+        width: 58px;
+        height: 58px;
+        flex-basis: 58px;
+        font-size: 24px;
+    }
+
+    .dasha-section-heading .heading-label {
+        font-size: 11px;
+        letter-spacing: 2px;
+    }
+
+    .dasha-section-heading h2 {
+        font-size: 27px;
+    }
+
+    .dasha-section-heading .heading-description {
+        font-size: 14px;
+    }
+}
+/* =========================================================
+   PREMIUM SECTION HEADING — IMPORTANT YOGAS
+   ========================================================= */
+
+.yogas-section-heading {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    padding: 8px 0 24px;
+    margin-bottom: 24px;
+}
+
+.yogas-section-heading .heading-icon {
+    width: 76px;
+    height: 76px;
+    flex: 0 0 76px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 2px solid #12d9ff;
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(18, 217, 255, 0.18),
+            rgba(3, 31, 70, 0.9)
+        );
+
+    color: #ffd84d;
+    font-size: 34px;
+
+    box-shadow:
+        0 0 18px rgba(18, 217, 255, 0.28),
+        inset 0 0 18px rgba(18, 217, 255, 0.08);
+}
+
+.yogas-section-heading .heading-content {
+    min-width: 0;
+}
+
+.yogas-section-heading .heading-label {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #ffd84d;
+
+    font-size: 15px;
+    font-weight: 800;
+
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+.yogas-section-heading h2 {
+    margin: 0;
+
+    color: #ffffff;
+
+    font-family: Georgia, "Times New Roman", serif;
+
+    font-size: clamp(30px, 3vw, 44px);
+    line-height: 1.08;
+    font-weight: 700;
+}
+
+.yogas-section-heading .heading-description {
+    margin: 8px 0 0;
+
+    color: rgba(235, 246, 255, 0.82);
+
+    font-size: 16px;
+    line-height: 1.55;
+}
+
+
+/* Decorative line */
+.yogas-section-heading::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    height: 2px;
+
+    background: linear-gradient(
+        90deg,
+        #12d9ff 0%,
+        rgba(18, 217, 255, 0.35) 25%,
+        transparent 70%
+    );
+}
+
+
+/* Mobile */
+@media (max-width: 700px) {
+
+    .yogas-section-heading {
+        gap: 14px;
+        padding-bottom: 18px;
+    }
+
+    .yogas-section-heading .heading-icon {
+        width: 58px;
+        height: 58px;
+        flex-basis: 58px;
+        font-size: 25px;
+    }
+
+    .yogas-section-heading .heading-label {
+        font-size: 11px;
+        letter-spacing: 2px;
+    }
+
+    .yogas-section-heading h2 {
+        font-size: 27px;
+    }
+
+    .yogas-section-heading .heading-description {
+        font-size: 14px;
+    }
+}
+/* =========================================================
+   PREMIUM SECTION HEADING — TWELVE HOUSES
+   ========================================================= */
+
+.houses-section-heading {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    padding: 8px 0 24px;
+    margin-bottom: 24px;
+}
+
+.houses-section-heading .heading-icon {
+    width: 76px;
+    height: 76px;
+    flex: 0 0 76px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 2px solid #12d9ff;
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(18, 217, 255, 0.18),
+            rgba(3, 31, 70, 0.9)
+        );
+
+    color: #ffd84d;
+    font-size: 34px;
+
+    box-shadow:
+        0 0 18px rgba(18, 217, 255, 0.28),
+        inset 0 0 18px rgba(18, 217, 255, 0.08);
+}
+
+.houses-section-heading .heading-content {
+    min-width: 0;
+}
+
+.houses-section-heading .heading-label {
+    display: block;
+    margin-bottom: 5px;
+
+    color: #ffd84d;
+
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+.houses-section-heading h2 {
+    margin: 0;
+
+    color: #ffffff;
+
+    font-family: Georgia, "Times New Roman", serif;
+
+    font-size: clamp(30px, 3vw, 44px);
+    line-height: 1.08;
+    font-weight: 700;
+}
+
+.houses-section-heading .heading-description {
+    margin: 8px 0 0;
+
+    color: rgba(235, 246, 255, 0.82);
+
+    font-size: 16px;
+    line-height: 1.55;
+}
+
+
+/* Mobile */
+@media (max-width: 700px) {
+
+    .houses-section-heading {
+        gap: 14px;
+        padding-bottom: 18px;
+    }
+
+    .houses-section-heading .heading-icon {
+        width: 58px;
+        height: 58px;
+        flex-basis: 58px;
+        font-size: 25px;
+    }
+
+    .houses-section-heading .heading-label {
+        font-size: 11px;
+        letter-spacing: 2px;
+    }
+
+    .houses-section-heading h2 {
+        font-size: 27px;
+    }
+
+    .houses-section-heading .heading-description {
+        font-size: 14px;
+    }
+}
+/* =========================================
+   NORTH INDIAN BIRTH CHART — PREMIUM HEADING
+   ========================================= */
+
+.chart-section h2,
+.chart-section .section-title,
+.chart-section-heading h2 {
+    margin: 0;
+    padding: 0;
+    color: #f7d774;
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    line-height: 1.2;
+    text-align: left;
+
+    text-shadow:
+        0 0 8px rgba(247, 215, 116, 0.18),
+        0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.chart-section h2::before,
+.chart-section .section-title::before,
+.chart-section-heading h2::before {
+    content: "✦";
+    display: inline-block;
+    margin-right: 12px;
+    color: #ffd966;
+    font-size: 0.75em;
+    vertical-align: middle;
+    text-shadow: 0 0 10px rgba(255, 217, 102, 0.55);
+}
+
+/* Subtitle */
+.chart-section h2 + p,
+.chart-section .section-title + p,
+.chart-section-heading h2 + p {
+    margin: 8px 0 0;
+    color: #b9d9f5;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    letter-spacing: 0.2px;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .chart-section h2,
+    .chart-section .section-title,
+    .chart-section-heading h2 {
+        font-size: 1.5rem;
+    }
+
+    .chart-section h2::before,
+    .chart-section .section-title::before,
+    .chart-section-heading h2::before {
+        margin-right: 8px;
+    }
+}
+/* =========================================================
+   AI JYOTISH — ALIGNED DASHBOARD CONTAINER
+   ========================================================= */
+
+.ai-jyotish-card {
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+}
+
+/* ---------- Header ---------- */
+
+.ai-jyotish-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+}
+
+.ai-jyotish-icon {
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    color: #f6d477;
+    background: rgba(246, 212, 119, 0.08);
+    border: 1px solid rgba(246, 212, 119, 0.40);
+
+    font-size: 22px;
+    box-sizing: border-box;
+}
+
+.ai-jyotish-title {
+    min-width: 0;
+}
+
+.ai-jyotish-title .section-eyebrow {
+    display: block;
+    margin: 0 0 3px;
+
+    color: #f1cf70;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+}
+
+.ai-jyotish-title h3 {
+    margin: 0;
+
+    color: #f4d477;
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: .03em;
+}
+
+.ai-jyotish-title p {
+    margin: 4px 0 0;
+
+    color: #91a7c7;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+/* ---------- Divider ---------- */
+
+.ai-jyotish-divider {
+    width: 100%;
+    height: 1px;
+
+    margin: 18px 0;
+
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(246, 212, 119, .35) 20%,
+        rgba(76, 151, 230, .45) 50%,
+        rgba(246, 212, 119, .35) 80%,
+        transparent 100%
+    );
+}
+
+/* ---------- Form ---------- */
+
+.ai-jyotish-form {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* IMPORTANT:
+   Input + Ask AI + response status remain aligned horizontally.
+*/
+
+.ai-jyotish-input-row {
+    display: grid;
+
+    /* One full-width column */
+    grid-template-columns: 1fr;
+
+    /* Question/button on top, answer below */
+    grid-template-rows: auto auto;
+
+    gap: 12px;
+    width: 100%;
+    align-items: stretch;
+}
+.ai-jyotish-input {
+    grid-column: 1;
+    grid-row: 1;
+    width: 100%;
+}
+
+.ai-jyotish-button {
+    grid-column: 1;
+    grid-row: 2;
+    width: 100%;
+}
+
+.ai-jyotish-answer {
+    grid-column: 1;
+    grid-row: 3;
+
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 120px;
+
+    margin: 0;
+    padding: 13px 15px;
+
+    box-sizing: border-box;
+
+    display: block !important;
+
+    color: #dbe7fa;
+    font-size: 12px;
+    line-height: 1.6;
+
+    word-break: normal !important;
+    overflow-wrap: break-word;
+}
+
+
+/* ---------- Question Input ---------- */
+
+.ai-jyotish-input {
+    width: 100%;
+    min-width: 0;
+    height: 50px;
+    min-height: 50px;
+    max-height: 180px;
+
+    padding: 14px 16px;
+
+    box-sizing: border-box;
+    resize: vertical;
+
+    outline: none;
+
+    border-radius: 12px;
+
+    color: #eef4ff;
+    background: rgba(5, 27, 60, .90);
+
+    border: 1px solid rgba(76, 151, 230, .35);
+
+    font-family: inherit;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.ai-jyotish-input::placeholder {
+    color: #7187a6;
+}
+
+.ai-jyotish-input:focus {
+    border-color: rgba(246, 212, 119, .65);
+
+    box-shadow:
+        0 0 0 3px rgba(246, 212, 119, .06);
+}
+
+/* ---------- Ask AI Button ---------- */
+
+.ai-jyotish-button {
+    width: 120px;
+    min-width: 120px;
+    height: 50px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    box-sizing: border-box;
+
+    cursor: pointer;
+}
+
+/* ---------- Response Box ---------- */
+
+.ai-jyotish-answer {
+    width: 100%;
+    min-width: 0;
+    min-height: 50px;
+
+    margin: 0;
+    padding: 13px 15px;
+
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+
+    border-radius: 12px;
+
+    color: #dbe7fa;
+    background: rgba(5, 27, 60, .72);
+
+    border: 1px solid rgba(76, 151, 230, .25);
+
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+/* ---------- When AI is thinking ---------- */
+
+.ai-jyotish-answer.thinking {
+    color: #f4d477;
+    border-color: rgba(246, 212, 119, .35);
+}
+
+/* ---------- AI response content ---------- */
+
+.ai-jyotish-answer p {
+    margin: 0 0 8px;
+}
+
+.ai-jyotish-answer p:last-child {
+    margin-bottom: 0;
+}
+
+/* =========================================================
+   SPECIAL YOGA CARDS — CLEAN ALIGNMENT
+   ========================================================= */
+
+.yoga-card {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.yoga-card-inner {
+    display: grid;
+    grid-template-columns: 275px minmax(0, 1fr);
+
+    align-items: center;
+
+    gap: 30px;
+
+    width: 100%;
+}
+
+.yoga-card-info {
+    min-width: 0;
+}
+
+.yoga-card-description {
+    min-width: 0;
+    line-height: 1.55;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1000px) {
+
+    .ai-jyotish-input-row {
+        grid-template-columns: minmax(0, 1fr) 120px;
+    }
+
+    .ai-jyotish-answer {
+        grid-column: 1 / -1;
+    }
+
+    .yoga-card-inner {
+        grid-template-columns: 220px minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 700px) {
+
+    .ai-jyotish-header {
+        gap: 12px;
+    }
+
+    .ai-jyotish-icon {
+        width: 42px;
+        height: 42px;
+        min-width: 42px;
+    }
+
+    .ai-jyotish-title h3 {
+        font-size: 19px;
+    }
+
+    .ai-jyotish-title p {
+        font-size: 11px;
+    }
+
+    .ai-jyotish-input-row {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .ai-jyotish-input {
+        width: 100%;
+        height: 50px;
+    }
+
+    .ai-jyotish-button {
+        width: 100%;
+    }
+
+    .ai-jyotish-answer {
+        width: 100%;
+        min-height: 50px;
+    }
+
+    .yoga-card-inner {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+}
+/* =========================================================
+   AI JYOTISH THINKING ANIMATION
+   ========================================================= */
+
+.ai-thinking {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 13px;
+
+    width: 100%;
+    min-height: 50px;
+
+    box-sizing: border-box;
+}
+
+/* ---------- Orbit Icon ---------- */
+
+.ai-orbit {
+    position: relative;
+
+    width: 34px;
+    height: 34px;
+
+    flex-shrink: 0;
+
+    border: 1px solid rgba(246, 212, 119, .65);
+    border-radius: 50%;
+
+    animation: aiOrbitRotate 4s linear infinite;
+
+    box-shadow:
+        0 0 10px rgba(246, 212, 119, .12);
+}
+
+.ai-orbit::before,
+.ai-orbit::after {
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 23px;
+    height: 10px;
+
+    border: 1px solid rgba(246, 212, 119, .45);
+    border-radius: 50%;
+
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.ai-orbit::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.ai-orbit span {
+    position: absolute;
+
+    width: 5px;
+    height: 5px;
+
+    border-radius: 50%;
+
+    background: #f6d477;
+
+    box-shadow: 0 0 8px rgba(246, 212, 119, .8);
+}
+
+.ai-orbit span:nth-child(1) {
+    top: 2px;
+    left: 14px;
+
+    animation: aiStarPulse 1.4s ease-in-out infinite;
+}
+
+.ai-orbit span:nth-child(2) {
+    right: 2px;
+    bottom: 8px;
+
+    animation: aiStarPulse 1.4s ease-in-out .35s infinite;
+}
+
+.ai-orbit span:nth-child(3) {
+    left: 4px;
+    bottom: 6px;
+
+    animation: aiStarPulse 1.4s ease-in-out .7s infinite;
+}
+
+
+/* ---------- Text ---------- */
+
+.ai-thinking-text {
+    display: flex;
+    align-items: center;
+
+    gap: 4px;
+
+    color: #c9d8ed;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.ai-thinking-text > span {
+    white-space: nowrap;
+}
+
+
+/* ---------- Three Dots ---------- */
+
+.ai-dots {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 3px;
+    margin-left: 2px;
+}
+
+.ai-dots i {
+    display: block;
+
+    width: 4px;
+    height: 4px;
+
+    border-radius: 50%;
+
+    background: #f6d477;
+
+    box-shadow:
+        0 0 7px rgba(246, 212, 119, .7);
+
+    animation: aiDotBounce 1.2s ease-in-out infinite;
+}
+
+.ai-dots i:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.ai-dots i:nth-child(2) {
+    animation-delay: .18s;
+}
+
+.ai-dots i:nth-child(3) {
+    animation-delay: .36s;
+}
+
+
+/* ---------- Animations ---------- */
+
+@keyframes aiOrbitRotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes aiStarPulse {
+    0%,
+    100% {
+        opacity: .35;
+        transform: scale(.75);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.25);
+    }
+}
+
+@keyframes aiDotBounce {
+    0%,
+    60%,
+    100% {
+        transform: translateY(0);
+        opacity: .35;
+    }
+
+    30% {
+        transform: translateY(-4px);
+        opacity: 1;
+    }
+}
+.ai-jyotish-answer {
+    width: 100%;
+    min-width: 0;
+    min-height: 50px;
+
+    margin: 0;
+    padding: 0;
+
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+
+    color: #dbe7fa;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+/* =========================================
+   AI THINKING / WAITING STATE
+   No JavaScript changes required
+   ========================================= */
+
+.ai-jyotish-answer.is-loading {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+
+    position: relative;
+}
+
+/* Hide the existing "Please wait..." text */
+.ai-jyotish-answer.is-loading {
+    font-size: 0;
+}
+
+/* Create animated waiting text */
+.ai-jyotish-answer.is-loading::before {
+    content: "Please wait";
+
+    font-size: 12px;
+    font-weight: 600;
+    color: #dbe7fa;
+
+    white-space: nowrap;
+
+    animation: aiWaitingText 1.5s infinite;
+}
+
+/* Animated dots */
+.ai-jyotish-answer.is-loading::after {
+    content: "";
+
+    position: absolute;
+
+    margin-left: 70px;
+
+    width: 18px;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    color: #f6d477;
+
+    animation: aiWaitingDots 1.5s steps(4, end) infinite;
+}
+
+
+/* Text glow/pulse */
+@keyframes aiWaitingText {
+
+    0%,
+    100% {
+        opacity: .55;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+
+/* Dots animation */
+
+@keyframes aiWaitingDots {
+
+    0% {
+        content: "";
+    }
+
+    25% {
+        content: ".";
+    }
+
+    50% {
+        content: "..";
+    }
+
+    75%,
+    100% {
+        content: "...";
+    }
+}

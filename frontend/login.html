@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <meta
+        name="description"
+        content="Sign in to AI Jyotish and access your Vedic astrology dashboard and Kundli."
+    >
+
+    <meta name="theme-color" content="#06101f">
+
+    <title>Sign In — AI Jyotish</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/cosmic.css">
+    <link rel="stylesheet" href="css/responsive.css">
+
+    <style>
+        :root {
+            --bg: #06101f;
+            --bg-2: #091a2f;
+            --card: rgba(10, 27, 48, .82);
+            --border: rgba(232, 177, 76, .18);
+            --gold: #e8b14c;
+            --gold-light: #f4d58e;
+            --text: #f4f7fb;
+            --muted: #8d9db2;
+            --input: rgba(255,255,255,.035);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            min-height: 100%;
+        }
+
+        body.auth-page {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--text);
+            background:
+                radial-gradient(
+                    circle at 15% 20%,
+                    rgba(55, 117, 203, .16),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 85% 80%,
+                    rgba(232, 177, 76, .09),
+                    transparent 28%
+                ),
+                linear-gradient(
+                    145deg,
+                    #06101f 0%,
+                    #09182b 52%,
+                    #06101f 100%
+                );
+            overflow-x: hidden;
+        }
+
+        body.auth-page::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            opacity: .3;
+            background-image:
+                radial-gradient(circle, rgba(255,255,255,.65) 0 1px, transparent 1.5px),
+                radial-gradient(circle, rgba(232,177,76,.4) 0 1px, transparent 1.5px);
+            background-size: 150px 150px, 240px 240px;
+            background-position: 20px 30px, 90px 80px;
+        }
+
+        .auth-shell {
+            width: min(1120px, calc(100% - 32px));
+            min-height: 100vh;
+            margin: 0 auto;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+        }
+
+        /* ---------------------------------------------------------
+           HEADER
+           --------------------------------------------------------- */
+
+        .auth-header {
+            padding: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .auth-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .auth-brand-icon {
+            width: 39px;
+            height: 39px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            color: #091423;
+            font-size: 18px;
+            background:
+                radial-gradient(
+                    circle at 35% 30%,
+                    #fff2bd 0 8%,
+                    transparent 9%
+                ),
+                linear-gradient(145deg, #f6d88e, #d79536);
+            box-shadow:
+                0 0 25px rgba(232,177,76,.2),
+                inset 0 1px 0 rgba(255,255,255,.45);
+        }
+
+        .auth-brand-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.05;
+        }
+
+        .auth-brand-name {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .auth-brand-subtitle {
+            margin-top: 4px;
+            color: #77899f;
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: .13em;
+            text-transform: uppercase;
+        }
+
+        .back-home {
+            color: #8293a9;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 550;
+            transition: color .2s ease;
+        }
+
+        .back-home:hover {
+            color: #fff;
+        }
+
+        /* ---------------------------------------------------------
+           MAIN
+           --------------------------------------------------------- */
+
+        .auth-main {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(360px, 440px);
+            align-items: center;
+            gap: 70px;
+            padding: 35px 0 65px;
+        }
+
+        /* Left information */
+
+        .auth-intro {
+            max-width: 520px;
+        }
+
+        .auth-kicker {
+            width: fit-content;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #dcb56a;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: .13em;
+            text-transform: uppercase;
+        }
+
+        .auth-kicker::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--gold);
+            box-shadow: 0 0 12px rgba(232,177,76,.7);
+        }
+
+        .auth-intro h1 {
+            margin: 17px 0 14px;
+            max-width: 540px;
+            font-size: clamp(35px, 5vw, 57px);
+            line-height: 1.02;
+            letter-spacing: -.05em;
+        }
+
+        .auth-intro h1 span {
+            color: var(--gold-light);
+            background: linear-gradient(135deg, #fff0b5, #dda544);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .auth-intro > p {
+            max-width: 500px;
+            margin: 0;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.75;
+        }
+
+        .auth-highlights {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            max-width: 470px;
+            margin-top: 28px;
+        }
+
+        .highlight {
+            padding: 13px 14px;
+            border: 1px solid rgba(255,255,255,.065);
+            border-radius: 11px;
+            background: rgba(255,255,255,.018);
+        }
+
+        .highlight strong {
+            display: block;
+            margin-bottom: 4px;
+            color: #cbd5e2;
+            font-size: 11px;
+            font-weight: 650;
+        }
+
+        .highlight span {
+            color: #718399;
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+        /* ---------------------------------------------------------
+           LOGIN CARD
+           --------------------------------------------------------- */
+
+        .auth-card {
+            position: relative;
+            padding: 31px;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(17, 40, 67, .82),
+                    rgba(7, 20, 36, .9)
+                );
+            box-shadow:
+                0 25px 70px rgba(0,0,0,.28),
+                inset 0 1px 0 rgba(255,255,255,.035);
+            backdrop-filter: blur(18px);
+        }
+
+        .auth-card::before {
+            content: "";
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            top: -60px;
+            right: -50px;
+            border-radius: 50%;
+            background: rgba(232,177,76,.07);
+            filter: blur(15px);
+            pointer-events: none;
+        }
+
+        .auth-card-header {
+            margin-bottom: 25px;
+        }
+
+        .auth-card-header h2 {
+            margin: 0 0 7px;
+            font-size: 23px;
+            letter-spacing: -.025em;
+        }
+
+        .auth-card-header p {
+            margin: 0;
+            color: #7f91a8;
+            font-size: 11px;
+            line-height: 1.55;
+        }
+
+        /* ---------------------------------------------------------
+           FORM
+           --------------------------------------------------------- */
+
+        #loginForm {
+            display: flex;
+            flex-direction: column;
+            gap: 17px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .field label {
+            color: #b6c2d1;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .field input {
+            width: 100%;
+            height: 45px;
+            padding: 0 13px;
+            border: 1px solid rgba(255,255,255,.09);
+            border-radius: 9px;
+            outline: none;
+            color: #edf2f8;
+            background: var(--input);
+            font: inherit;
+            font-size: 12px;
+            transition:
+                border-color .2s ease,
+                background .2s ease,
+                box-shadow .2s ease;
+        }
+
+        .field input::placeholder {
+            color: #596c83;
+        }
+
+        .field input:hover {
+            border-color: rgba(255,255,255,.14);
+        }
+
+        .field input:focus {
+            border-color: rgba(232,177,76,.52);
+            background: rgba(255,255,255,.045);
+            box-shadow: 0 0 0 3px rgba(232,177,76,.08);
+        }
+
+        .password-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .forgot-link {
+            color: #b69457;
+            font-size: 10px;
+            text-decoration: none;
+        }
+
+        .forgot-link:hover {
+            color: #e5c47f;
+        }
+
+        .login-submit {
+            width: 100%;
+            min-height: 45px;
+            margin-top: 3px;
+            border: 0;
+            border-radius: 9px;
+            cursor: pointer;
+            color: #071321;
+            background: linear-gradient(135deg, #f5d991, #d79a3b);
+            box-shadow: 0 10px 25px rgba(215,154,59,.17);
+            font: inherit;
+            font-size: 12px;
+            font-weight: 750;
+            transition:
+                transform .2s ease,
+                box-shadow .2s ease,
+                opacity .2s ease;
+        }
+
+        .login-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 14px 30px rgba(215,154,59,.24);
+        }
+
+        .login-submit:active {
+            transform: translateY(0);
+        }
+
+        .login-submit:disabled {
+            cursor: not-allowed;
+            opacity: .62;
+            transform: none;
+        }
+
+        #loginMessage {
+            min-height: 18px;
+            margin: -3px 0 0;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .auth-divider {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            margin: 22px 0;
+            color: #52657c;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+        }
+
+        .auth-divider::before,
+        .auth-divider::after {
+            content: "";
+            height: 1px;
+            flex: 1;
+            background: rgba(255,255,255,.06);
+        }
+
+        .register-prompt {
+            margin: 0;
+            text-align: center;
+            color: #718399;
+            font-size: 11px;
+        }
+
+        .register-prompt a {
+            color: #dfb35f;
+            text-decoration: none;
+            font-weight: 650;
+        }
+
+        .register-prompt a:hover {
+            color: #f0cf84;
+        }
+
+        .auth-security {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 19px;
+            color: #566a81;
+            font-size: 9px;
+        }
+
+        .auth-security span {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* ---------------------------------------------------------
+           FOOTER
+           --------------------------------------------------------- */
+
+        .auth-footer {
+            padding: 20px 0 25px;
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            border-top: 1px solid rgba(255,255,255,.05);
+            color: #596c83;
+            font-size: 9px;
+        }
+
+        /* ---------------------------------------------------------
+           RESPONSIVE
+           --------------------------------------------------------- */
+
+        @media (max-width: 850px) {
+            .auth-main {
+                grid-template-columns: 1fr;
+                gap: 35px;
+                padding-top: 35px;
+            }
+
+            .auth-intro {
+                max-width: 620px;
+                text-align: center;
+                margin-inline: auto;
+            }
+
+            .auth-kicker {
+                margin-inline: auto;
+            }
+
+            .auth-intro > p {
+                margin-inline: auto;
+            }
+
+            .auth-highlights {
+                margin-inline: auto;
+            }
+
+            .auth-card {
+                width: min(440px, 100%);
+                margin-inline: auto;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .auth-shell {
+                width: min(100% - 24px, 1120px);
+            }
+
+            .auth-header {
+                padding: 14px 0;
+            }
+
+            .auth-brand-icon {
+                width: 35px;
+                height: 35px;
+                border-radius: 10px;
+            }
+
+            .auth-brand-name {
+                font-size: 14px;
+            }
+
+            .auth-brand-subtitle {
+                font-size: 8px;
+            }
+
+            .back-home {
+                font-size: 10px;
+            }
+
+            .auth-main {
+                padding: 28px 0 45px;
+            }
+
+            .auth-intro h1 {
+                font-size: 38px;
+            }
+
+            .auth-intro > p {
+                font-size: 12px;
+            }
+
+            .auth-highlights {
+                grid-template-columns: 1fr;
+                text-align: left;
+            }
+
+            .auth-card {
+                padding: 23px 19px;
+                border-radius: 15px;
+            }
+
+            .auth-card-header h2 {
+                font-size: 21px;
+            }
+
+            .auth-footer {
+                flex-direction: column;
+                gap: 7px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                transition-duration: .01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="auth-page">
+
+<div class="auth-shell">
+
+    <!-- =========================================================
+         HEADER
+         ========================================================= -->
+    <header class="auth-header">
+
+        <a class="auth-brand" href="index.html">
+            <span class="auth-brand-icon" aria-hidden="true">✦</span>
+
+            <span class="auth-brand-text">
+                <span class="auth-brand-name">AI Jyotish</span>
+                <span class="auth-brand-subtitle">Vedic Astrology</span>
+            </span>
+        </a>
+
+        <a class="back-home" href="index.html">
+            ← Back to home
+        </a>
+
+    </header>
+
+
+    <!-- =========================================================
+         MAIN
+         ========================================================= -->
+    <main class="auth-main">
+
+        <!-- Intro -->
+        <section class="auth-intro">
+
+            <div class="auth-kicker">
+                Welcome back
+            </div>
+
+            <h1>
+                Return to your
+                <span>cosmic journey.</span>
+            </h1>
+
+            <p>
+                Sign in to continue exploring your Kundli, planetary
+                placements, Nakshatra, Dashas, Yogas and personalized
+                AI-powered astrological insights.
+            </p>
+
+            <div class="auth-highlights">
+
+                <div class="highlight">
+                    <strong>Personal Kundli</strong>
+                    <span>Your calculated Vedic birth chart in one place.</span>
+                </div>
+
+                <div class="highlight">
+                    <strong>Detailed Analysis</strong>
+                    <span>Explore planets, houses, Dashas and Yogas.</span>
+                </div>
+
+                <div class="highlight">
+                    <strong>AI Astrology</strong>
+                    <span>Ask questions using your chart context.</span>
+                </div>
+
+                <div class="highlight">
+                    <strong>Private Account</strong>
+                    <span>Access your saved astrology experience securely.</span>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Login -->
+        <section class="auth-card" aria-labelledby="loginTitle">
+
+            <div class="auth-card-header">
+                <h2 id="loginTitle">Sign in</h2>
+
+                <p>
+                    Enter your account details to access your dashboard.
+                </p>
+            </div>
+
+
+            <form id="loginForm" novalidate>
+
+                <div class="field">
+                    <label for="email">
+                        Email address
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        autocomplete="email"
+                        placeholder="you@example.com"
+                        required
+                    >
+                </div>
+
+
+                <div class="field">
+
+                    <div class="password-row">
+                        <label for="password">
+                            Password
+                        </label>
+
+                        <a
+                            class="forgot-link"
+                            href="#"
+                            onclick="return false;"
+                            aria-label="Password recovery"
+                        >
+                            Forgot password?
+                        </a>
+                    </div>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        autocomplete="current-password"
+                        placeholder="Enter your password"
+                        required
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    id="loginButton"
+                    class="login-submit"
+                >
+                    Sign in to AI Jyotish
+                </button>
+
+
+                <div
+                    id="loginMessage"
+                    role="status"
+                    aria-live="polite"
+                ></div>
+
+            </form>
+
+
+            <div class="auth-divider">
+                <span>AI Jyotish</span>
+            </div>
+
+
+            <p class="register-prompt">
+                Don't have an account?
+                <a href="register.html">Create one</a>
+            </p>
+
+
+            <div class="auth-security">
+                <span>✦ Secure account</span>
+                <span>✦ Vedic calculations</span>
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================================================
+         FOOTER
+         ========================================================= -->
+    <footer class="auth-footer">
+
+        <span>
+            © <span id="currentYear"></span> AI Jyotish
+        </span>
+
+        <span>
+            Astrology is for guidance and personal reflection.
+        </span>
+
+    </footer>
+
+</div>
+
+
+<!-- =============================================================
+     APPLICATION SCRIPTS
+     ============================================================= -->
+
+<script>
+    (function () {
+        const year = document.getElementById("currentYear");
+
+        if (year) {
+            year.textContent = new Date().getFullYear();
+        }
+    })();
+</script>
+
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/script.js"></script>
+
+</body>
+</html>

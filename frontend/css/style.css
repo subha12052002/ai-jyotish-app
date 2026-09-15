@@ -1,803 +1,4088 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+/* =========================================================
+   AI JYOTISH
+   Premium Cosmic Blue + Vedic Gold Design System
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Serif+Devanagari:wght@400;500;600&display=swap');
 
 :root {
-    --bg: #f7f4ed;
-    --card: #fffdf8;
-    --text: #201b16;
-    --muted: #756d63;
-    --line: #ddd5c9;
-    --accent: #8b5e34;
-    --accent-dark: #5e3b1f;
-    --gold: #b58a48;
+    /* Core colors */
+    --blue-950: #020817;
+    --blue-900: #06132d;
+    --blue-850: #081a3a;
+    --blue-800: #0a2148;
+    --blue-750: #0c2b5c;
+    --blue-700: #10366f;
+    --blue-600: #1454a6;
+    --blue-500: #1c6bd6;
+    --blue-400: #3b82f6;
+
+    /* Vedic gold */
+    --gold-100: #fff8dc;
+    --gold-200: #fceca7;
+    --gold-300: #f7d774;
+    --gold-400: #e9bd4b;
+    --gold-500: #d9a52e;
+    --gold-600: #b98219;
+    --gold-700: #8b5e12;
+
+    /* Text */
+    --text-primary: #f7f9ff;
+    --text-secondary: #c8d3e8;
+    --text-muted: #8d9bb5;
+    --text-dark: #17233b;
+
+    /* Surfaces */
+    --surface: rgba(8, 27, 59, 0.88);
+    --surface-light: rgba(255, 255, 255, 0.96);
+    --surface-soft: rgba(14, 44, 91, 0.72);
+    --surface-hover: rgba(21, 66, 130, 0.82);
+
+    /* Borders */
+    --border: rgba(110, 161, 231, 0.22);
+    --border-gold: rgba(233, 189, 75, 0.42);
+
+    /* Status */
+    --success: #3ddc97;
+    --danger: #ff6b6b;
+    --warning: #ffd166;
+
+    /* Shadows */
+    --shadow-sm: 0 5px 18px rgba(0, 0, 0, 0.18);
+    --shadow-md: 0 12px 35px rgba(0, 0, 0, 0.28);
+    --shadow-lg: 0 22px 65px rgba(0, 0, 0, 0.38);
+
+    /* Radius */
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --radius-xl: 28px;
+
+    /* Layout */
+    --container: 1240px;
+    --nav-height: 72px;
+
+    /* Typography */
+    --font-body: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-heading: 'Cinzel', Georgia, serif;
+    --font-devanagari: 'Noto Serif Devanagari', serif;
+
+    /* Transitions */
+    --transition: 180ms ease;
+}
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    font-size: 16px;
 }
 
 body {
-    font-family: Georgia, "Times New Roman", serif;
-    background: var(--bg);
-    color: var(--text);
+    margin: 0;
+    min-height: 100vh;
+
+    font-family: var(--font-body);
+    color: var(--text-primary);
+
+    background:
+        radial-gradient(
+            circle at 50% -10%,
+            rgba(29, 91, 177, 0.30),
+            transparent 38%
+        ),
+        linear-gradient(
+            180deg,
+            #020817 0%,
+            #04132d 42%,
+            #061a39 100%
+        );
+
     line-height: 1.6;
+    overflow-x: hidden;
 }
 
-a {
-    text-decoration: none;
-    color: inherit;
+body::selection {
+    background: var(--gold-400);
+    color: #081225;
+}
+
+img {
+    display: block;
+    max-width: 100%;
 }
 
 button,
 input,
-select {
+select,
+textarea {
     font: inherit;
 }
 
-
-/* =========================
-   NAVBAR
-========================= */
-
-.navbar {
-    border-bottom: 1px solid var(--line);
-    background: rgba(255, 253, 248, 0.95);
-}
-
-.nav-container {
-    max-width: 1180px;
-    margin: auto;
-    min-height: 76px;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    padding: 0 24px;
-}
-
-.brand {
-    font-size: 25px;
-    font-weight: bold;
-}
-
-.nav-links {
-    display: flex;
-    align-items: center;
-    gap: 28px;
-}
-
-.nav-links a {
-    color: #4c453d;
-}
-
-.nav-button {
-    padding: 11px 18px;
-    border: 1px solid var(--line);
-    border-radius: 30px;
-}
-
-
-/* =========================
-   HERO
-========================= */
-
-.hero {
-    max-width: 1180px;
-    min-height: 620px;
-    margin: auto;
-
-    padding: 90px 24px;
-
-    display: grid;
-    grid-template-columns: 1.3fr 0.7fr;
-    align-items: center;
-    gap: 70px;
-}
-
-.eyebrow {
-    letter-spacing: 3px;
-    font-size: 12px;
-    font-weight: bold;
-    color: var(--accent);
-    margin-bottom: 12px;
-}
-
-.hero h1 {
-    font-size: clamp(48px, 7vw, 82px);
-    line-height: 1.05;
-    margin-bottom: 28px;
-}
-
-.hero h1 span {
-    display: block;
-    color: var(--accent);
-}
-
-.hero-text {
-    max-width: 650px;
-    color: var(--muted);
-    font-size: 18px;
-    margin-bottom: 35px;
-}
-
-.primary-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-
-    background: var(--accent-dark);
-    color: white;
-
-    border: 0;
-    border-radius: 8px;
-
-    padding: 15px 24px;
-
+button {
     cursor: pointer;
-
-    transition: 0.2s;
 }
 
-.primary-button:hover {
-    transform: translateY(-2px);
-    opacity: 0.92;
+a {
+    color: inherit;
+    text-decoration: none;
 }
 
-.hero-card {
-    min-height: 390px;
-
-    border: 1px solid var(--line);
-    background: var(--card);
-
-    border-radius: 18px;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    text-align: center;
-
-    box-shadow: 0 20px 50px rgba(80, 55, 30, 0.08);
+ul,
+ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
 }
 
-.hero-symbol {
-    font-size: 80px;
-    color: var(--gold);
-    margin-bottom: 20px;
-}
+/* =========================================================
+   COMMON
+   ========================================================= */
 
-.hero-card h3 {
-    font-size: 28px;
-}
-
-.hero-card p {
-    color: var(--muted);
-}
-
-.mini-orbit {
-    display: flex;
-    gap: 18px;
-    margin-top: 35px;
-    font-size: 26px;
-    color: var(--accent);
-}
-
-
-/* =========================
-   FEATURES
-========================= */
-
-.features {
-    max-width: 1180px;
-    margin: auto;
-    padding: 80px 24px;
-}
-
-.center {
-    text-align: center;
-}
-
-.section-heading {
-    margin-bottom: 35px;
-}
-
-.section-heading h2 {
-    font-size: 42px;
-    line-height: 1.15;
-    margin-bottom: 8px;
-}
-
-.section-heading p:not(.eyebrow) {
-    color: var(--muted);
-}
-
-.feature-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 18px;
-}
-
-.feature-card {
-    padding: 28px;
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-}
-
-.feature-icon {
-    font-size: 32px;
-    color: var(--gold);
-    margin-bottom: 20px;
-}
-
-.feature-card h3 {
-    margin-bottom: 8px;
-}
-
-.feature-card p {
-    color: var(--muted);
-}
-
-
-/* =========================
-   FORM
-========================= */
-
-.form-page {
-    max-width: 760px;
-    margin: auto;
-    padding: 70px 24px;
-}
-
-.form-card {
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 18px;
-    padding: 45px;
-    box-shadow: 0 20px 50px rgba(80, 55, 30, 0.08);
-}
-
-.form-heading {
-    margin-bottom: 35px;
-}
-
-.form-heading h1 {
-    font-size: 48px;
-    margin-bottom: 10px;
-}
-
-.form-heading p:not(.eyebrow) {
-    color: var(--muted);
-}
-
-.form-group {
-    margin-bottom: 22px;
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 18px;
-}
-
-label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 8px;
-}
-
-input,
-select {
-    width: 100%;
-    padding: 14px 15px;
-
-    background: white;
-
-    border: 1px solid var(--line);
-    border-radius: 8px;
-
-    outline: none;
-}
-
-input:focus,
-select:focus {
-    border-color: var(--accent);
-}
-
-small {
-    display: block;
-    color: var(--muted);
-    margin-top: 5px;
-}
-
-.full-button {
-    width: 100%;
-    margin-top: 10px;
-}
-
-.form-error {
-    color: #a52c2c;
-    margin-bottom: 10px;
+.container {
+    width: min(calc(100% - 40px), var(--container));
+    margin-inline: auto;
 }
 
 .hidden {
     display: none !important;
 }
 
-.loader {
-    color: white;
-}
-
-
-/* =========================
-   KUNDLI PAGE
-========================= */
-
-.page-container {
-    max-width: 1180px;
-    margin: auto;
-    padding: 55px 24px 100px;
-}
-
-.profile-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: 30px;
-
-    margin-bottom: 50px;
-}
-
-.profile-header h1 {
-    font-size: 52px;
-}
-
-.person-info {
-    color: var(--muted);
-}
-
-.profile-badges {
-    display: flex;
-    gap: 12px;
-}
-
-.badge {
-    min-width: 120px;
-    padding: 14px;
-
-    border: 1px solid var(--line);
-    background: var(--card);
-
-    border-radius: 10px;
-
+.text-center {
     text-align: center;
 }
 
-.badge span {
-    display: block;
-    font-size: 10px;
-    letter-spacing: 2px;
-    color: var(--muted);
+.text-gold {
+    color: var(--gold-300);
 }
 
-.badge strong {
-    display: block;
-    margin-top: 5px;
-    color: var(--accent-dark);
+.muted {
+    color: var(--text-muted);
 }
 
-
-/* =========================
-   SECTIONS
-========================= */
-
-.section {
-    margin-top: 70px;
+.gold {
+    color: var(--gold-300);
 }
 
-
-/* =========================
-   TWO CHARTS
-========================= */
-
-.charts-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 25px;
+.blue {
+    color: #72aaff;
 }
 
-.chart-card {
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 18px;
-    padding: 20px;
+/* =========================================================
+   COSMIC PAGE
+   ========================================================= */
 
-    overflow: hidden;
+.cosmic-page {
+    min-height: 100vh;
+    position: relative;
+    isolation: isolate;
+
+    background:
+        radial-gradient(
+            ellipse at 15% 20%,
+            rgba(21, 78, 151, 0.16),
+            transparent 35%
+        ),
+        radial-gradient(
+            ellipse at 85% 30%,
+            rgba(20, 74, 143, 0.13),
+            transparent 34%
+        );
 }
 
-.chart-title {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+/* =========================================================
+   NAVBAR
+   ========================================================= */
 
-    padding: 5px 10px 18px;
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 
-    border-bottom: 1px solid var(--line);
+    height: var(--nav-height);
+
+    background: rgba(2, 10, 27, 0.92);
+    border-bottom: 1px solid rgba(112, 160, 226, 0.18);
+
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    box-shadow:
+        0 4px 25px rgba(0, 0, 0, 0.20);
 }
 
-.chart-title span {
-    font-size: 12px;
-    letter-spacing: 2px;
-    font-weight: bold;
-    color: var(--muted);
-}
-
-.chart-title strong {
-    color: var(--accent-dark);
-}
-
-
-/* =========================
-   NORTH INDIAN CHART
-========================= */
-
-.kundli-chart {
-    width: 100%;
-    max-width: 560px;
-    aspect-ratio: 1;
-    margin: auto;
-    padding: 12px;
-}
-
-.kundli-svg {
-    width: 100%;
+.nav-container {
+    width: min(calc(100% - 40px), var(--container));
     height: 100%;
-    display: block;
+    margin-inline: auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
 }
 
-.chart-border {
-    fill: #fffdf8;
-    stroke: #806848;
-    stroke-width: 2;
+.logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 11px;
+
+    flex-shrink: 0;
 }
 
-.chart-line {
-    fill: none;
-    stroke: #806848;
-    stroke-width: 1.5;
-}
+.logo-symbol {
+    width: 42px;
+    height: 42px;
 
-.chart-center {
-    fill: #fbf8f0;
-}
-
-.chart-house-number {
-    font-family: Georgia, serif;
-    font-size: 15px;
-    fill: #9b6e36;
-    text-anchor: middle;
-    dominant-baseline: middle;
-    font-weight: bold;
-}
-
-.chart-planet {
-    font-family: Georgia, serif;
-    font-size: 13px;
-    fill: #211b16;
-    text-anchor: middle;
-    dominant-baseline: middle;
-    font-weight: bold;
-}
-
-
-/* =========================
-   QUICK CARDS
-========================= */
-
-.quick-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
+    place-items: center;
 
-    margin-top: 25px;
+    border-radius: 50%;
+
+    color: var(--gold-300);
+    font-size: 23px;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(233, 189, 75, 0.16),
+            rgba(8, 29, 63, 0.9)
+        );
+
+    border: 1px solid var(--border-gold);
+
+    box-shadow:
+        0 0 20px rgba(233, 189, 75, 0.12),
+        inset 0 0 15px rgba(233, 189, 75, 0.05);
 }
 
-.info-card {
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 12px;
+.logo-text {
+    font-family: var(--font-heading);
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
 
+    color: #fff;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.nav-links a {
+    position: relative;
+
+    padding: 9px 14px;
+
+    color: #bdcbe2;
+    font-size: 14px;
+    font-weight: 500;
+
+    border-radius: 8px;
+
+    transition:
+        color var(--transition),
+        background var(--transition);
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: #fff;
+    background: rgba(33, 91, 169, 0.24);
+}
+
+.nav-links a.active::after {
+    content: '';
+
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 3px;
+
+    height: 2px;
+    border-radius: 10px;
+
+    background: var(--gold-400);
+}
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+.btn {
+    min-height: 42px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 9px 18px;
+
+    border: 1px solid transparent;
+    border-radius: 9px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    transition:
+        transform var(--transition),
+        background var(--transition),
+        border-color var(--transition),
+        box-shadow var(--transition);
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn-primary {
+    color: #071427;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f8da79,
+            #d9a52e
+        );
+
+    border-color: #f0c85b;
+
+    box-shadow:
+        0 7px 22px rgba(211, 163, 45, 0.20);
+}
+
+.btn-primary:hover {
+    box-shadow:
+        0 10px 30px rgba(211, 163, 45, 0.32);
+}
+
+.btn-outline {
+    color: #dce8ff;
+
+    background: rgba(12, 38, 78, 0.48);
+    border-color: rgba(121, 168, 231, 0.35);
+}
+
+.btn-outline:hover {
+    background: rgba(25, 69, 132, 0.60);
+    border-color: rgba(233, 189, 75, 0.45);
+}
+
+.btn-small {
+    min-height: 36px;
+    padding: 7px 13px;
+    font-size: 13px;
+}
+
+.btn-large {
+    min-height: 48px;
+    padding: 11px 24px;
+    font-size: 15px;
+}
+
+/* =========================================================
+   HEADINGS
+   ========================================================= */
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+    margin: 0;
+    color: #fff;
+    line-height: 1.25;
+}
+
+h1,
+h2 {
+    font-family: var(--font-heading);
+}
+
+.section-heading {
+    margin-bottom: 26px;
+}
+
+.section-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    margin-bottom: 9px;
+
+    color: var(--gold-300);
+
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.section-symbol {
+    color: var(--gold-300);
+    font-size: 18px;
+}
+
+.section-heading h1 {
+    font-size: clamp(28px, 4vw, 42px);
+}
+
+.section-heading h2 {
+    font-size: clamp(23px, 3vw, 32px);
+}
+
+.section-heading p {
+    max-width: 680px;
+    margin: 9px 0 0;
+
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+/* =========================================================
+   CARDS
+   ========================================================= */
+
+.glass-card,
+.cosmic-card {
+    background:
+        linear-gradient(
+            145deg,
+            rgba(11, 37, 77, 0.91),
+            rgba(5, 22, 48, 0.91)
+        );
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-md);
+
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+
+.glass-card {
+    padding: 24px;
+}
+
+.cosmic-card {
     padding: 22px;
 }
 
-.card-label {
+.glass-card:hover,
+.cosmic-card:hover {
+    border-color: rgba(102, 154, 225, 0.32);
+}
+
+/* =========================================================
+   FORMS
+   ========================================================= */
+
+.form-group {
+    margin-bottom: 17px;
+}
+
+.form-group label {
     display: block;
-    font-size: 12px;
-    color: var(--muted);
+
     margin-bottom: 7px;
+
+    color: #d8e3f6;
+
+    font-size: 13px;
+    font-weight: 600;
 }
 
-.info-card strong {
-    display: block;
-    font-size: 24px;
+.input-wrapper {
+    position: relative;
 }
 
+.input-wrapper input,
+.input-wrapper select,
+.input-wrapper textarea,
+input.form-input,
+select.form-input,
+textarea.form-input {
+    width: 100%;
 
-/* =========================
-   TABLE
-========================= */
+    min-height: 46px;
 
-.table-card {
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 15px;
+    padding: 11px 13px;
+
+    color: #eef5ff;
+    background: rgba(3, 17, 38, 0.74);
+
+    border: 1px solid rgba(111, 156, 215, 0.27);
+    border-radius: 9px;
+
+    outline: none;
+
+    transition:
+        border-color var(--transition),
+        box-shadow var(--transition),
+        background var(--transition);
+}
+
+.input-wrapper input::placeholder,
+textarea::placeholder {
+    color: #6f809e;
+}
+
+.input-wrapper input:focus,
+.input-wrapper select:focus,
+.input-wrapper textarea:focus,
+input.form-input:focus,
+select.form-input:focus,
+textarea.form-input:focus {
+    border-color: rgba(233, 189, 75, 0.65);
+
+    background: rgba(5, 23, 50, 0.92);
+
+    box-shadow:
+        0 0 0 3px rgba(233, 189, 75, 0.08);
+}
+
+.input-icon {
+    position: absolute;
+    top: 50%;
+    left: 13px;
+
+    transform: translateY(-50%);
+
+    color: var(--gold-300);
+
+    pointer-events: none;
+}
+
+.input-icon + input {
+    padding-left: 40px;
+}
+
+/* =========================================================
+   ALERT / MESSAGE
+   ========================================================= */
+
+.message,
+.form-message {
+    margin-top: 12px;
+    padding: 10px 13px;
+
+    border-radius: 8px;
+
+    font-size: 13px;
+}
+
+.message.success,
+.form-message.success {
+    color: #b8f6d9;
+    background: rgba(37, 157, 105, 0.12);
+    border: 1px solid rgba(61, 220, 151, 0.22);
+}
+
+.message.error,
+.form-message.error {
+    color: #ffc0c0;
+    background: rgba(210, 55, 55, 0.12);
+    border: 1px solid rgba(255, 107, 107, 0.22);
+}
+
+/* =========================================================
+   AUTH PAGES
+   ========================================================= */
+
+.auth-main {
+    min-height: calc(100vh - var(--nav-height));
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 55px 20px;
+}
+
+.auth-wrapper {
+    width: min(100%, 1040px);
+
+    display: grid;
+    grid-template-columns: 1fr 430px;
+
     overflow: hidden;
+
+    border-radius: 24px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(7, 29, 62, 0.94),
+            rgba(3, 16, 36, 0.96)
+        );
+
+    border: 1px solid rgba(104, 153, 220, 0.24);
+
+    box-shadow: var(--shadow-lg);
 }
+
+.auth-visual {
+    position: relative;
+
+    min-height: 590px;
+
+    padding: 50px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            circle at 50% 40%,
+            rgba(24, 91, 177, 0.30),
+            transparent 46%
+        ),
+        linear-gradient(
+            150deg,
+            #061a3c,
+            #031126
+        );
+}
+
+.auth-visual::before {
+    content: 'ॐ';
+
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+
+    color: rgba(233, 189, 75, 0.05);
+
+    font-family: var(--font-devanagari);
+    font-size: 250px;
+
+    pointer-events: none;
+}
+
+.auth-visual h1 {
+    position: relative;
+    z-index: 1;
+
+    max-width: 500px;
+
+    font-size: clamp(34px, 4vw, 52px);
+}
+
+.auth-visual p {
+    position: relative;
+    z-index: 1;
+
+    max-width: 500px;
+
+    margin-top: 17px;
+
+    color: #aebed7;
+}
+
+.auth-card {
+    padding: 42px 34px;
+
+    background: rgba(255, 255, 255, 0.975);
+
+    color: var(--text-dark);
+}
+
+.auth-card h2 {
+    color: #102044;
+    font-size: 27px;
+}
+
+.auth-card-header {
+    margin-bottom: 26px;
+}
+
+.auth-card-header p {
+    margin: 6px 0 0;
+
+    color: #71809a;
+    font-size: 13px;
+}
+
+.auth-card .form-group label {
+    color: #34435e;
+}
+
+.auth-card input,
+.auth-card select,
+.auth-card textarea {
+    color: #18243b;
+    background: #f8faff;
+
+    border-color: #d9e1ef;
+}
+
+.auth-card input:focus,
+.auth-card select:focus,
+.auth-card textarea:focus {
+    border-color: #d0a338;
+
+    box-shadow:
+        0 0 0 3px rgba(208, 163, 56, 0.10);
+}
+
+.auth-card .btn-primary {
+    width: 100%;
+}
+
+/* =========================================================
+   DASHBOARD
+   ========================================================= */
+
+.dashboard-page {
+    min-height: calc(100vh - var(--nav-height));
+
+    padding: 38px 0 70px;
+}
+
+.dashboard-hero {
+    position: relative;
+
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 25px;
+
+    margin-bottom: 27px;
+    padding: 30px 32px;
+
+    overflow: hidden;
+
+    border-radius: 20px;
+
+    background:
+        radial-gradient(
+            circle at 80% 20%,
+            rgba(34, 108, 213, 0.28),
+            transparent 40%
+        ),
+        linear-gradient(
+            135deg,
+            rgba(10, 43, 91, 0.96),
+            rgba(4, 22, 48, 0.96)
+        );
+
+    border: 1px solid rgba(103, 154, 222, 0.25);
+}
+
+.dashboard-hero::after {
+    content: '✦';
+
+    position: absolute;
+
+    right: 60px;
+    top: 18px;
+
+    color: rgba(233, 189, 75, 0.32);
+    font-size: 80px;
+}
+
+.dashboard-hero h1 {
+    font-size: clamp(26px, 4vw, 40px);
+}
+
+.dashboard-hero p {
+    margin: 7px 0 0;
+
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+.dashboard-stats {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 15px;
+
+    margin-bottom: 22px;
+}
+
+.stat-card {
+    min-height: 130px;
+
+    padding: 19px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(12, 43, 91, 0.92),
+            rgba(5, 25, 55, 0.92)
+        );
+
+    border: 1px solid rgba(102, 154, 225, 0.20);
+    border-radius: 15px;
+
+    box-shadow: var(--shadow-sm);
+}
+
+.stat-card:hover {
+    border-color: rgba(233, 189, 75, 0.30);
+}
+
+.stat-card .stat-label {
+    color: #8fa2bf;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.stat-card .stat-value {
+    color: #fff;
+
+    font-family: var(--font-heading);
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.stat-card .stat-icon {
+    color: var(--gold-300);
+    font-size: 23px;
+}
+
+.dashboard-grid {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.55fr)
+        minmax(280px, 0.75fr);
+
+    gap: 20px;
+}
+
+.dashboard-card {
+    padding: 24px;
+
+    background:
+        rgba(6, 26, 55, 0.88);
+
+    border:
+        1px solid rgba(103, 154, 222, 0.19);
+
+    border-radius: 18px;
+
+    box-shadow: var(--shadow-sm);
+}
+
+.dashboard-card h2 {
+    margin-bottom: 17px;
+
+    font-size: 21px;
+}
+
+.quick-actions {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 12px;
+}
+
+.quick-action-card {
+    min-height: 105px;
+
+    padding: 17px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    border-radius: 12px;
+
+    background:
+        rgba(12, 43, 88, 0.72);
+
+    border: 1px solid rgba(105, 155, 223, 0.16);
+
+    transition:
+        transform var(--transition),
+        border-color var(--transition),
+        background var(--transition);
+}
+
+.quick-action-card:hover {
+    transform: translateY(-2px);
+
+    background:
+        rgba(17, 58, 115, 0.82);
+
+    border-color:
+        rgba(233, 189, 75, 0.32);
+}
+
+.quick-action-card .icon {
+    color: var(--gold-300);
+    font-size: 23px;
+}
+
+.quick-action-card strong {
+    font-size: 14px;
+}
+
+.quick-action-card span {
+    color: #8497b5;
+    font-size: 12px;
+}
+
+/* =========================================================
+   KUNDLI PAGE
+   ========================================================= */
+
+.kundli-page {
+    min-height: calc(100vh - var(--nav-height));
+
+    padding: 34px 0 70px;
+}
+
+.kundli-header {
+    margin-bottom: 22px;
+}
+
+.kundli-profile {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    padding: 22px 25px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(10, 43, 91, 0.94),
+            rgba(4, 21, 47, 0.94)
+        );
+
+    border: 1px solid rgba(104, 155, 223, 0.22);
+    border-radius: 17px;
+}
+
+.kundli-profile h1 {
+    font-size: 27px;
+}
+
+.kundli-profile p {
+    margin: 5px 0 0;
+
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.kundli-main-grid {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.25fr)
+        minmax(280px, 0.75fr);
+
+    gap: 20px;
+}
+
+.summary-card {
+    padding: 20px;
+
+    background:
+        rgba(7, 29, 61, 0.90);
+
+    border:
+        1px solid rgba(102, 153, 222, 0.19);
+
+    border-radius: 16px;
+}
+
+.summary-card h3 {
+    margin-bottom: 14px;
+
+    font-size: 17px;
+}
+
+.summary-value {
+    color: var(--gold-300);
+
+    font-family: var(--font-heading);
+    font-size: 23px;
+}
+
+/* =========================================================
+   TABLES
+   ========================================================= */
 
 .table-wrapper {
+    width: 100%;
     overflow-x: auto;
+
+    border-radius: 12px;
 }
 
 table {
     width: 100%;
+    min-width: 680px;
+
     border-collapse: collapse;
 }
 
 th,
 td {
-    padding: 17px;
+    padding: 12px 13px;
+
     text-align: left;
-    border-bottom: 1px solid var(--line);
+
+    border-bottom:
+        1px solid rgba(103, 151, 216, 0.13);
 }
 
 th {
-    background: #f1ede4;
-    font-size: 12px;
-    letter-spacing: 1px;
+    color: var(--gold-300);
+
+    background:
+        rgba(10, 40, 82, 0.90);
+
+    font-size: 11px;
+    font-weight: 700;
+
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
 }
 
 td {
-    color: #4b443c;
+    color: #d4dff0;
+    font-size: 13px;
 }
 
-tr:last-child td {
-    border-bottom: none;
+tbody tr {
+    transition: background var(--transition);
 }
 
-
-/* =========================
-   CARDS
-========================= */
-
-.yoga-grid,
-.strength-grid,
-.house-grid,
-.aspect-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
+tbody tr:hover {
+    background: rgba(28, 84, 158, 0.12);
 }
 
-.yoga-card,
-.strength-card,
-.house-card,
-.aspect-card,
-.nakshatra-card {
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 24px;
+tbody tr:last-child td {
+    border-bottom: 0;
 }
 
-.yoga-card h3,
-.strength-card h3,
-.house-card h3,
-.aspect-card h3 {
-    margin-bottom: 8px;
+/* =========================================================
+   PLANET BADGES
+   ========================================================= */
+
+.planet-badge {
+    width: 34px;
+    height: 34px;
+
+    display: inline-grid;
+    place-items: center;
+
+    border-radius: 50%;
+
+    color: var(--gold-200);
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(233, 189, 75, 0.18),
+            rgba(9, 36, 75, 0.92)
+        );
+
+    border: 1px solid rgba(233, 189, 75, 0.30);
+
+    font-family: var(--font-devanagari);
+    font-size: 17px;
 }
 
-.muted {
-    color: var(--muted);
+/* =========================================================
+   STATUS
+   ========================================================= */
+
+.status {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 4px 9px;
+
+    border-radius: 999px;
+
+    font-size: 11px;
+    font-weight: 600;
 }
 
-.strength-bar {
-    height: 7px;
-    background: #e6dfd4;
-    border-radius: 20px;
-    overflow: hidden;
-    margin-top: 14px;
+.status.success {
+    color: #9df0c9;
+    background: rgba(61, 220, 151, 0.11);
 }
 
-.strength-fill {
-    height: 100%;
-    background: var(--accent);
+.status.warning {
+    color: #ffe19a;
+    background: rgba(255, 209, 102, 0.11);
 }
 
-
-/* =========================
-   NAKSHATRA
-========================= */
-
-.nakshatra-card {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
+.status.danger {
+    color: #ffb0b0;
+    background: rgba(255, 107, 107, 0.11);
 }
 
-.nakshatra-item span {
-    display: block;
-    color: var(--muted);
-    font-size: 12px;
+/* =========================================================
+   SECTIONS
+   ========================================================= */
+
+.kundli-section {
+    margin-top: 22px;
 }
 
-.nakshatra-item strong {
-    font-size: 20px;
-}
-
-
-/* =========================
-   AI
-========================= */
-
-.ai-card {
-    margin-top: 75px;
-
-    background: #eee7da;
-    border: 1px solid var(--line);
-    border-radius: 18px;
-
-    padding: 40px;
-}
-
-.ai-card h2 {
-    font-size: 38px;
-    margin-bottom: 8px;
-}
-
-.ai-card > p:not(.eyebrow) {
-    color: var(--muted);
-}
-
-.ai-messages {
-    min-height: 50px;
-    margin: 25px 0;
-}
-
-.ai-message {
-    background: white;
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 15px;
-    margin-bottom: 10px;
-}
-
-.ai-form {
+.kundli-section-title {
     display: flex;
+    align-items: center;
     gap: 10px;
+
+    margin-bottom: 14px;
+
+    font-family: var(--font-heading);
+    font-size: 21px;
 }
 
-.ai-form input {
-    flex: 1;
+.kundli-section-title::before {
+    content: '';
+
+    width: 4px;
+    height: 22px;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            180deg,
+            var(--gold-300),
+            var(--gold-600)
+        );
 }
 
-.ai-form button {
-    border: none;
-    background: var(--accent-dark);
-    color: white;
-    padding: 0 24px;
-    border-radius: 8px;
-    cursor: pointer;
+/* =========================================================
+   AI SECTION
+   ========================================================= */
+
+.ai-section {
+    padding: 22px;
+
+    border-radius: 17px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(10, 42, 88, 0.90),
+            rgba(4, 21, 46, 0.92)
+        );
+
+    border:
+        1px solid rgba(103, 155, 223, 0.20);
 }
 
+.ai-section textarea {
+    min-height: 100px;
+    resize: vertical;
+}
 
-/* =========================
+.ai-answer {
+    margin-top: 17px;
+    padding: 18px;
+
+    color: #d8e4f6;
+
+    background:
+        rgba(3, 17, 38, 0.68);
+
+    border:
+        1px solid rgba(107, 156, 222, 0.15);
+
+    border-radius: 12px;
+}
+
+/* =========================================================
+   LOADING
+   ========================================================= */
+
+.loading {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+
+    color: var(--text-muted);
+}
+
+.loading::before {
+    content: '';
+
+    width: 15px;
+    height: 15px;
+
+    border-radius: 50%;
+
+    border:
+        2px solid rgba(255, 255, 255, 0.18);
+
+    border-top-color: var(--gold-300);
+
+    animation: spin 700ms linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* =========================================================
    FOOTER
-========================= */
+   ========================================================= */
 
-.footer {
-    border-top: 1px solid var(--line);
-    padding: 35px 24px;
+footer {
+    padding: 30px 20px;
 
-    display: flex;
-    justify-content: space-between;
+    color: #6f829f;
 
-    max-width: 1180px;
-    margin: auto;
+    text-align: center;
 
-    color: var(--muted);
+    font-size: 12px;
+
+    border-top:
+        1px solid rgba(103, 153, 221, 0.12);
 }
 
+/* =========================================================
+   MOBILE NAVIGATION
+   ========================================================= */
 
-/* =========================
-   MOBILE
-========================= */
+.mobile-menu-btn {
+    display: none;
 
-@media (max-width: 900px) {
+    width: 40px;
+    height: 40px;
 
-    .hero {
+    place-items: center;
+
+    color: #dbe8ff;
+
+    background: rgba(13, 43, 85, 0.65);
+
+    border:
+        1px solid rgba(105, 154, 221, 0.22);
+
+    border-radius: 8px;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1000px) {
+    .auth-wrapper {
         grid-template-columns: 1fr;
-        padding-top: 60px;
     }
 
-    .feature-grid {
-        grid-template-columns: 1fr 1fr;
+    .auth-visual {
+        min-height: 310px;
+        padding: 40px;
     }
 
-    .charts-grid {
+    .auth-visual::before {
+        font-size: 180px;
+    }
+
+    .dashboard-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dashboard-grid,
+    .kundli-main-grid {
         grid-template-columns: 1fr;
-    }
-
-    .quick-grid {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .yoga-grid,
-    .strength-grid,
-    .house-grid,
-    .aspect-grid {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .nakshatra-card {
-        grid-template-columns: 1fr 1fr;
     }
 }
 
+@media (max-width: 760px) {
+    :root {
+        --nav-height: 64px;
+    }
 
-@media (max-width: 600px) {
+    .container,
+    .nav-container {
+        width: min(calc(100% - 26px), var(--container));
+    }
 
-    .nav-links a:not(.nav-button) {
+    .navbar {
+        height: var(--nav-height);
+    }
+
+    .nav-links {
         display: none;
     }
 
-    .hero h1 {
-        font-size: 48px;
+    .mobile-menu-btn {
+        display: grid;
     }
 
-    .feature-grid,
-    .form-row,
-    .quick-grid,
-    .yoga-grid,
-    .strength-grid,
-    .house-grid,
-    .aspect-grid,
-    .nakshatra-card {
+    .dashboard-page,
+    .kundli-page {
+        padding-top: 22px;
+    }
+
+    .dashboard-hero {
+        align-items: flex-start;
+        flex-direction: column;
+
+        padding: 23px;
+    }
+
+    .dashboard-hero::after {
+        right: 20px;
+        top: 10px;
+    }
+
+    .dashboard-stats {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .stat-card {
+        min-height: 110px;
+        padding: 15px;
+    }
+
+    .stat-card .stat-value {
+        font-size: 18px;
+    }
+
+    .quick-actions {
         grid-template-columns: 1fr;
     }
 
-    .form-card {
-        padding: 25px;
-    }
-
-    .profile-header {
-        flex-direction: column;
+    .kundli-profile {
         align-items: flex-start;
-    }
-
-    .profile-header h1 {
-        font-size: 40px;
-    }
-
-    .profile-badges {
-        width: 100%;
-    }
-
-    .badge {
-        flex: 1;
-    }
-
-    .ai-form {
         flex-direction: column;
     }
 
-    .ai-form button {
+    .auth-main {
+        padding: 25px 13px;
+    }
+
+    .auth-visual {
+        min-height: 230px;
+        padding: 30px 24px;
+    }
+
+    .auth-visual h1 {
+        font-size: 31px;
+    }
+
+    .auth-card {
+        padding: 30px 22px;
+    }
+}
+
+@media (max-width: 460px) {
+    .dashboard-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-hero h1 {
+        font-size: 27px;
+    }
+
+    .logo-text {
+        font-size: 16px;
+    }
+
+    .logo-symbol {
+        width: 38px;
+        height: 38px;
+    }
+
+    .glass-card,
+    .cosmic-card,
+    .dashboard-card {
+        padding: 17px;
+    }
+
+    .kundli-profile {
+        padding: 18px;
+    }
+}
+
+/* =========================================================
+   PRINT
+   ========================================================= */
+
+@media print {
+    body {
+        color: #111;
+        background: #fff;
+    }
+
+    .navbar,
+    footer,
+    .btn,
+    .mobile-menu-btn,
+    .ai-section {
+        display: none !important;
+    }
+
+    .cosmic-page,
+    .dashboard-page,
+    .kundli-page {
+        min-height: auto;
+        padding: 0;
+        background: #fff;
+    }
+
+    .kundli-profile,
+    .summary-card,
+    .dashboard-card,
+    .glass-card,
+    .cosmic-card {
+        color: #111;
+        background: #fff !important;
+
+        border:
+            1px solid #ccc;
+
+        box-shadow: none;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    td,
+    th {
+        color: #111 !important;
+    }
+
+    th {
+        background: #eee !important;
+    }
+
+    td,
+    th {
+        border-color: #ccc;
+    }
+
+    .kundli-section {
+        break-inside: avoid;
+    }
+}
+/* =========================================================
+   PLANETARY POSITIONS — PROPER TWO-COLUMN ALIGNMENT
+   ========================================================= */
+
+.planet-position-visual {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.planet-position-header {
+    width: 100%;
+    margin-bottom: 22px;
+}
+
+.planet-position-header > div {
+    width: 100%;
+}
+
+/* Main visual + planetary list */
+.planet-position-visual {
+    display: grid;
+    grid-template-columns: minmax(320px, 0.95fr) minmax(420px, 1.35fr);
+    gap: 28px;
+    align-items: start;
+}
+
+/* Header should occupy the complete row */
+.planet-position-visual > .planet-position-header {
+    grid-column: 1 / -1;
+}
+
+/* Zodiac visual */
+.planet-zodiac-wheel {
+    position: relative;
+    width: min(100%, 500px);
+    aspect-ratio: 1 / 1;
+    margin: 0 auto;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(20, 94, 170, 0.28),
+            rgba(3, 20, 45, 0.88) 62%,
+            rgba(2, 12, 28, 0.96)
+        );
+
+    border: 1px solid rgba(73, 184, 255, 0.30);
+
+    box-shadow:
+        0 0 35px rgba(25, 145, 255, 0.12),
+        inset 0 0 35px rgba(0, 0, 0, 0.30);
+
+    overflow: visible;
+}
+
+/* Zodiac ring */
+.planet-zodiac-ring {
+    position: absolute;
+    inset: 8%;
+    border: 1px solid rgba(78, 190, 255, 0.38);
+    border-radius: 50%;
+}
+
+/* Zodiac segments */
+.zodiac-segment {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    min-width: 55px;
+}
+
+.zodiac-symbol {
+    display: block;
+    color: var(--cyan);
+    font-size: 20px;
+    line-height: 1;
+    margin-bottom: 4px;
+
+    text-shadow:
+        0 0 10px rgba(39, 215, 255, 0.45);
+}
+
+.zodiac-name {
+    display: block;
+    color: #b9d9ef;
+    font-size: 9px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* Planet layer */
+.planet-position-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+/* Planet markers */
+.planet-orbit-marker {
+    position: absolute;
+    transform: translate(-50%, -50%);
+
+    min-width: 54px;
+    padding: 6px 7px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    border-radius: 9px;
+
+    background: rgba(4, 22, 47, 0.92);
+    border: 1px solid rgba(73, 184, 255, 0.30);
+
+    box-shadow:
+        0 5px 16px rgba(0, 0, 0, 0.25),
+        0 0 10px rgba(30, 144, 255, 0.08);
+}
+
+.planet-marker-symbol {
+    color: var(--gold);
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.planet-marker-name {
+    color: #ffffff;
+    font-size: 8px;
+    font-weight: 800;
+}
+
+.planet-marker-degree {
+    color: #8fc8e8;
+    font-size: 7px;
+    margin-top: 2px;
+}
+
+/* Center of zodiac wheel */
+.planet-wheel-center {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+
+    width: 105px;
+    height: 105px;
+
+    border-radius: 50%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(17, 74, 133, 0.95),
+            rgba(3, 20, 43, 0.98)
+        );
+
+    border: 1px solid rgba(255, 215, 106, 0.35);
+
+    box-shadow:
+        0 0 25px rgba(30, 144, 255, 0.16);
+}
+
+.planet-wheel-center-symbol {
+    color: var(--gold);
+    font-size: 20px;
+}
+
+.planet-wheel-center strong {
+    color: #ffffff;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+}
+
+.planet-wheel-center small {
+    color: #8bb5d3;
+    font-size: 8px;
+    margin-top: 3px;
+}
+
+/* Planetary list */
+.planet-position-list {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+
+    align-content: start;
+}
+
+/* Individual position row */
+.planet-position-item {
+    min-height: 52px;
+
+    display: grid;
+    grid-template-columns: 34px minmax(70px, 1fr);
+    grid-template-rows: auto auto;
+
+    column-gap: 8px;
+    row-gap: 3px;
+
+    align-items: center;
+
+    padding: 9px 11px;
+
+    box-sizing: border-box;
+
+    border-radius: 11px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(9, 42, 81, 0.72),
+            rgba(3, 20, 43, 0.82)
+        );
+
+    border: 1px solid rgba(76, 165, 230, 0.15);
+}
+
+/* Planet icon */
+.planet-position-symbol {
+    grid-row: 1 / 3;
+
+    width: 30px;
+    height: 30px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 8px;
+
+    color: var(--gold);
+
+    background: rgba(255, 215, 106, 0.07);
+    border: 1px solid rgba(255, 215, 106, 0.16);
+
+    font-size: 15px;
+}
+
+/* Planet name */
+.planet-position-name {
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+/* Sign */
+.planet-position-sign {
+    color: #9bd9f8;
+    font-size: 9px;
+}
+
+/* Degree */
+.planet-position-degree {
+    color: #f2cf73;
+    font-size: 9px;
+    font-weight: 700;
+}
+
+/* House */
+.planet-position-house {
+    color: #8db4d0;
+    font-size: 9px;
+}
+
+/* Give each row a clean two-line information layout */
+.planet-position-item .planet-position-sign {
+    grid-column: 2;
+}
+
+.planet-position-item .planet-position-degree {
+    grid-column: 2;
+}
+
+.planet-position-item .planet-position-house {
+    grid-column: 2;
+}
+
+/* Hover */
+.planet-position-item:hover {
+    border-color: rgba(39, 215, 255, 0.35);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(12, 56, 105, 0.80),
+            rgba(4, 24, 50, 0.90)
+        );
+
+    transform: translateY(-1px);
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .planet-position-visual {
+        grid-template-columns: 1fr;
+    }
+
+    .planet-position-visual > .planet-position-header {
+        grid-column: 1;
+    }
+
+    .planet-zodiac-wheel {
+        width: min(100%, 440px);
+    }
+
+    .planet-position-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    .planet-position-visual {
+        gap: 20px;
+    }
+
+    .planet-zodiac-wheel {
+        width: min(100%, 330px);
+    }
+
+    .planet-wheel-center {
+        width: 78px;
+        height: 78px;
+    }
+
+    .planet-wheel-center-symbol {
+        font-size: 16px;
+    }
+
+    .planet-wheel-center strong {
+        font-size: 9px;
+    }
+
+    .planet-wheel-center small {
+        font-size: 7px;
+    }
+
+    .zodiac-symbol {
+        font-size: 15px;
+    }
+
+    .zodiac-name {
+        font-size: 7px;
+    }
+
+    .planet-orbit-marker {
+        min-width: 43px;
+        padding: 4px 5px;
+    }
+
+    .planet-marker-symbol {
+        font-size: 12px;
+    }
+
+    .planet-marker-name {
+        font-size: 7px;
+    }
+
+    .planet-marker-degree {
+        font-size: 6px;
+    }
+
+    .planet-position-list {
+        grid-template-columns: 1fr;
+    }
+}
+/* =========================================================
+   PLANETARY CARDS — HORIZONTAL / SIDE-BY-SIDE LAYOUT
+   ========================================================= */
+
+#planetCards {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+}
+
+/* Each planet card */
+#planetCards .planet-card {
+    display: grid;
+    grid-template-columns:
+        190px
+        minmax(120px, 1fr)
+        minmax(100px, 0.8fr)
+        minmax(80px, 0.6fr)
+        minmax(130px, 1fr)
+        minmax(70px, 0.55fr)
+        minmax(120px, 0.9fr)
+        minmax(150px, 1.1fr);
+
+    align-items: stretch;
+    width: 100%;
+    min-height: 150px;
+    overflow: hidden;
+}
+
+/* Planet identity section */
+#planetCards .planet-card > .planet-card-header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+}
+
+/* Every information column */
+#planetCards .planet-card > .planet-card-section,
+#planetCards .planet-card > .planet-detail,
+#planetCards .planet-card > div {
+    min-width: 0;
+}
+
+/* Vertical separators */
+#planetCards .planet-card > div + div {
+    border-left: 1px solid rgba(125, 211, 252, 0.18);
+    padding: 20px;
+}
+
+/* Field labels */
+#planetCards .planet-label,
+#planetCards .field-label,
+#planetCards .detail-label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #7dd3fc;
+}
+
+/* Field values */
+#planetCards .planet-value,
+#planetCards .field-value,
+#planetCards .detail-value {
+    display: block;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+/* Status badge */
+#planetCards .planet-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    padding: 7px 13px;
+    border-radius: 999px;
+    background: rgba(56, 189, 248, 0.16);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    color: #e0f2fe;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+/* Keywords */
+#planetCards .planet-keywords {
+    line-height: 1.55;
+    color: #e2e8f0;
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+    #planetCards .planet-card {
+        grid-template-columns:
+            170px
+            repeat(4, minmax(100px, 1fr));
+    }
+
+    #planetCards .planet-card > div:nth-child(n + 6) {
+        grid-column: span 1;
+    }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    #planetCards {
+        gap: 12px;
+    }
+
+    #planetCards .planet-card {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        min-height: auto;
+    }
+
+    #planetCards .planet-card > .planet-card-header {
+        grid-column: 1 / -1;
+        padding: 16px;
+        border-bottom: 1px solid rgba(125, 211, 252, 0.18);
+    }
+
+    #planetCards .planet-card > div + div {
+        border-left: none;
+        border-bottom: 1px solid rgba(125, 211, 252, 0.12);
         padding: 14px;
     }
 
-    .footer {
-        flex-direction: column;
-        gap: 10px;
+    #planetCards .planet-label,
+    #planetCards .field-label,
+    #planetCards .detail-label {
+        font-size: 0.65rem;
+    }
+
+    #planetCards .planet-value,
+    #planetCards .field-value,
+    #planetCards .detail-value {
+        font-size: 0.9rem;
+    }
+}
+/* =========================================================
+   PLANETARY ANALYSIS — FULL WIDTH HORIZONTAL ROW
+   ========================================================= */
+
+.planet-cards {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 7px !important;
+    width: 100%;
+}
+
+/* One planet = one complete horizontal row */
+.planet-card {
+    display: grid !important;
+
+    /*
+     * Planet | Rashi | Degree | House |
+     * Nakshatra | Pada | Star Lord | Keywords
+     */
+    grid-template-columns:
+        minmax(230px, 1.35fr)
+        minmax(135px, 0.9fr)
+        minmax(105px, 0.7fr)
+        minmax(80px, 0.55fr)
+        minmax(150px, 1fr)
+        minmax(75px, 0.5fr)
+        minmax(130px, 0.9fr)
+        minmax(180px, 1.2fr);
+
+    align-items: center;
+
+    min-width: 0;
+
+    padding: 14px 16px !important;
+
+    border: 1px solid rgba(44, 155, 225, 0.32);
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(7, 54, 104, 0.94),
+            rgba(5, 39, 79, 0.96)
+        );
+
+    box-sizing: border-box;
+}
+
+/* Remove the old vertical card layout */
+.planet-card-top,
+.planet-placement,
+.planet-meta,
+.planet-card-footer {
+    min-width: 0;
+}
+
+/*
+ * Make the nested groups disappear as layout boxes.
+ * Their children become direct grid items of the planet row.
+ */
+.planet-card-top,
+.planet-placement,
+.planet-meta,
+.planet-card-footer {
+    display: contents !important;
+}
+
+/* =========================================================
+   PLANET NAME / ICON / STATUS
+   ========================================================= */
+
+.planet-symbol-wrap {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+
+    width: 42px;
+    height: 42px;
+
+    margin-right: 10px;
+
+    border-radius: 50%;
+
+    border: 1px solid rgba(72, 183, 255, 0.55);
+
+    background:
+        radial-gradient(
+            circle at 35% 30%,
+            rgba(92, 205, 255, 0.25),
+            rgba(3, 29, 62, 0.9)
+        );
+
+    box-shadow:
+        0 0 12px rgba(42, 168, 255, 0.16);
+
+    vertical-align: middle;
+}
+
+.planet-symbol {
+    margin: 0 !important;
+
+    width: auto !important;
+    min-width: auto !important;
+    height: auto !important;
+
+    border: 0 !important;
+    background: transparent !important;
+
+    color: #f3c85b !important;
+
+    font-size: 1.15rem !important;
+}
+
+.planet-title {
+    display: inline-flex !important;
+    flex-direction: column;
+
+    justify-content: center;
+
+    min-width: 85px;
+
+    vertical-align: middle;
+}
+
+.planet-title h3 {
+    margin: 0;
+
+    color: #f5f8ff;
+
+    font-size: 0.95rem;
+
+    font-weight: 800;
+
+    line-height: 1.15;
+}
+
+.planet-title span {
+    margin-top: 3px;
+
+    color: #9db9d8;
+
+    font-size: 0.72rem;
+
+    line-height: 1.1;
+}
+
+/*
+ * Keep symbol + name + status together
+ */
+.planet-card-top {
+    display: flex !important;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding-right: 14px;
+
+    border-right:
+        1px solid rgba(101, 180, 235, 0.22);
+}
+
+/* Status badge */
+.planet-status {
+    display: inline-flex !important;
+
+    align-items: center;
+    justify-content: center;
+
+    width: fit-content;
+
+    margin-left: auto;
+
+    padding: 5px 9px;
+
+    border:
+        1px solid rgba(63, 174, 255, 0.38);
+
+    border-radius: 999px;
+
+    background:
+        rgba(21, 126, 201, 0.22);
+
+    color: #d9efff;
+
+    font-size: 0.63rem;
+
+    font-weight: 750;
+
+    white-space: nowrap;
+
+    line-height: 1;
+}
+
+/* Rahu / Ketu */
+.planet-card[data-planet="Rahu"] .planet-status,
+.planet-card[data-planet="Ketu"] .planet-status {
+    border-color: rgba(108, 191, 255, 0.45);
+
+    background:
+        rgba(30, 136, 214, 0.28);
+
+    color: #d8f0ff;
+}
+
+/* =========================================================
+   INFORMATION COLUMNS
+   ========================================================= */
+
+.planet-sign,
+.planet-degree,
+.planet-house,
+.planet-meta > div {
+    min-width: 0;
+
+    min-height: 52px;
+
+    display: flex !important;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    padding:
+        2px 15px;
+
+    border-right:
+        1px solid rgba(101, 180, 235, 0.20);
+}
+
+/* Rashi */
+.planet-sign {
+    flex-direction: row !important;
+
+    align-items: center;
+
+    gap: 8px;
+}
+
+.planet-sign-symbol {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 28px;
+    height: 28px;
+
+    flex: 0 0 28px;
+
+    border-radius: 5px;
+
+    background:
+        rgba(87, 92, 255, 0.28);
+
+    color: #b8dfff;
+
+    font-size: 1rem;
+}
+
+.planet-sign div {
+    display: flex;
+
+    flex-direction: column;
+}
+
+.planet-sign small,
+.planet-degree small,
+.planet-house small,
+.planet-meta span {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #63c7ff;
+
+    font-size: 0.60rem;
+
+    font-weight: 750;
+
+    letter-spacing: 0.04em;
+
+    text-transform: uppercase;
+}
+
+.planet-sign strong,
+.planet-degree strong,
+.planet-house strong,
+.planet-meta strong {
+    display: block;
+
+    color: #f0f6ff;
+
+    font-size: 0.78rem;
+
+    font-weight: 750;
+
+    line-height: 1.2;
+}
+
+/* Degree */
+.planet-degree strong {
+    color: #ffffff;
+
+    font-variant-numeric: tabular-nums;
+}
+
+/* House */
+.planet-house strong {
+    color: #f1f6ff;
+}
+
+/* =========================================================
+   NAKSHATRA / PADA / STAR LORD
+   ========================================================= */
+
+.planet-meta {
+    display: contents !important;
+}
+
+.planet-meta > div:last-child {
+    border-right:
+        1px solid rgba(101, 180, 235, 0.20);
+}
+
+/* =========================================================
+   KEYWORDS
+   ========================================================= */
+
+.planet-card-footer {
+    display: flex !important;
+
+    align-items: center;
+
+    min-width: 0;
+
+    padding-left: 15px;
+}
+
+.planet-card-footer span {
+    display: block;
+
+    color: #e0ecf9;
+
+    font-size: 0.72rem;
+
+    font-weight: 550;
+
+    line-height: 1.5;
+}
+
+/* =========================================================
+   PLANET ROW HOVER
+   ========================================================= */
+
+.planet-card:hover {
+    transform: none !important;
+
+    border-color:
+        rgba(57, 178, 255, 0.55);
+
+    box-shadow:
+        0 7px 24px rgba(0, 90, 170, 0.15);
+}
+
+/* Keep the gold accent */
+.planet-card::after {
+    pointer-events: none;
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+    .planet-card {
+        grid-template-columns:
+            minmax(205px, 1.3fr)
+            minmax(125px, 0.85fr)
+            minmax(95px, 0.65fr)
+            minmax(70px, 0.5fr)
+            minmax(135px, 0.9fr)
+            minmax(65px, 0.45fr)
+            minmax(115px, 0.8fr)
+            minmax(150px, 1fr);
+    }
+
+    .planet-card-top {
+        padding-right: 10px;
+    }
+
+    .planet-sign,
+    .planet-degree,
+    .planet-house,
+    .planet-meta > div {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .planet-card-footer {
+        padding-left: 10px;
+    }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 850px) {
+
+    /*
+     * On small screens allow horizontal scrolling
+     * instead of destroying the desktop row structure.
+     */
+    .planet-cards {
+        overflow-x: auto;
+
+        padding-bottom: 5px;
+    }
+
+    .planet-card {
+        min-width: 1000px;
+    }
+}
+
+/* =========================================================
+   VERY SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    .planet-card {
+        min-width: 950px;
+
+        padding: 11px 12px !important;
+    }
+
+    .planet-symbol-wrap {
+        width: 36px;
+        height: 36px;
+    }
+
+    .planet-title h3 {
+        font-size: 0.84rem;
+    }
+
+    .planet-title span {
+        font-size: 0.65rem;
+    }
+
+    .planet-sign strong,
+    .planet-degree strong,
+    .planet-house strong,
+    .planet-meta strong {
+        font-size: 0.72rem;
+    }
+
+    .planet-card-footer span {
+        font-size: 0.68rem;
+    }
+}
+/* =========================================================
+   FIX — KUNDLI CHART BLANK AREA
+   Keep existing North Indian chart geometry
+   ========================================================= */
+
+/* The #kundliSvg element is a container */
+#kundliSvg {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    overflow: visible !important;
+}
+
+/* Wrapper created by charts.js */
+#kundliSvg > .kundli-chart-visual {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Actual North Indian SVG */
+#kundliSvg > .kundli-chart-visual > svg,
+#kundliSvg > svg {
+    display: block !important;
+
+    width: min(100%, 520px) !important;
+    height: auto !important;
+
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-width: 100% !important;
+
+    margin: 0 auto !important;
+
+    overflow: visible !important;
+}
+
+/* Chart card */
+.chart-card {
+    width: 100% !important;
+    min-height: 0 !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    padding: 18px !important;
+
+    overflow: visible !important;
+}
+
+/* Make the whole chart section compact */
+.chart-layout {
+    align-items: stretch !important;
+}
+
+/* =========================================================
+   DESKTOP
+   ========================================================= */
+
+@media (min-width: 1051px) {
+
+    .chart-card {
+        min-height: 430px !important;
+    }
+
+    #kundliSvg > .kundli-chart-visual > svg,
+    #kundliSvg > svg {
+        width: min(100%, 500px) !important;
+    }
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1050px) {
+
+    .chart-card {
+        min-height: 390px !important;
+    }
+
+    #kundliSvg > .kundli-chart-visual > svg,
+    #kundliSvg > svg {
+        width: min(100%, 480px) !important;
+    }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 760px) {
+
+    .chart-card {
+        min-height: 330px !important;
+        padding: 10px !important;
+    }
+
+    #kundliSvg > .kundli-chart-visual > svg,
+    #kundliSvg > svg {
+        width: 100% !important;
+        max-width: 440px !important;
+    }
+}
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 460px) {
+
+    .chart-card {
+        min-height: 300px !important;
+        padding: 6px !important;
+    }
+
+    #kundliSvg > .kundli-chart-visual > svg,
+    #kundliSvg > svg {
+        width: 100% !important;
+    }
+}
+/* =========================================================
+   FINAL 12 HOUSES ALIGNMENT FIX
+   This block intentionally comes LAST so it overrides
+   the previous conflicting house-grid styles.
+   ========================================================= */
+
+#houseGrid {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 16px !important;
+
+    width: 100% !important;
+    margin: 18px 0 0 !important;
+    padding: 0 !important;
+
+    box-sizing: border-box !important;
+    align-items: stretch !important;
+}
+
+#houseGrid .house-card {
+    position: relative !important;
+
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 180px !important;
+
+    margin: 0 !important;
+    padding: 22px 20px !important;
+
+    box-sizing: border-box !important;
+
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-start !important;
+
+    border: 1px solid rgba(0, 183, 255, 0.55) !important;
+    border-radius: 16px !important;
+
+    background:
+        radial-gradient(
+            circle at 85% 15%,
+            rgba(0, 174, 255, 0.12),
+            transparent 38%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(7, 42, 91, 0.96),
+            rgba(3, 24, 61, 0.98)
+        ) !important;
+
+    box-shadow:
+        0 0 18px rgba(0, 174, 255, 0.10),
+        inset 0 0 25px rgba(0, 120, 255, 0.04) !important;
+
+    overflow: hidden !important;
+}
+
+#houseGrid .house-number {
+    position: static !important;
+
+    flex: 0 0 42px !important;
+
+    width: 42px !important;
+    height: 42px !important;
+
+    margin: 0 14px 0 0 !important;
+    padding: 0 !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    box-sizing: border-box !important;
+
+    border-radius: 50% !important;
+
+    border: 1px solid rgba(0, 205, 255, 0.9) !important;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(0, 173, 255, 0.32),
+            rgba(3, 38, 84, 0.9)
+        ) !important;
+
+    color: #ffffff !important;
+
+    font-size: 17px !important;
+    font-weight: 700 !important;
+
+    box-shadow:
+        0 0 12px rgba(0, 190, 255, 0.35),
+        inset 0 0 12px rgba(0, 190, 255, 0.12) !important;
+}
+
+#houseGrid .house-content {
+    flex: 1 1 auto !important;
+
+    width: auto !important;
+    min-width: 0 !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+
+    gap: 6px !important;
+}
+
+#houseGrid .house-label {
+    margin: 0 !important;
+
+    color: #ffd84d !important;
+
+    font-size: 13px !important;
+    font-weight: 800 !important;
+
+    letter-spacing: 1px !important;
+    line-height: 1.2 !important;
+}
+
+#houseGrid .house-title {
+    margin: 0 !important;
+
+    color: #ffffff !important;
+
+    font-size: 18px !important;
+    font-weight: 700 !important;
+
+    line-height: 1.3 !important;
+}
+
+#houseGrid .house-sign {
+    margin: 0 !important;
+
+    color: #55c9ff !important;
+
+    font-size: 14px !important;
+    font-weight: 600 !important;
+
+    line-height: 1.3 !important;
+}
+
+#houseGrid .house-lord {
+    margin: 0 !important;
+
+    color: #8edcff !important;
+
+    font-size: 13px !important;
+    font-weight: 600 !important;
+
+    line-height: 1.3 !important;
+}
+
+#houseGrid .house-planets {
+    margin: 2px 0 0 !important;
+
+    color: #e8f7ff !important;
+
+    font-size: 13px !important;
+    font-weight: 400 !important;
+
+    line-height: 1.4 !important;
+}
+
+#houseGrid .house-planets strong {
+    color: #ffd84d !important;
+    font-weight: 800 !important;
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1000px) {
+
+    #houseGrid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 14px !important;
+    }
+
+    #houseGrid .house-card {
+        min-height: 165px !important;
+        padding: 19px 17px !important;
+    }
+
+    #houseGrid .house-number {
+        flex-basis: 38px !important;
+        width: 38px !important;
+        height: 38px !important;
+        margin-right: 11px !important;
+        font-size: 15px !important;
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 650px) {
+
+    #houseGrid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+
+    #houseGrid .house-card {
+        min-height: 0 !important;
+        padding: 18px !important;
+    }
+
+    #houseGrid .house-number {
+        flex-basis: 38px !important;
+        width: 38px !important;
+        height: 38px !important;
+    }
+
+    #houseGrid .house-title {
+        font-size: 17px !important;
+    }
+
+    #houseGrid .house-sign,
+    #houseGrid .house-lord,
+    #houseGrid .house-planets {
+        font-size: 13px !important;
+    }
+}
+
+
+/* =========================================================
+   VERY SMALL PHONE
+   ========================================================= */
+
+@media (max-width: 400px) {
+
+    #houseGrid {
+        grid-template-columns: 1fr !important;
+    }
+
+    #houseGrid .house-card {
+        padding: 16px !important;
+    }
+}
+/* =========================================================
+   COMPLETE ANALYSIS MAIN HEADING
+   ========================================================= */
+
+.analysis-main-heading {
+    margin: 0 0 28px;
+    padding: 0;
+}
+
+.analysis-main-title {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.analysis-main-icon {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid rgba(0, 220, 255, 0.45);
+    border-radius: 50%;
+
+    color: #ffd45a;
+    font-size: 18px;
+
+    background: rgba(0, 130, 255, 0.12);
+    box-shadow: 0 0 18px rgba(0, 200, 255, 0.18);
+}
+
+.analysis-eyebrow {
+    display: block;
+
+    margin-bottom: 4px;
+
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+
+    color: #ffd45a;
+}
+
+.analysis-main-heading h2 {
+    margin: 0;
+
+    font-size: 27px;
+    line-height: 1.15;
+    font-weight: 800;
+
+    color: #ffffff;
+}
+
+.analysis-main-heading p {
+    margin: 10px 0 0 52px;
+
+    font-size: 14px;
+    line-height: 1.5;
+
+    color: rgba(255, 255, 255, 0.68);
+}
+
+/* Mobile */
+@media (max-width: 700px) {
+
+    .analysis-main-heading {
+        margin-bottom: 22px;
+    }
+
+    .analysis-main-icon {
+        width: 32px;
+        height: 32px;
+        flex-basis: 32px;
+        font-size: 15px;
+    }
+
+    .analysis-eyebrow {
+        font-size: 10px;
+        letter-spacing: 1.5px;
+    }
+
+    .analysis-main-heading h2 {
+        font-size: 21px;
+    }
+
+    .analysis-main-heading p {
+        margin-left: 46px;
+        font-size: 12px;
+    }
+}
+.analysis-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.analysis-table th,
+.analysis-table td {
+    padding: 12px 14px;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.analysis-table th {
+    text-align: center;
+}
+
+.analysis-table td:first-child,
+.analysis-table th:first-child {
+    text-align: center;
+}
+
+/* Keep text columns readable */
+.analysis-table td:nth-child(2),
+.analysis-table th:nth-child(2) {
+    text-align: center;
+}
+
+/* Numeric columns */
+.analysis-table td:nth-child(n + 3),
+.analysis-table th:nth-child(n + 3) {
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Bhava Bala */
+.analysis-table td strong {
+    display: inline-block;
+}
+
+/* Horizontal scrolling on smaller screens */
+.analysis-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Desktop spacing */
+@media (min-width: 900px) {
+    .analysis-table th,
+    .analysis-table td {
+        padding: 13px 16px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 700px) {
+    .analysis-table {
+        min-width: 850px;
+    }
+
+    .analysis-table th,
+    .analysis-table td {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+}
+/* =========================================================
+   COMPLETE ANALYSIS MAIN HEADING
+   ========================================================= */
+
+.analysis-main-heading {
+    margin: 0 0 28px;
+    padding: 0;
+}
+
+.analysis-main-title {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.analysis-main-icon {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid rgba(0, 220, 255, 0.45);
+    border-radius: 50%;
+
+    color: #ffd45a;
+    font-size: 18px;
+
+    background: rgba(0, 130, 255, 0.12);
+    box-shadow: 0 0 18px rgba(0, 200, 255, 0.18);
+}
+
+.analysis-eyebrow {
+    display: block;
+
+    margin-bottom: 4px;
+
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+
+    color: #ffd45a;
+}
+
+.analysis-main-heading h2 {
+    margin: 0;
+
+    font-size: 27px;
+    line-height: 1.15;
+    font-weight: 800;
+
+    color: #ffffff;
+}
+
+.analysis-main-heading p {
+    margin: 10px 0 0 52px;
+
+    font-size: 14px;
+    line-height: 1.5;
+
+    color: rgba(255, 255, 255, 0.68);
+}
+
+/* Mobile */
+@media (max-width: 700px) {
+
+    .analysis-main-heading {
+        margin-bottom: 22px;
+    }
+
+    .analysis-main-icon {
+        width: 32px;
+        height: 32px;
+        flex-basis: 32px;
+        font-size: 15px;
+    }
+
+    .analysis-eyebrow {
+        font-size: 10px;
+        letter-spacing: 1.5px;
+    }
+
+    .analysis-main-heading h2 {
+        font-size: 21px;
+    }
+
+    .analysis-main-heading p {
+        margin-left: 46px;
+        font-size: 12px;
+    }
+}
+/* =========================================================
+   KUNDLI NAVIGATION — FIXED BRAND / LOGO
+   ========================================================= */
+
+.kundli-shell > .navbar {
+    position: sticky;
+    top: 12px;
+    z-index: 1000;
+
+    width: 100%;
+    min-height: 66px;
+
+    padding: 0 18px;
+
+    border: 1px solid rgba(91, 157, 255, 0.18);
+    border-radius: 17px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(9, 30, 62, 0.96),
+            rgba(3, 15, 34, 0.94)
+        );
+
+    box-shadow:
+        0 18px 55px rgba(0, 0, 0, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.035);
+
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+
+/* Bottom cosmic line */
+
+.kundli-shell > .navbar::after {
+    content: "";
+
+    position: absolute;
+
+    left: 8%;
+    right: 8%;
+    bottom: 0;
+
+    height: 1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(77, 157, 255, 0.55),
+            rgba(233, 180, 76, 0.5),
+            transparent
+        );
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   NAVBAR CONTAINER
+   ========================================================= */
+
+.kundli-shell .navbar-container {
+    width: 100%;
+    min-height: 64px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 22px;
+}
+
+
+/* =========================================================
+   BRAND
+   ========================================================= */
+
+.kundli-shell .navbar-brand {
+    display: flex;
+    align-items: center;
+
+    gap: 11px;
+
+    flex-shrink: 0;
+
+    min-width: 205px;
+
+    color: #ffffff;
+
+    text-decoration: none;
+}
+
+
+/* =========================================================
+   COSMIC LOGO
+   ========================================================= */
+
+.kundli-shell .navbar-logo-icon {
+    position: relative;
+
+    width: 42px;
+    height: 42px;
+
+    flex-shrink: 0;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 50%;
+
+    color: #ffd77d;
+
+    font-size: 22px;
+    font-weight: 700;
+
+    background:
+        radial-gradient(
+            circle at 50% 45%,
+            rgba(255, 215, 125, 0.2),
+            rgba(12, 42, 82, 0.92) 58%,
+            rgba(2, 13, 30, 0.98)
+        );
+
+    border: 1px solid rgba(233, 180, 76, 0.38);
+
+    box-shadow:
+        0 0 20px rgba(233, 180, 76, 0.16),
+        inset 0 0 14px rgba(77, 157, 255, 0.12);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+
+/* Orbital ring */
+
+.kundli-shell .navbar-logo-icon::before {
+    content: "";
+
+    position: absolute;
+
+    width: 31px;
+    height: 12px;
+
+    border: 1px solid rgba(138, 193, 255, 0.5);
+
+    border-radius: 50%;
+
+    transform: rotate(-28deg);
+
+    pointer-events: none;
+}
+
+
+/* Small cosmic planet */
+
+.kundli-shell .navbar-logo-icon::after {
+    content: "";
+
+    position: absolute;
+
+    width: 4px;
+    height: 4px;
+
+    top: 6px;
+    right: 5px;
+
+    border-radius: 50%;
+
+    background: #8ac1ff;
+
+    box-shadow:
+        0 0 8px rgba(138, 193, 255, 0.9);
+}
+
+
+/* Hover */
+
+.kundli-shell .navbar-brand:hover .navbar-logo-icon {
+    transform: rotate(8deg) scale(1.05);
+
+    box-shadow:
+        0 0 28px rgba(233, 180, 76, 0.23),
+        inset 0 0 16px rgba(77, 157, 255, 0.16);
+}
+
+
+/* =========================================================
+   BRAND TEXT
+   ========================================================= */
+
+.kundli-shell .brand-text {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+
+.kundli-shell .brand-title {
+    margin: 0;
+
+    color: #f4f8ff;
+
+    font-size: 17px;
+    line-height: 1.1;
+
+    font-weight: 850;
+
+    letter-spacing: 0.015em;
+
+    white-space: nowrap;
+}
+
+
+.kundli-shell .brand-subtitle {
+    margin-top: 4px;
+
+    color: #7089ad;
+
+    font-size: 8px;
+    line-height: 1;
+
+    font-weight: 700;
+
+    letter-spacing: 0.13em;
+
+    text-transform: uppercase;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   NAVIGATION LINKS
+   ========================================================= */
+
+.kundli-shell .navbar-nav {
+    flex: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 4px;
+
+    min-width: 0;
+}
+
+
+.kundli-shell .navbar-nav a {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 36px;
+
+    padding: 0 13px;
+
+    border-radius: 9px;
+
+    color: #8fa7c8;
+
+    font-size: 10px;
+    font-weight: 750;
+
+    white-space: nowrap;
+
+    text-decoration: none;
+
+    transition:
+        color 0.2s ease,
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.kundli-shell .navbar-nav a:hover {
+    color: #edf5ff;
+
+    background: rgba(77, 157, 255, 0.08);
+
+    transform: translateY(-1px);
+}
+
+
+.kundli-shell .navbar-nav a.active {
+    color: #ffffff;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(77, 157, 255, 0.13),
+            rgba(77, 157, 255, 0.055)
+        );
+
+    border: 1px solid rgba(77, 157, 255, 0.12);
+}
+
+
+/* Active underline */
+
+.kundli-shell .navbar-nav a.active::after {
+    content: "";
+
+    position: absolute;
+
+    left: 22%;
+    right: 22%;
+    bottom: 4px;
+
+    height: 2px;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #4d9dff,
+            #e9b44c
+        );
+
+    box-shadow:
+        0 0 8px rgba(77, 157, 255, 0.4);
+}
+
+
+/* =========================================================
+   RIGHT SIDE ACTIONS
+   ========================================================= */
+
+.kundli-shell .navbar-actions {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    flex-shrink: 0;
+}
+
+
+.kundli-shell .navbar-divider {
+    width: 1px;
+    height: 25px;
+
+    margin-right: 3px;
+
+    background: rgba(91, 157, 255, 0.13);
+}
+
+
+/* =========================================================
+   THEME BUTTON
+   ========================================================= */
+
+.kundli-shell .theme-toggle {
+    width: 35px;
+    height: 35px;
+
+    display: grid;
+    place-items: center;
+
+    padding: 0;
+
+    border-radius: 9px;
+
+    border: 1px solid rgba(77, 157, 255, 0.14);
+
+    color: #a9c7ec;
+
+    background: rgba(77, 157, 255, 0.045);
+
+    cursor: pointer;
+
+    font-size: 15px;
+
+    transition: 0.2s ease;
+}
+
+
+.kundli-shell .theme-toggle:hover {
+    color: #ffffff;
+
+    background: rgba(77, 157, 255, 0.1);
+
+    border-color: rgba(77, 157, 255, 0.3);
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   USER MENU
+   ========================================================= */
+
+.kundli-shell .user-menu {
+    min-height: 35px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 0 10px;
+
+    border-radius: 9px;
+
+    color: #9fb6d6;
+
+    background: rgba(255, 255, 255, 0.018);
+
+    font-size: 9px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+
+.kundli-shell .user-menu span:first-child {
+    color: #d6a94c;
+
+    font-size: 15px;
+}
+
+
+.kundli-shell .user-menu span:last-child {
+    color: #657d9f;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   SIGN OUT
+   ========================================================= */
+
+.kundli-shell .sign-out-btn {
+    min-height: 35px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 0 11px;
+
+    border-radius: 9px;
+
+    border: 1px solid rgba(233, 180, 76, 0.14);
+
+    color: #cda657;
+
+    background: rgba(233, 180, 76, 0.035);
+
+    cursor: pointer;
+
+    font-size: 9px;
+    font-weight: 800;
+
+    transition: 0.2s ease;
+}
+
+
+.kundli-shell .sign-out-btn:hover {
+    color: #f4cd76;
+
+    background: rgba(233, 180, 76, 0.08);
+
+    border-color: rgba(233, 180, 76, 0.28);
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1050px) {
+
+    .kundli-shell .navbar-brand {
+        min-width: auto;
+    }
+
+    .kundli-shell .brand-subtitle {
+        display: none;
+    }
+
+    .kundli-shell .navbar-container {
+        gap: 12px;
+    }
+
+    .kundli-shell .navbar-nav {
+        justify-content: flex-start;
+        overflow-x: auto;
+
+        scrollbar-width: none;
+    }
+
+    .kundli-shell .navbar-nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    .kundli-shell .navbar-nav a {
+        flex-shrink: 0;
+    }
+
+    .kundli-shell .user-menu span:nth-child(2) {
+        display: none;
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 760px) {
+
+    .kundli-shell > .navbar {
+        top: 8px;
+
+        padding: 9px 10px;
+
+        border-radius: 15px;
+    }
+
+    .kundli-shell .navbar-container {
+        min-height: auto;
+
+        flex-wrap: wrap;
+
+        row-gap: 8px;
+    }
+
+    .kundli-shell .navbar-brand {
+        flex: 1;
+
+        min-width: 0;
+    }
+
+    .kundli-shell .navbar-logo-icon {
+        width: 37px;
+        height: 37px;
+
+        font-size: 19px;
+    }
+
+    .kundli-shell .brand-title {
+        font-size: 15px;
+    }
+
+    .kundli-shell .navbar-actions {
+        margin-left: auto;
+    }
+
+    .kundli-shell .navbar-divider {
+        display: none;
+    }
+
+    .kundli-shell .navbar-nav {
+        order: 3;
+
+        width: 100%;
+
+        padding-top: 7px;
+
+        border-top: 1px solid rgba(91, 157, 255, 0.07);
+
+        justify-content: flex-start;
+    }
+
+    .kundli-shell .navbar-nav a {
+        min-height: 33px;
+
+        padding: 0 11px;
+
+        font-size: 9px;
+    }
+
+    .kundli-shell .user-menu {
+        display: none;
+    }
+
+    .kundli-shell .sign-out-btn {
+        width: 35px;
+        height: 35px;
+
+        padding: 0;
+
+        justify-content: center;
+    }
+
+    .kundli-shell .sign-out-btn span {
+        display: none;
+    }
+}
+
+
+/* =========================================================
+   SMALL PHONE
+   ========================================================= */
+
+@media (max-width: 460px) {
+
+    .kundli-shell > .navbar {
+        padding: 8px;
+    }
+
+    .kundli-shell .navbar-logo-icon {
+        width: 35px;
+        height: 35px;
+    }
+
+    .kundli-shell .brand-title {
+        font-size: 14px;
+    }
+
+    .kundli-shell .theme-toggle,
+    .kundli-shell .sign-out-btn {
+        width: 33px;
+        height: 33px;
+    }
+
+    .kundli-shell .navbar-nav a {
+        padding: 0 9px;
+    }
+}
+/* =========================================================
+   YOGA SECTION - CLEAN ALIGNMENT
+   ========================================================= */
+
+.kundli-shell .yogas-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Individual Yoga card */
+.kundli-shell .yoga-card {
+    width: 100%;
+    min-height: 190px;
+
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    align-items: center;
+
+    padding: 28px 32px;
+
+    border: 1px solid rgba(77, 157, 255, 0.45);
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(8, 34, 72, 0.82),
+            rgba(4, 20, 48, 0.72)
+        );
+
+    box-sizing: border-box;
+}
+
+/* Left side of Yoga card */
+.kundli-shell .yoga-type {
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 18px;
+
+    border-right: 2px solid rgba(233, 180, 76, 0.55);
+
+    text-align: center;
+}
+
+/* Yoga icon */
+.kundli-shell .yoga-type .yoga-icon {
+    font-size: 30px;
+}
+
+/* "Special Yoga" text */
+.kundli-shell .yoga-type span {
+    color: #ffffff;
+
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* Right side */
+.kundli-shell .yoga-content {
+    padding-left: 38px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    text-align: left;
+}
+
+/* Yoga name */
+.kundli-shell .yoga-content h3 {
+    margin: 0 0 14px;
+
+    color: #f4cd76;
+
+    font-size: 27px;
+    font-weight: 800;
+
+    line-height: 1.15;
+}
+
+/* Present badge */
+.kundli-shell .yoga-content .status,
+.kundli-shell .yoga-content .yoga-status {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 6px 18px;
+
+    margin-bottom: 14px;
+
+    border: 1px solid rgba(0, 255, 220, 0.65);
+    border-radius: 20px;
+
+    color: #72fff1;
+
+    background: rgba(0, 220, 200, 0.12);
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* Description */
+.kundli-shell .yoga-content p {
+    margin: 0;
+
+    color: #dce9fa;
+
+    font-size: 16px;
+    line-height: 1.7;
+
+    max-width: 100%;
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .kundli-shell .yoga-card {
+        grid-template-columns: 1fr;
+
+        padding: 24px;
+    }
+
+    .kundli-shell .yoga-type {
+        height: auto;
+
+        padding-bottom: 18px;
+
+        border-right: none;
+        border-bottom: 1px solid rgba(233, 180, 76, 0.35);
+    }
+
+    .kundli-shell .yoga-content {
+        padding-left: 0;
+        padding-top: 22px;
+    }
+
+    .kundli-shell .yoga-content h3 {
+        font-size: 22px;
+    }
+
+    .kundli-shell .yoga-content p {
+        font-size: 14px;
+    }
+}
+/* =========================================================
+   AI JYOTISH - SUGGESTED QUESTIONS
+   ========================================================= */
+
+.kundli-shell .ai-suggested-questions {
+    margin-top: 18px;
+}
+
+.kundli-shell .suggested-label {
+    display: block;
+
+    margin-bottom: 10px;
+
+    color: #7189ad;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+}
+
+.kundli-shell .question-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+}
+
+.kundli-shell .question-chip {
+    padding: 9px 15px;
+
+    border: 1px solid rgba(77, 157, 255, 0.25);
+    border-radius: 20px;
+
+    color: #a9c9ee;
+
+    background: rgba(77, 157, 255, 0.06);
+
+    font-size: 11px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+.kundli-shell .question-chip:hover {
+    color: #ffffff;
+
+    border-color: rgba(77, 157, 255, 0.55);
+
+    background: rgba(77, 157, 255, 0.14);
+
+    transform: translateY(-1px);
+
+    box-shadow: 0 5px 18px rgba(0, 100, 255, 0.12);
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+
+    .kundli-shell .question-chips {
+        gap: 7px;
+    }
+
+    .kundli-shell .question-chip {
+        padding: 8px 12px;
+        font-size: 10px;
+    }
+}
+.location-btn {
+    width: 100%;
+    min-height: 42px;
+    margin-top: 2px;
+    padding: 10px 14px;
+
+    border: 1px solid rgba(232,177,76,.20);
+    border-radius: 9px;
+
+    cursor: pointer;
+
+    color: #f5d78f;
+    background: rgba(232,177,76,.06);
+
+    font: inherit;
+    font-size: 11px;
+    font-weight: 650;
+
+    transition:
+        background .2s ease,
+        border-color .2s ease,
+        transform .2s ease,
+        opacity .2s ease;
+}
+
+.location-btn:hover {
+    background: rgba(232,177,76,.11);
+    border-color: rgba(232,177,76,.38);
+    transform: translateY(-1px);
+}
+
+.location-btn:active {
+    transform: translateY(0);
+}
+
+.location-btn:disabled {
+    cursor: wait;
+    opacity: .6;
+    transform: none;
+}
+
+#locationStatus {
+    min-height: 13px;
+}
+/* =========================================================
+   CHANDRA KUNDLI + NAVAMSHA D9
+   Dedicated sizing so these charts render visibly.
+   ========================================================= */
+
+.special-charts-grid .chart-container {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 400px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: visible !important;
+}
+
+.special-charts-grid .chart-container .kundli-chart-visual {
+    width: 100% !important;
+    max-width: 500px !important;
+    height: auto !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 0 1 500px !important;
+    overflow: visible !important;
+}
+
+.special-charts-grid .chart-container svg.north-indian-kundli {
+    display: block !important;
+    width: 100% !important;
+    max-width: 500px !important;
+    height: auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+@media (max-width: 768px) {
+    .special-charts-grid .chart-container {
+        min-height: 330px !important;
+    }
+
+    .special-charts-grid .chart-container .kundli-chart-visual,
+    .special-charts-grid .chart-container svg.north-indian-kundli {
+        max-width: 440px !important;
     }
 }

@@ -1,0 +1,918 @@
+/* =========================================================
+   AI JYOTISH — DASHA
+   Premium Cosmic Blue + Gold Vedic Timeline
+   ========================================================= */
+
+.dasha-section {
+    position: relative;
+    overflow: hidden;
+}
+
+.dasha-section::after {
+    content: "ॐ";
+    position: absolute;
+    right: 22px;
+    top: 15px;
+    color: rgba(218, 176, 85, 0.035);
+    font-family: serif;
+    font-size: 5rem;
+    pointer-events: none;
+}
+
+/* =========================================================
+   CURRENT DASHA
+   ========================================================= */
+
+.current-dasha {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 17px;
+    padding: 17px 18px;
+    overflow: hidden;
+    border: 1px solid rgba(218, 176, 85, 0.24);
+    border-radius: 14px;
+    background:
+        radial-gradient(
+            circle at 10% 50%,
+            rgba(218, 176, 85, 0.09),
+            transparent 28%
+        ),
+        linear-gradient(
+            135deg,
+            rgba(82, 58, 19, 0.18),
+            rgba(6, 30, 55, 0.78)
+        );
+}
+
+.current-dasha::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(
+        180deg,
+        #e4bd6b,
+        rgba(228, 189, 107, 0.05)
+    );
+}
+
+.current-dasha-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border: 1px solid rgba(224, 183, 92, 0.3);
+    border-radius: 50%;
+    background: rgba(175, 126, 39, 0.1);
+    color: #e2bb68;
+    font-size: 1.15rem;
+    font-weight: 800;
+}
+
+.current-dasha-label {
+    margin-bottom: 3px;
+    color: #7f98b2;
+    font-size: 0.65rem;
+    font-weight: 750;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.current-dasha-name {
+    color: #f0e2c4;
+    font-size: 1rem;
+    font-weight: 750;
+}
+
+.current-dasha-dates {
+    color: #879eb7;
+    font-size: 0.72rem;
+    text-align: right;
+}
+
+/* =========================================================
+   DASHA SUMMARY
+   ========================================================= */
+
+.dasha-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 9px;
+    margin-bottom: 17px;
+}
+
+.dasha-summary-item {
+    padding: 11px 13px;
+    border: 1px solid rgba(133, 171, 209, 0.09);
+    border-radius: 10px;
+    background: rgba(3, 18, 36, 0.42);
+}
+
+.dasha-summary-label {
+    display: block;
+    margin-bottom: 4px;
+    color: #718aa5;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.dasha-summary-value {
+    color: #c8d5e1;
+    font-size: 0.77rem;
+    font-weight: 700;
+}
+
+/* =========================================================
+   DASHA TIMELINE
+   ========================================================= */
+
+.dasha-timeline {
+    position: relative;
+    display: grid;
+    gap: 8px;
+    padding-left: 23px;
+}
+
+.dasha-timeline::before {
+    content: "";
+    position: absolute;
+    left: 7px;
+    top: 9px;
+    bottom: 9px;
+    width: 1px;
+    background: linear-gradient(
+        180deg,
+        rgba(220, 177, 87, 0.48),
+        rgba(117, 159, 199, 0.12)
+    );
+}
+
+.dasha-item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 100px minmax(0, 1fr) 145px;
+    align-items: center;
+    gap: 13px;
+    min-height: 52px;
+    padding: 10px 13px;
+    border: 1px solid rgba(132, 169, 207, 0.09);
+    border-radius: 10px;
+    background: rgba(3, 18, 37, 0.46);
+}
+
+.dasha-item::before {
+    content: "";
+    position: absolute;
+    left: -20px;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    border: 2px solid #d8b267;
+    border-radius: 50%;
+    background: #071d36;
+    transform: translateY(-50%);
+    box-shadow: 0 0 0 4px rgba(216, 178, 103, 0.045);
+}
+
+.dasha-item:hover {
+    border-color: rgba(217, 175, 84, 0.22);
+    background: rgba(13, 48, 79, 0.4);
+}
+
+.dasha-item.active {
+    border-color: rgba(219, 176, 84, 0.3);
+    background:
+        linear-gradient(
+            90deg,
+            rgba(122, 83, 23, 0.14),
+            rgba(8, 36, 61, 0.75)
+        );
+}
+
+.dasha-item.active::before {
+    width: 10px;
+    height: 10px;
+    border-color: #f0c875;
+    background: #c5953f;
+    box-shadow:
+        0 0 0 4px rgba(218, 174, 81, 0.08),
+        0 0 14px rgba(218, 174, 81, 0.2);
+}
+
+.dasha-planet {
+    color: #e1b967;
+    font-size: 0.78rem;
+    font-weight: 750;
+}
+
+.dasha-period {
+    color: #b7c8d8;
+    font-size: 0.75rem;
+}
+
+.dasha-duration {
+    color: #778fa8;
+    font-size: 0.69rem;
+    text-align: right;
+}
+
+/* =========================================================
+   DASHA PLANET ICONS
+   ========================================================= */
+
+.dasha-planet-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    margin-right: 7px;
+    border: 1px solid rgba(220, 178, 91, 0.25);
+    border-radius: 50%;
+    background: rgba(166, 117, 30, 0.1);
+    color: #ddb567;
+    font-size: 0.66rem;
+    font-weight: 800;
+    vertical-align: middle;
+}
+
+/* =========================================================
+   DATES
+   ========================================================= */
+
+.dasha-dates {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    color: #8198b0;
+    font-size: 0.68rem;
+}
+
+.dasha-date-start,
+.dasha-date-end {
+    white-space: nowrap;
+}
+
+.dasha-date-separator {
+    flex: 1;
+    height: 1px;
+    min-width: 12px;
+    background: rgba(133, 171, 209, 0.11);
+}
+
+/* =========================================================
+   ANTARDASHA
+   ========================================================= */
+
+.antardasha {
+    margin-top: 10px;
+    padding: 11px 13px 11px 15px;
+    border-left: 1px solid rgba(218, 176, 86, 0.22);
+    border-radius: 0 9px 9px 0;
+    background: rgba(5, 25, 47, 0.5);
+}
+
+.antardasha-title {
+    margin-bottom: 7px;
+    color: #cba55c;
+    font-size: 0.67rem;
+    font-weight: 750;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.antardasha-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(132, 169, 207, 0.06);
+    color: #9db1c5;
+    font-size: 0.7rem;
+}
+
+.antardasha-row:last-child {
+    border-bottom: 0;
+}
+
+/* =========================================================
+   BIRTH DASHA
+   ========================================================= */
+
+.dasha-birth-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.dasha-birth-card {
+    padding: 12px 14px;
+    border: 1px solid rgba(133, 171, 209, 0.1);
+    border-radius: 10px;
+    background: rgba(3, 18, 36, 0.44);
+}
+
+.dasha-birth-card-label {
+    color: #718aa5;
+    font-size: 0.63rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.dasha-birth-card-value {
+    margin-top: 4px;
+    color: #d3dfeb;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+/* =========================================================
+   DARSHA / DATES STATUS
+   ========================================================= */
+
+.dasha-status {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: rgba(75, 151, 112, 0.1);
+    color: #86cdae;
+    font-size: 0.62rem;
+    font-weight: 750;
+}
+
+.dasha-status.current {
+    background: rgba(208, 164, 66, 0.12);
+    color: #dfb968;
+}
+
+.dasha-status.completed {
+    background: rgba(111, 135, 159, 0.1);
+    color: #8fa4b8;
+}
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.dasha-empty {
+    padding: 25px 18px;
+    border: 1px dashed rgba(136, 173, 211, 0.15);
+    border-radius: 11px;
+    color: #7891aa;
+    font-size: 0.76rem;
+    text-align: center;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 800px) {
+    .dasha-item {
+        grid-template-columns: 85px minmax(0, 1fr);
+    }
+
+    .dasha-duration {
+        grid-column: 2;
+        text-align: left;
+    }
+}
+
+@media (max-width: 600px) {
+    .current-dasha {
+        grid-template-columns: auto 1fr;
+    }
+
+    .current-dasha-dates {
+        grid-column: 2;
+        text-align: left;
+    }
+
+    .dasha-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .dasha-timeline {
+        padding-left: 19px;
+    }
+
+    .dasha-item {
+        grid-template-columns: 1fr;
+        gap: 5px;
+        padding: 12px;
+    }
+
+    .dasha-item::before {
+        left: -16px;
+    }
+
+    .dasha-duration {
+        grid-column: auto;
+        text-align: left;
+    }
+
+    .dasha-birth-info {
+        grid-template-columns: 1fr;
+    }
+
+    .dasha-dates {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .dasha-date-separator {
+        display: none;
+    }
+}
+
+/* =========================================================
+   PRINT
+   ========================================================= */
+
+@media print {
+    .current-dasha,
+    .dasha-summary-item,
+    .dasha-item,
+    .dasha-birth-card {
+        background: #fff !important;
+        border-color: #ccc !important;
+        box-shadow: none !important;
+    }
+
+    .current-dasha-name,
+    .dasha-planet,
+    .dasha-summary-value,
+    .dasha-birth-card-value {
+        color: #222 !important;
+    }
+
+    .current-dasha-label,
+    .current-dasha-dates,
+    .dasha-summary-label,
+    .dasha-duration,
+    .dasha-birth-card-label {
+        color: #555 !important;
+    }
+
+    .dasha-timeline::before {
+        background: #999 !important;
+    }
+}
+/* =========================================================
+   DASHA — FINAL ALIGNMENT FIX
+   Matches the HTML generated by dasha.js
+   ========================================================= */
+
+/* Dasha list should use the full available width */
+#dashaList {
+    width: 100%;
+    padding: 17px !important;
+    box-sizing: border-box;
+}
+
+/* Timeline */
+#dashaList .dasha-timeline {
+    position: relative;
+
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+
+    padding: 4px 0 4px 34px;
+
+    box-sizing: border-box;
+}
+
+/* Vertical timeline line */
+#dashaList .dasha-timeline::before {
+    content: "";
+
+    position: absolute;
+
+    left: 12px;
+    top: 18px;
+    bottom: 18px;
+
+    width: 1px;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(125, 211, 252, 0.45),
+            rgba(125, 211, 252, 0.08)
+        );
+}
+
+/* =========================================================
+   EACH DASHA ROW
+   ========================================================= */
+
+#dashaList .dasha-period {
+    position: relative;
+
+    width: 100%;
+    min-width: 0;
+
+    display: block;
+
+    box-sizing: border-box;
+
+    border:
+        1px solid rgba(91, 157, 255, 0.18);
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(10, 48, 100, 0.72),
+            rgba(4, 27, 59, 0.82)
+        );
+
+    overflow: hidden;
+
+    transition:
+        border-color 180ms ease,
+        background 180ms ease,
+        box-shadow 180ms ease;
+}
+
+/* Timeline dot */
+#dashaList .dasha-period::before {
+    content: "";
+
+    position: absolute;
+
+    left: -28px;
+    top: 50%;
+
+    width: 10px;
+    height: 10px;
+
+    transform: translateY(-50%);
+
+    border-radius: 50%;
+
+    background: #071b38;
+
+    border:
+        2px solid rgba(96, 190, 255, 0.65);
+
+    box-shadow:
+        0 0 0 4px rgba(59, 130, 246, 0.07);
+}
+
+/* =========================================================
+   ACTIVE / CURRENT DASHA
+   ========================================================= */
+
+#dashaList .dasha-period.is-current {
+    border-color:
+        rgba(233, 189, 75, 0.42);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(14, 66, 125, 0.86),
+            rgba(5, 30, 65, 0.92)
+        );
+
+    box-shadow:
+        0 0 22px rgba(28, 107, 214, 0.12),
+        inset 0 0 20px rgba(233, 189, 75, 0.025);
+}
+
+#dashaList .dasha-period.is-current::before {
+    width: 12px;
+    height: 12px;
+
+    background: #d9a52e;
+
+    border-color: #f7d774;
+
+    box-shadow:
+        0 0 0 4px rgba(233, 189, 75, 0.09),
+        0 0 15px rgba(233, 189, 75, 0.35);
+}
+
+/* =========================================================
+   DASHA CONTENT
+   ========================================================= */
+
+#dashaList .dasha-period-content {
+    width: 100%;
+
+    padding: 16px 18px;
+
+    box-sizing: border-box;
+}
+
+/* Top row */
+#dashaList .dasha-period-top {
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 12px;
+}
+
+/* Label */
+#dashaList .dasha-period-label {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #67c7ff;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    letter-spacing: 0.09em;
+
+    text-transform: uppercase;
+}
+
+/* Planet name */
+#dashaList .dasha-period-top h3 {
+    margin: 0;
+
+    color: #ffffff;
+
+    font-size: 15px;
+
+    font-weight: 800;
+}
+
+/* =========================================================
+   ACTIVE BADGE
+   ========================================================= */
+
+#dashaList .dasha-active-badge {
+    flex-shrink: 0;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 5px 10px;
+
+    border-radius: 999px;
+
+    background:
+        rgba(233, 189, 75, 0.10);
+
+    border:
+        1px solid rgba(233, 189, 75, 0.28);
+
+    color: #f7d774;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    white-space: nowrap;
+}
+
+#dashaList .dasha-live-dot {
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+
+    background: #3ddc97;
+
+    box-shadow:
+        0 0 8px rgba(61, 220, 151, 0.65);
+}
+
+/* =========================================================
+   FROM / TO / DURATION
+   ========================================================= */
+
+#dashaList .dasha-period-meta {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 10px;
+
+    box-sizing: border-box;
+}
+
+#dashaList .dasha-period-meta > div {
+    min-width: 0;
+
+    padding:
+        9px 11px;
+
+    border-radius: 8px;
+
+    background:
+        rgba(2, 18, 39, 0.42);
+
+    border:
+        1px solid rgba(96, 165, 250, 0.10);
+}
+
+/* Meta label */
+#dashaList .dasha-period-meta span {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #6fa6c9;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    letter-spacing: 0.07em;
+
+    text-transform: uppercase;
+}
+
+/* Meta value */
+#dashaList .dasha-period-meta strong {
+    display: block;
+
+    color: #e9f3ff;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+/* Duration */
+#dashaList .dasha-period-meta > div:last-child strong {
+    color: #f4d16d;
+}
+
+/* =========================================================
+   PROGRESS BAR
+   ========================================================= */
+
+#dashaList .dasha-mini-progress {
+    width: 100%;
+
+    height: 4px;
+
+    margin-top: 13px;
+
+    overflow: hidden;
+
+    border-radius: 999px;
+
+    background:
+        rgba(255, 255, 255, 0.07);
+}
+
+#dashaList .dasha-mini-progress-bar {
+    height: 100%;
+
+    border-radius: inherit;
+
+    background:
+        linear-gradient(
+            90deg,
+            #1454a6,
+            #3b82f6,
+            #e9bd4b
+        );
+
+    box-shadow:
+        0 0 10px rgba(59, 130, 246, 0.30);
+}
+
+/* =========================================================
+   HOVER
+   ========================================================= */
+
+#dashaList .dasha-period:hover {
+    border-color:
+        rgba(91, 178, 255, 0.36);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(12, 57, 113, 0.82),
+            rgba(5, 29, 62, 0.90)
+        );
+
+    box-shadow:
+        0 8px 25px rgba(0, 50, 120, 0.14);
+}
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+#dashaList .dasha-empty {
+    width: 100%;
+
+    padding: 35px 20px;
+
+    text-align: center;
+
+    box-sizing: border-box;
+
+    border:
+        1px solid rgba(91, 157, 255, 0.15);
+
+    border-radius: 12px;
+
+    background:
+        rgba(4, 25, 52, 0.55);
+}
+
+#dashaList .dasha-empty h3 {
+    margin: 8px 0 5px;
+
+    color: #ffffff;
+
+    font-size: 14px;
+}
+
+#dashaList .dasha-empty p {
+    margin: 0;
+
+    color: #8199b7;
+
+    font-size: 11px;
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    #dashaList {
+        padding: 12px !important;
+    }
+
+    #dashaList .dasha-timeline {
+        padding-left: 25px;
+    }
+
+    #dashaList .dasha-timeline::before {
+        left: 8px;
+    }
+
+    #dashaList .dasha-period::before {
+        left: -22px;
+    }
+
+    #dashaList .dasha-period-content {
+        padding: 13px;
+    }
+
+    #dashaList .dasha-period-top {
+        align-items: flex-start;
+    }
+
+    #dashaList .dasha-period-top h3 {
+        font-size: 14px;
+    }
+
+    #dashaList .dasha-period-meta {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+
+    #dashaList .dasha-period-meta > div {
+        padding: 8px 10px;
+    }
+
+    #dashaList .dasha-period-meta strong {
+        white-space: normal;
+    }
+}

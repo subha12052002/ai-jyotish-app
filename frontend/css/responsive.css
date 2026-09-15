@@ -1,0 +1,557 @@
+/* =========================================================
+   AI JYOTISH — RESPONSIVE SYSTEM
+   Mobile-first refinements for Cosmic Blue + Gold UI
+   ========================================================= */
+
+/* =========================================================
+   LARGE DESKTOP
+   ========================================================= */
+
+@media (min-width: 1400px) {
+    .container,
+    .kundli-header,
+    .kundli-profile,
+    .kundli-summary,
+    .kundli-main {
+        max-width: 1400px;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .planet-cards {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+/* =========================================================
+   LAPTOP
+   ========================================================= */
+
+@media (max-width: 1200px) {
+    .container {
+        width: min(100% - 32px, 1100px);
+    }
+
+    .dashboard-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .kundli-content-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .kundli-side-column {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+        align-items: start;
+    }
+
+    .kundli-side-column > .kundli-section {
+        margin-bottom: 0;
+    }
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 900px) {
+    .container {
+        width: min(100% - 28px, 850px);
+    }
+
+    /* Navbar */
+    .navbar {
+        padding: 11px 16px;
+    }
+
+    .nav-links {
+        gap: 4px;
+    }
+
+    .nav-links a {
+        padding: 7px 9px;
+        font-size: 0.74rem;
+    }
+
+    /* Dashboard */
+    .dashboard-hero {
+        padding: 24px;
+    }
+
+    .dashboard-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .quick-actions {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Kundli */
+    .kundli-profile-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .kundli-summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .kundli-side-column {
+        grid-template-columns: 1fr;
+    }
+
+    .chart-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .chart-wrapper {
+        min-height: 500px;
+    }
+
+    .planet-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .house-grid,
+    #houseGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* =========================================================
+   MOBILE NAVIGATION
+   ========================================================= */
+
+@media (max-width: 720px) {
+    body {
+        overflow-x: hidden;
+    }
+
+    .container {
+        width: calc(100% - 24px);
+    }
+
+    .navbar {
+        position: relative;
+        min-height: 58px;
+        padding: 9px 12px;
+    }
+
+    .navbar-inner,
+    .nav-container {
+        flex-wrap: wrap;
+        gap: 9px;
+    }
+
+    .logo {
+        font-size: 1rem;
+    }
+
+    .logo-symbol {
+        width: 31px;
+        height: 31px;
+    }
+
+    .nav-links {
+        width: 100%;
+        order: 3;
+        display: flex;
+        overflow-x: auto;
+        padding-bottom: 2px;
+        scrollbar-width: none;
+    }
+
+    .nav-links::-webkit-scrollbar {
+        display: none;
+    }
+
+    .nav-links a {
+        flex: 0 0 auto;
+        white-space: nowrap;
+        padding: 7px 10px;
+    }
+
+    .nav-actions {
+        margin-left: auto;
+    }
+
+    /* General */
+    h1 {
+        font-size: 1.7rem;
+    }
+
+    h2 {
+        font-size: 1.3rem;
+    }
+
+    h3 {
+        font-size: 1.05rem;
+    }
+
+    /* Buttons */
+    .btn,
+    button {
+        min-height: 40px;
+    }
+
+    /* Dashboard */
+    .dashboard-hero {
+        padding: 21px 17px;
+        border-radius: 16px;
+    }
+
+    .dashboard-hero-content {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .dashboard-hero-actions {
+        width: 100%;
+    }
+
+    .dashboard-hero-actions .btn {
+        flex: 1;
+    }
+
+    .dashboard-stats {
+        grid-template-columns: 1fr 1fr;
+        gap: 9px;
+    }
+
+    .stat-card {
+        padding: 14px;
+        min-height: 86px;
+    }
+
+    .quick-actions {
+        grid-template-columns: 1fr 1fr;
+        gap: 9px;
+    }
+
+    /* Auth */
+    .auth-container {
+        width: calc(100% - 24px);
+        padding: 20px 0;
+    }
+
+    .auth-card {
+        padding: 24px 18px;
+        border-radius: 17px;
+    }
+
+    /* Birth form */
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .birth-form-card {
+        padding: 20px 16px;
+    }
+
+    /* Kundli */
+    .kundli-header {
+        margin-top: 14px;
+        padding: 20px 16px;
+    }
+
+    .kundli-header-content {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .kundli-header-actions {
+        width: 100%;
+    }
+
+    .kundli-header-actions .btn {
+        flex: 1;
+    }
+
+    .kundli-profile {
+        padding: 9px;
+    }
+
+    .kundli-profile-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .kundli-summary-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .kundli-section {
+        padding: 17px 14px;
+        border-radius: 15px;
+    }
+
+    /* Charts */
+    .chart-wrapper {
+        min-height: 410px;
+        padding: 10px;
+    }
+
+    #kundliSvg {
+        width: 100%;
+        height: auto;
+    }
+
+    .chart-info {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    /* Planet cards */
+    .planet-cards {
+        grid-template-columns: 1fr;
+    }
+
+    /* AI */
+    .ai-form,
+    #aiForm {
+        flex-direction: column;
+    }
+
+    #aiForm button {
+        width: 100%;
+    }
+}
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+    .container {
+        width: calc(100% - 18px);
+    }
+
+    .navbar {
+        padding-left: 9px;
+        padding-right: 9px;
+    }
+
+    .logo-text {
+        display: none;
+    }
+
+    .nav-actions .btn {
+        padding: 7px 10px;
+        font-size: 0.68rem;
+    }
+
+    .dashboard-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .quick-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .kundli-profile-grid,
+    .kundli-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .kundli-profile-item {
+        padding: 11px 12px;
+    }
+
+    .kundli-summary-card {
+        min-height: auto;
+    }
+
+    .chart-wrapper {
+        min-height: 300px;
+    }
+
+    .chart-info {
+        grid-template-columns: 1fr;
+    }
+
+    .house-grid,
+    #houseGrid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .dasha-item {
+        grid-template-columns: 1fr;
+    }
+
+    .dasha-duration {
+        text-align: left;
+    }
+
+    .nakshatra-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .ai-section {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    /* Prevent long astrology values from breaking layout */
+    .planet-card-value,
+    .kundli-profile-value,
+    .dasha-period,
+    .analysis-text {
+        overflow-wrap: anywhere;
+    }
+}
+
+/* =========================================================
+   VERY SMALL DEVICES
+   ========================================================= */
+
+@media (max-width: 360px) {
+    .container {
+        width: calc(100% - 14px);
+    }
+
+    .kundli-section {
+        padding: 14px 11px;
+    }
+
+    .dashboard-hero {
+        padding: 18px 14px;
+    }
+
+    .kundli-title,
+    #chartName {
+        font-size: 1.3rem;
+    }
+
+    .house-grid,
+    #houseGrid {
+        gap: 6px;
+    }
+
+    .house-card {
+        padding: 9px;
+    }
+}
+
+/* =========================================================
+   LANDSCAPE PHONES
+   ========================================================= */
+
+@media (max-height: 500px) and (orientation: landscape) {
+    .auth-page {
+        min-height: auto;
+        padding: 20px 0;
+    }
+
+    .auth-card {
+        margin: 10px auto;
+    }
+
+    .dashboard-hero {
+        padding: 18px;
+    }
+
+    .chart-wrapper {
+        min-height: 360px;
+    }
+}
+
+/* =========================================================
+   TOUCH DEVICES
+   ========================================================= */
+
+@media (hover: none) and (pointer: coarse) {
+    .btn,
+    button,
+    .nav-links a,
+    .quick-action,
+    .ai-suggestion,
+    .planet-card,
+    .kundli-summary-card {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .planet-card:hover,
+    .kundli-summary-card:hover {
+        transform: none;
+    }
+
+    .btn:active,
+    button:active {
+        transform: scale(0.98);
+    }
+
+    /* Comfortable tap targets */
+    .nav-links a {
+        min-height: 38px;
+    }
+}
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* =========================================================
+   PRINT
+   ========================================================= */
+
+@media print {
+    .navbar,
+    .nav-links,
+    .nav-actions,
+    .dashboard-hero-actions,
+    .kundli-header-actions,
+    .quick-actions,
+    .ai-form,
+    #aiForm,
+    .ai-suggestions,
+    #logoutBtn,
+    #printBtn {
+        display: none !important;
+    }
+
+    body,
+    .cosmic-page,
+    .kundli-page {
+        background: #fff !important;
+        color: #111 !important;
+    }
+
+    .container,
+    .kundli-header,
+    .kundli-profile,
+    .kundli-summary,
+    .kundli-main {
+        width: 100% !important;
+        max-width: none !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    .kundli-content-grid,
+    .dashboard-grid,
+    .kundli-side-column {
+        display: block !important;
+    }
+
+    .kundli-section,
+    .stat-card,
+    .dashboard-hero,
+    .kundli-header {
+        margin-bottom: 14px;
+        break-inside: avoid;
+        page-break-inside: avoid;
+        box-shadow: none !important;
+    }
+}

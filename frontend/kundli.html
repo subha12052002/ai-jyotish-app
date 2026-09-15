@@ -1,566 +1,2039 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Jyotish — Kundli</title>
 
     <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
+        name="description"
+        content="Detailed Vedic birth chart, planetary positions, Nakshatra, Dasha, Yogas and AI astrology analysis."
     >
 
-    <title>Your Kundli • AI Jyotish</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/cosmic.css">
+    <link rel="stylesheet" href="css/charts.css">
+    <link rel="stylesheet" href="css/planets.css">
+    <link rel="stylesheet" href="css/dasha.css">
+    <link rel="stylesheet" href="css/kundli.css">
+    <link rel="stylesheet" href="css/ai.css">
+    <link rel="stylesheet" href="css/responsive.css">
 
-    <link
-        rel="stylesheet"
-        href="css/style.css"
-    >
+    <style>
+        :root {
+            --k-bg: #020817;
+            --k-panel: rgba(7, 22, 47, .82);
+            --k-panel-2: rgba(9, 29, 59, .9);
+            --k-border: rgba(91, 157, 255, .18);
+            --k-gold: #e9b44c;
+            --k-gold-light: #ffd77d;
+            --k-blue: #4d9dff;
+            --k-blue-light: #8ac1ff;
+            --k-text: #edf5ff;
+            --k-muted: #8ea6c7;
+            --k-soft: #637b9e;
+            --k-radius: 20px;
+        }
 
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--k-text);
+            background:
+                radial-gradient(
+                    circle at 15% 5%,
+                    rgba(35, 101, 190, .16),
+                    transparent 28%
+                ),
+                radial-gradient(
+                    circle at 85% 12%,
+                    rgba(233, 180, 76, .055),
+                    transparent 25%
+                ),
+                radial-gradient(
+                    circle at 50% 75%,
+                    rgba(35, 90, 165, .10),
+                    transparent 32%
+                ),
+                var(--k-bg);
+            overflow-x: hidden;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button {
+            font: inherit;
+        }
+
+        .kundli-stars {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -1;
+            opacity: .35;
+
+            background-image:
+                radial-gradient(
+                    circle,
+                    rgba(255,255,255,.72) 0 1px,
+                    transparent 1.4px
+                ),
+                radial-gradient(
+                    circle,
+                    rgba(100,170,255,.55) 0 1px,
+                    transparent 1.4px
+                );
+
+            background-size: 125px 125px, 205px 205px;
+            background-position: 15px 20px, 65px 90px;
+        }
+
+        #kundliPage {
+            min-height: 100vh;
+        }
+
+        .kundli-shell {
+            width: min(1260px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 20px 0 60px;
+        }
+
+        /* =====================================================
+           NAVIGATION
+           ===================================================== */
+
+        .kundli-nav {
+            min-height: 66px;
+            padding: 11px 14px 11px 19px;
+
+            display: flex;
+            align-items: center;
+            gap: 18px;
+
+            border: 1px solid var(--k-border);
+            border-radius: 17px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(9, 30, 62, .94),
+                    rgba(3, 15, 34, .91)
+                );
+
+            box-shadow:
+                0 18px 55px rgba(0,0,0,.27),
+                inset 0 1px 0 rgba(255,255,255,.035);
+
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+
+            position: relative;
+        }
+
+        .kundli-nav::after {
+            content: "";
+            position: absolute;
+            left: 9%;
+            right: 9%;
+            bottom: 0;
+            height: 1px;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(77,157,255,.5),
+                rgba(233,180,76,.42),
+                transparent
+            );
+        }
+
+        .k-brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            min-width: 190px;
+        }
+
+        .k-brand-mark {
+            width: 39px;
+            height: 39px;
+            display: grid;
+            place-items: center;
+
+            border-radius: 12px;
+            color: var(--k-gold-light);
+
+            border: 1px solid rgba(233,180,76,.22);
+            background: rgba(233,180,76,.06);
+
+            font-size: 18px;
+        }
+
+        .k-brand-name {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .k-brand-sub {
+            margin: 3px 0 0;
+            color: var(--k-soft);
+            font-size: 9px;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+        }
+
+        .k-nav-links {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .k-nav-link {
+            padding: 8px 12px;
+            border-radius: 9px;
+            color: #8fa7c8;
+            font-size: 11px;
+            font-weight: 700;
+            transition: .2s ease;
+        }
+
+        .k-nav-link:hover,
+        .k-nav-link.active {
+            color: white;
+            background: rgba(77,157,255,.09);
+        }
+
+        .k-nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .k-nav-btn {
+            min-height: 36px;
+            padding: 0 12px;
+
+            border-radius: 9px;
+            cursor: pointer;
+
+            color: #c7dcf8;
+            border: 1px solid rgba(77,157,255,.16);
+            background: rgba(77,157,255,.055);
+
+            font-size: 10px;
+            font-weight: 800;
+
+            transition: .2s ease;
+        }
+
+        .k-nav-btn:hover {
+            background: rgba(77,157,255,.11);
+            border-color: rgba(77,157,255,.3);
+        }
+
+        .k-nav-btn.gold {
+            color: #f4c968;
+            border-color: rgba(233,180,76,.2);
+            background: rgba(233,180,76,.045);
+        }
+
+        /* =====================================================
+           PAGE HEADER
+           ===================================================== */
+
+        .kundli-header {
+            margin-top: 22px;
+            padding: 26px 28px;
+
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 22px;
+            align-items: center;
+
+            border: 1px solid var(--k-border);
+            border-radius: var(--k-radius);
+
+            background:
+                radial-gradient(
+                    circle at 88% 25%,
+                    rgba(233,180,76,.075),
+                    transparent 27%
+                ),
+                linear-gradient(
+                    135deg,
+                    rgba(9, 30, 63, .92),
+                    rgba(4, 16, 36, .86)
+                );
+
+            box-shadow:
+                0 22px 65px rgba(0,0,0,.28),
+                inset 0 1px 0 rgba(255,255,255,.025);
+        }
+
+        .header-eyebrow {
+            margin: 0 0 7px;
+            color: var(--k-gold);
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+        }
+
+        .kundli-title {
+            margin: 0;
+            font-size: clamp(25px, 3vw, 36px);
+            line-height: 1.15;
+            letter-spacing: -.025em;
+        }
+
+        .kundli-subtitle {
+            margin: 8px 0 0;
+            color: var(--k-muted);
+            font-size: 12px;
+            line-height: 1.65;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        #printBtn {
+            min-height: 41px;
+            padding: 0 16px;
+
+            border: 1px solid rgba(233,180,76,.24);
+            border-radius: 10px;
+
+            color: #f5cd75;
+            background: rgba(233,180,76,.06);
+
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 800;
+
+            transition: .2s ease;
+        }
+
+        #printBtn:hover {
+            background: rgba(233,180,76,.12);
+            transform: translateY(-1px);
+        }
+
+        /* =====================================================
+           PROFILE STRIP
+           ===================================================== */
+
+        .birth-profile {
+            margin-top: 13px;
+
+            display: grid;
+            grid-template-columns: 1.3fr 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        .profile-item {
+            min-height: 74px;
+            padding: 13px 15px;
+
+            border: 1px solid rgba(91,157,255,.13);
+            border-radius: 13px;
+
+            background: rgba(7,23,48,.67);
+        }
+
+        .profile-label {
+            color: #6f87aa;
+            font-size: 8px;
+            font-weight: 800;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+        }
+
+        .profile-value {
+            margin-top: 7px;
+            color: #eaf3ff;
+            font-size: 13px;
+            font-weight: 800;
+            overflow-wrap: anywhere;
+        }
+
+        /* =====================================================
+           SECTION SYSTEM
+           ===================================================== */
+
+        .kundli-section {
+            margin-top: 17px;
+            border: 1px solid var(--k-border);
+            border-radius: var(--k-radius);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(8,27,57,.88),
+                    rgba(3,15,34,.83)
+                );
+
+            box-shadow:
+                0 18px 55px rgba(0,0,0,.23),
+                inset 0 1px 0 rgba(255,255,255,.025);
+
+            overflow: hidden;
+        }
+
+        .section-head {
+            min-height: 64px;
+            padding: 15px 19px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+
+            border-bottom: 1px solid rgba(91,157,255,.08);
+        }
+
+        .section-head h2 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 800;
+        }
+
+        .section-head p {
+            margin: 4px 0 0;
+            color: var(--k-muted);
+            font-size: 10px;
+        }
+
+        .section-tag {
+            padding: 6px 9px;
+            border-radius: 8px;
+
+            color: #8dc4ff;
+            background: rgba(77,157,255,.055);
+            border: 1px solid rgba(77,157,255,.14);
+
+            font-size: 8px;
+            font-weight: 800;
+            letter-spacing: .09em;
+            text-transform: uppercase;
+        }
+
+        /* =====================================================
+           CHART + CALCULATION
+           ===================================================== */
+
+        .chart-layout {
+            padding: 17px;
+
+            display: grid;
+            grid-template-columns: minmax(350px, .95fr) minmax(0, 1.05fr);
+            gap: 15px;
+            align-items: stretch;
+        }
+
+        .chart-card {
+            min-height: 420px;
+
+            border: 1px solid rgba(91,157,255,.13);
+            border-radius: 15px;
+
+            background:
+                radial-gradient(
+                    circle at center,
+                    rgba(35,88,160,.08),
+                    transparent 58%
+                ),
+                rgba(2,13,30,.5);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 18px;
+            overflow: hidden;
+        }
+
+        #kundliSvg {
+            width: min(100%, 480px);
+            height: auto;
+            min-height: 340px;
+            display: block;
+        }
+
+        .calculation-card {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .calc-block {
+            padding: 14px;
+
+            border-radius: 13px;
+            border: 1px solid rgba(91,157,255,.1);
+            background: rgba(255,255,255,.016);
+        }
+
+        .calc-title {
+            margin: 0 0 10px;
+            color: var(--k-gold-light);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+        }
+
+        .calc-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0,1fr));
+            gap: 7px;
+        }
+
+        .calc-value {
+            padding: 9px 10px;
+            border-radius: 9px;
+            background: rgba(77,157,255,.035);
+            border: 1px solid rgba(77,157,255,.065);
+        }
+
+        .calc-value small {
+            display: block;
+            color: #627b9f;
+            font-size: 8px;
+            margin-bottom: 3px;
+        }
+
+        .calc-value strong {
+            color: #dceaff;
+            font-size: 11px;
+            font-weight: 750;
+        }
+
+        /* =====================================================
+           PLANET POSITION VISUAL
+           ===================================================== */
+
+        #planetPositionVisual {
+            margin: 17px;
+            min-height: 350px;
+
+            padding: 18px;
+
+            border: 1px solid rgba(91,157,255,.12);
+            border-radius: 15px;
+
+            background:
+                radial-gradient(
+                    circle at center,
+                    rgba(27,83,160,.10),
+                    transparent 58%
+                ),
+                rgba(2,13,30,.42);
+        }
+
+        /* =====================================================
+           ASCENDANT
+           ===================================================== */
+
+        #ascDetails {
+            padding: 17px 19px 20px;
+        }
+
+        /* =====================================================
+           PLANET TABLE
+           ===================================================== */
+
+        .planet-table-wrap {
+            padding: 14px 17px 18px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        #planetBody {
+            width: 100%;
+            min-width: 930px;
+            border-collapse: separate;
+            border-spacing: 0 5px;
+        }
+
+        #planetBody tr {
+            background: rgba(255,255,255,.018);
+        }
+
+        #planetBody td {
+            padding: 12px 10px;
+            border-top: 1px solid rgba(91,157,255,.07);
+            border-bottom: 1px solid rgba(91,157,255,.07);
+
+            color: #a9bdd8;
+            font-size: 10px;
+            white-space: nowrap;
+        }
+
+        #planetBody td:first-child {
+            border-left: 1px solid rgba(91,157,255,.07);
+            border-radius: 9px 0 0 9px;
+            color: #edf5ff;
+            font-weight: 800;
+        }
+
+        #planetBody td:last-child {
+            border-right: 1px solid rgba(91,157,255,.07);
+            border-radius: 0 9px 9px 0;
+        }
+
+        /* =====================================================
+           NAKSHATRA / DASHA / YOGA / HOUSES / ANALYSIS
+           ===================================================== */
+
+        #birthNakshatra,
+        #birthNakshatraLord,
+        #birthPada,
+        #currentDasha,
+        #dashaDates,
+        #dashaBirthLord,
+        #dashaStatus {
+            color: #e7f1ff;
+        }
+
+        #dashaList,
+        #yogaList,
+        #houseGrid {
+            padding: 17px;
+        }
+
+        /* =====================================================
+           AI SECTION
+           ===================================================== */
+
+        #ai {
+            padding-bottom: 4px;
+        }
+
+        #aiForm {
+            padding: 17px;
+
+            display: flex;
+            gap: 10px;
+            align-items: stretch;
+        }
+
+        #question {
+            flex: 1;
+            min-width: 0;
+
+            min-height: 47px;
+            padding: 12px 14px;
+
+            resize: vertical;
+
+            color: #eaf3ff;
+            background: rgba(2,13,30,.65);
+
+            border: 1px solid rgba(91,157,255,.16);
+            border-radius: 11px;
+
+            outline: none;
+        }
+
+        #question::placeholder {
+            color: #5f7596;
+        }
+
+        #question:focus {
+            border-color: rgba(77,157,255,.42);
+            box-shadow: 0 0 0 3px rgba(77,157,255,.06);
+        }
+
+        #aiForm button {
+            min-height: 47px;
+            padding: 0 18px;
+
+            border: 0;
+            border-radius: 11px;
+
+            color: #081321;
+            background: linear-gradient(
+                135deg,
+                #f2c55f,
+                #d99f38
+            );
+
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 900;
+
+            box-shadow: 0 9px 25px rgba(226,169,59,.12);
+            transition: .2s ease;
+        }
+
+        #aiForm button:hover {
+            transform: translateY(-1px);
+        }
+
+        #answer {
+            margin: 0 17px 17px;
+            min-height: 30px;
+        }
+
+        /* =====================================================
+           FOOTER
+           ===================================================== */
+
+        .kundli-footer {
+            margin-top: 27px;
+            padding: 17px 3px 0;
+
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+
+            border-top: 1px solid rgba(91,157,255,.07);
+
+            color: #5f7596;
+            font-size: 9px;
+        }
+
+        .kundli-footer span:last-child {
+            color: #a37d3d;
+        }
+
+        /* =====================================================
+           MOBILE
+           ===================================================== */
+
+        @media (max-width: 1050px) {
+            .k-brand {
+                min-width: auto;
+            }
+
+            .k-nav-links {
+                justify-content: flex-start;
+            }
+
+            .birth-profile {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .chart-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-card {
+                min-height: 390px;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .kundli-shell {
+                width: min(100% - 20px, 1260px);
+                padding-top: 10px;
+            }
+
+            .kundli-nav {
+                flex-wrap: wrap;
+                padding: 10px 11px;
+            }
+
+            .k-brand {
+                flex: 1;
+            }
+
+            .k-nav-actions {
+                margin-left: auto;
+            }
+
+            .k-nav-links {
+                order: 3;
+                width: 100%;
+                overflow-x: auto;
+                scrollbar-width: none;
+                border-top: 1px solid rgba(91,157,255,.06);
+                padding-top: 7px;
+            }
+
+            .k-nav-links::-webkit-scrollbar {
+                display: none;
+            }
+
+            .k-nav-link {
+                white-space: nowrap;
+            }
+
+            .kundli-header {
+                margin-top: 12px;
+                grid-template-columns: 1fr;
+                padding: 21px 18px;
+            }
+
+            .header-actions {
+                justify-content: flex-start;
+            }
+
+            .birth-profile {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+
+            .profile-item {
+                min-height: 68px;
+                padding: 11px;
+            }
+
+            .section-head {
+                min-height: 58px;
+                padding: 13px 15px;
+            }
+
+            .chart-layout {
+                padding: 10px;
+            }
+
+            .chart-card {
+                min-height: 330px;
+                padding: 10px;
+            }
+
+            #planetPositionVisual {
+                margin: 10px;
+                padding: 10px;
+                min-height: 290px;
+            }
+
+            #aiForm {
+                flex-direction: column;
+                padding: 12px;
+            }
+
+            #aiForm button {
+                width: 100%;
+            }
+
+            #answer {
+                margin-left: 12px;
+                margin-right: 12px;
+            }
+
+            .kundli-footer {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 460px) {
+            .k-brand-sub {
+                display: none;
+            }
+
+            .k-brand-mark {
+                width: 35px;
+                height: 35px;
+            }
+
+            .k-brand-name {
+                font-size: 14px;
+            }
+
+            .k-nav-btn {
+                padding: 0 9px;
+                font-size: 9px;
+            }
+
+            .kundli-title {
+                font-size: 25px;
+            }
+
+            .kundli-subtitle {
+                font-size: 11px;
+            }
+
+            .birth-profile {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .profile-value {
+                font-size: 11px;
+            }
+
+            .calc-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media print {
+            body {
+                background: white !important;
+                color: #111 !important;
+            }
+
+            .kundli-stars,
+            .kundli-nav,
+            #printBtn,
+            .header-actions,
+            #ai {
+                display: none !important;
+            }
+
+            .kundli-shell {
+                width: 100%;
+                padding: 0;
+            }
+
+            .kundli-header,
+            .kundli-section,
+            .profile-item {
+                background: white !important;
+                color: #111 !important;
+                box-shadow: none !important;
+                border-color: #d5d5d5 !important;
+            }
+
+            .kundli-title,
+            .section-head h2,
+            .profile-value,
+            #planetBody td {
+                color: #111 !important;
+            }
+        }
+    </style>
 </head>
-
 
 <body>
 
+<div class="kundli-stars" aria-hidden="true"></div>
 
-<header class="navbar">
+<main id="kundliPage">
 
-    <div class="nav-container">
+    <div class="kundli-shell">
 
-        <a
-            href="index.html"
-            class="brand"
-        >
-            ✦ AI Jyotish
-        </a>
+        <!-- =====================================================
+             NAVIGATION
+             ===================================================== -->
 
+        <nav class="kundli-nav">
 
-        <nav class="nav-links">
+            <a href="dashboard.html" class="k-brand">
 
-            <a href="index.html">
-                Home
+                <div class="k-brand-mark">
+                    ✦
+                </div>
+
+                <div>
+                    <p class="k-brand-name">
+                        AI Jyotish
+                    </p>
+
+                    <p class="k-brand-sub">
+                        Vedic Astrology Intelligence
+                    </p>
+                </div>
+
             </a>
 
-            <a
-                href="birth-form.html"
-                class="nav-button"
-            >
-                Create New
-            </a>
+            <div class="k-nav-links">
+
+                <a
+                    href="dashboard.html"
+                    class="k-nav-link"
+                >
+                    Dashboard
+                </a>
+
+                <a
+                    href="kundli.html"
+                    class="k-nav-link active"
+                >
+                    Kundli
+                </a>
+
+                <a
+                    href="birth-form.html"
+                    class="k-nav-link"
+                >
+                    New Chart
+                </a>
+
+                <a
+                    href="index.html"
+                    class="k-nav-link"
+                >
+                    Home
+                </a>
+
+            </div>
+
+            <div class="k-nav-actions">
+
+                <button
+                    type="button"
+                    id="printBtn"
+                    class="k-nav-btn gold"
+                >
+                    Print
+                </button>
+
+                <button
+                    type="button"
+                    id="logoutBtn"
+                    class="k-nav-btn"
+                >
+                    Sign Out
+                </button>
+
+            </div>
 
         </nav>
 
+
+        <!-- =====================================================
+             KUNDLI HEADER
+             ===================================================== -->
+
+        <section class="kundli-header">
+
+            <div>
+
+                <p class="header-eyebrow">
+                    Vedic Birth Chart
+                </p>
+
+                <h1 class="kundli-title">
+                    <span id="chartName">Your Kundli</span>
+                </h1>
+
+                <p class="kundli-subtitle">
+                    A detailed view of your Vedic horoscope, planetary
+                    positions, Nakshatra, Dashas, Yogas and calculated
+                    astrological factors.
+                </p>
+
+            </div>
+
+            <div class="header-actions">
+
+                <button
+                    type="button"
+                    id="printBtn"
+                    aria-label="Print Kundli"
+                >
+                    ⤓ Print Kundli
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             BIRTH PROFILE
+             ===================================================== -->
+
+        <section class="birth-profile">
+
+            <div class="profile-item">
+
+                <div class="profile-label">
+                    Birth Details
+                </div>
+
+                <div
+                    id="chartBirth"
+                    class="profile-value"
+                >
+                    —
+                </div>
+
+            </div>
+
+            <div class="profile-item">
+
+                <div class="profile-label">
+                    Birth Place
+                </div>
+
+                <div
+                    id="chartPlace"
+                    class="profile-value"
+                >
+                    —
+                </div>
+
+            </div>
+
+            <div class="profile-item">
+
+                <div class="profile-label">
+                    Ascendant
+                </div>
+
+                <div
+                    id="chartAsc"
+                    class="profile-value"
+                >
+                    —
+                </div>
+
+            </div>
+
+            <div class="profile-item">
+
+                <div class="profile-label">
+                    Sun · Moon
+                </div>
+
+                <div
+                    id="chartSun"
+                    class="profile-value"
+                >
+                    —
+                </div>
+
+            </div>
+
+        </section>
+        
+
+
+        <!-- =====================================================
+             BIRTH CHART
+             ===================================================== -->
+
+        <section class="kundli-section">
+<div class="chart-section-heading">
+    <div class="chart-heading-icon">✦</div>
+
+    <div class="chart-heading-content">
+        <h2>North Indian Birth Chart</h2>
+        <p>Rāśi chart with calculated planetary placements.</p>
+    </div>
+</div>
+
+                <span class="section-tag">
+                    D1 · Rāśi
+                </span>
+
+            </header>
+
+
+            <div class="chart-layout">
+
+                <div class="chart-card">
+
+                    <div
+                        id="kundliSvg"
+                        aria-label="North Indian Vedic birth chart"
+                    ></div>
+
+                </div>
+
+
+                <div class="calculation-card">
+
+                    <div class="calc-block">
+
+                        <h3 class="calc-title">
+                            Calculation Details
+                        </h3>
+
+                        <div class="calc-grid">
+
+                            <div class="calc-value">
+                                <small>Zodiac</small>
+                                <strong id="calcZodiac">—</strong>
+                            </div>
+
+                            <div class="calc-value">
+                                <small>Ayanamsha</small>
+                                <strong id="calcAyanamsha">—</strong>
+                            </div>
+
+                            <div class="calc-value">
+                                <small>House System</small>
+                                <strong id="calcHouse">—</strong>
+                            </div>
+
+                            <div class="calc-value">
+                                <small>Julian Day</small>
+                                <strong id="julianDay">—</strong>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="calc-block">
+
+                        <h3 class="calc-title">
+                            Ascendant
+                        </h3>
+
+                        <div id="ascDetails">
+                            Calculating Ascendant details…
+                        </div>
+
+                    </div>
+
+
+                    <div class="calc-block">
+
+                        <h3 class="calc-title">
+                            Chart Interpretation
+                        </h3>
+
+                        <p style="
+                            margin:0;
+                            color:#8299ba;
+                            font-size:10px;
+                            line-height:1.7;
+                        ">
+                            The Lagna establishes the first house of the
+                            horoscope. Planetary placements are interpreted
+                            relative to this reference point.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+        <!-- =====================================================
+     CHANDRA + NAVAMSHA
+     ===================================================== -->
+<section class="kundli-section special-charts-section" id="specialCharts">
+
+    <div class="chart-section-heading">
+        <div class="chart-heading-icon">☾</div>
+        <div class="chart-heading-content">
+            <span class="chart-heading-label">DERIVED CHARTS</span>
+            <h2>Chandra &amp; Navamsha Kundli</h2>
+            <p>Moon-based Chandra Kundli and Navamsha (D9) calculated from the same birth data.</p>
+        </div>
     </div>
 
-</header>
+    <div class="special-charts-grid">
+        <article class="special-chart-card">
+            <div class="special-chart-card-header">
+                <div>
+                    <span class="special-chart-kicker">MOON CHART</span>
+                    <h3>🌙 Chandra Kundli</h3>
+                </div>
+                <span class="special-chart-badge">Chandra Lagna</span>
+            </div>
+            <div id="chandraChart" class="special-chart-container" aria-label="Chandra Kundli"></div>
+        </article>
 
+        <article class="special-chart-card">
+            <div class="special-chart-card-header">
+                <div>
+                    <span class="special-chart-kicker">DIVISIONAL CHART</span>
+                    <h3>⭐ Navamsha Kundli</h3>
+                </div>
+                <span class="special-chart-badge">D9</span>
+            </div>
+            <div id="navamshaChart" class="special-chart-container" aria-label="Navamsha D9 Kundli"></div>
+        </article>
+    </div>
+</section>
 
+        <!-- =====================================================
+             PLANETARY POSITION VISUAL
+             ===================================================== -->
 
-<main class="page-container">
-
-
-<!-- PROFILE -->
-
-<section class="profile-header">
-
-    <div>
-
-        <p class="eyebrow">
-            YOUR COSMIC BLUEPRINT
-        </p>
-
-        <h1 id="personName">
-            Your Kundli
-        </h1>
-
-        <p
-            id="personInfo"
-            class="person-info"
+        <section
+            class="kundli-section"
+            id="planetaryPositions"
         >
-            Loading birth details...
+
+            <div class="chart-section-heading planetary-positions-heading">
+    <div class="chart-heading-icon">✦</div>
+
+    <div class="chart-heading-content">
+        <h2>Planetary Positions</h2>
+        <p>Calculated planetary placements in the birth chart.</p>
+    </div>
+</div>
+
+                <span class="section-tag">
+                    Graha
+                </span>
+
+            </header>
+
+            <div id="planetPositionVisual">
+                <!-- Rendered dynamically by charts.js -->
+            </div>
+
+        </section>
+        
+
+
+        <!-- =====================================================
+             PLANETARY TABLE
+             ===================================================== -->
+
+        <section class="kundli-section">
+
+            <div class="chart-section-heading detailed-positions-heading">
+
+    <div class="chart-heading-icon">
+        ✧
+    </div>
+
+    <div class="chart-heading-content">
+
+        <span class="chart-heading-label">
+            PLANETARY DATA
+        </span>
+
+        <h2>
+            Detailed Planetary Positions
+        </h2>
+
+        <p>
+            Exact degrees, signs, nakshatras and house placements.
         </p>
 
     </div>
 
+</div>
 
-    <div class="profile-badges">
 
-        <div class="badge">
+            <div class="planet-table-wrap">
 
-            <span>
-                LAGNA
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Planet</th>
+                            <th>Sign</th>
+                            <th>Degree</th>
+                            <th>Longitude</th>
+                            <th>House</th>
+                            <th>Nakshatra</th>
+                            <th>Nakshatra Lord</th>
+                            <th>Pada</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="planetBody">
+                        <tr>
+                            <td colspan="9">
+                                Calculating planetary positions…
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             PLANETS
+             ===================================================== -->
+
+        <section class="kundli-section">
+
+            <header class="section-head">
+
+                <div class="planetary-analysis-heading">
+
+    <div class="chart-heading-icon">
+        ✦
+    </div>
+
+    <div class="chart-heading-content">
+
+        <span class="chart-heading-label">
+            PLANETARY INSIGHTS
+        </span>
+
+        <h2>
+            Planetary Analysis
+        </h2>
+
+        <p>
+            Detailed interpretation of planetary positions and influences.
+        </p>
+
+    </div>
+
+</div>
+
+                <span class="section-tag">
+                    Graha Analysis
+                </span>
+
+            </header>
+
+            <div id="planetCards">
+                <!-- planets.js renders cards -->
+            </div>
+
+        </section>
+        <!-- =========================================================
+     FIXED NAKSHATRA HERO
+     Replace the existing NAKSHATRA section in kundli.html
+     with this section.
+     ========================================================= -->
+
+<section class="birth-nakshatra-container" id="birthNakshatraSection">
+
+    <!-- =====================================================
+         HERO / NAKSHATRA HEADER
+    ====================================================== -->
+
+    <div class="birth-nakshatra-hero">
+
+        <div class="nakshatra-hero-icon" aria-hidden="true">
+            ✦
+        </div>
+
+        <div class="nakshatra-hero-content">
+
+            <span class="nakshatra-hero-label">
+                BIRTH NAKSHATRA
             </span>
 
-            <strong id="ascendantSign">
+            <!--
+                IMPORTANT:
+                This value is intentionally NOT hard-coded.
+
+                script.js already updates #birthNakshatra
+                whenever a new Kundli is loaded.
+            -->
+            <h2 id="nakshatraHeroTitle">—</h2>
+
+            <p id="nakshatraHeroSubtitle">
+                Loading your birth-star details…
+            </p>
+
+        </div>
+
+        <div class="nakshatra-cosmic-decoration" aria-hidden="true">
+            ☾
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         NAKSHATRA DETAILS
+    ====================================================== -->
+
+    <div class="nakshatra-details-section">
+
+        <div class="nakshatra-details-title">
+
+            <span class="details-title-icon" aria-hidden="true">
+                ☾
+            </span>
+
+            <span>
+                NAKSHATRA DETAILS
+            </span>
+
+        </div>
+
+
+        <div class="nakshatra-info-grid">
+
+            <!-- =================================================
+                 NAKSHATRA
+            ================================================== -->
+
+            <div class="nakshatra-info-card">
+
+                <div class="info-card-icon" aria-hidden="true">
+                    ✦
+                </div>
+
+                <div class="info-card-content">
+
+                    <span>
+                        NAKSHATRA
+                    </span>
+
+                    <!--
+                        This is also dynamically updated by
+                        script.js.
+                    -->
+                    <strong id="birthNakshatra">
+                        —
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 NAKSHATRA LORD
+            ================================================== -->
+
+            <div class="nakshatra-info-card">
+
+                <div class="info-card-icon moon-icon" aria-hidden="true">
+                    ☾
+                </div>
+
+                <div class="info-card-content">
+
+                    <span>
+                        NAKSHATRA LORD
+                    </span>
+
+                    <strong id="birthNakshatraLord">
+                        —
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 PADA
+            ================================================== -->
+
+            <div class="nakshatra-info-card">
+
+                <div class="info-card-icon pada-icon" aria-hidden="true">
+
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+
+                </div>
+
+                <div class="info-card-content">
+
+                    <span>
+                        PADA
+                    </span>
+
+                    <strong id="birthPada">
+                        —
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             ABOUT NAKSHATRA
+             This section is also dynamically replaced so that
+             Rohini is NOT permanently hard-coded.
+        ====================================================== -->
+
+        <div
+            class="nakshatra-about-card"
+            id="nakshatraAboutCard"
+        >
+
+            <div class="nakshatra-about-title">
+
+                <span class="about-icon" aria-hidden="true">
+                    ▮▮
+                </span>
+
+                <span id="nakshatraAboutTitle">
+                    ABOUT YOUR NAKSHATRA
+                </span>
+
+            </div>
+
+
+            <p id="nakshatraAboutText">
+                Your Nakshatra interpretation will appear here
+                after your birth chart has been calculated.
+            </p>
+
+
+            <div class="nakshatra-quote">
+
+                <span
+                    class="quote-mark"
+                    aria-hidden="true"
+                >
+                    “
+                </span>
+
+                <span id="nakshatraQuote">
+                    Your birth star carries a unique
+                    symbolic influence in Vedic astrology.
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     VIMSHOTTARI DASHA
+     ===================================================== -->
+<section
+    class="kundli-section"
+    id="dashaSection"
+>
+
+    <div class="dasha-section-heading">
+
+    <div class="heading-icon">
+        ☸︎
+    </div>
+
+    <div class="heading-content">
+
+        <span class="heading-label">
+            VIMSHOTTARI DASHA
+        </span>
+
+        <h2>
+            MAHADASHA
+        </h2>
+
+        <p class="heading-description">
+            Current running planetary period based on your birth chart.
+        </p>
+
+    </div>
+
+</div>
+
+
+    <!-- Dasha Summary -->
+    <div class="dasha-summary-grid">
+
+        <!-- CURRENT DASHA -->
+        <div class="dasha-summary-card current-dasha-box">
+
+            <div class="dasha-summary-title">
+                Current Dasha
+            </div>
+
+            <div id="currentDasha">
                 —
-            </strong>
+            </div>
 
         </div>
 
 
-        <div class="badge">
+        <!-- DATES -->
+        <div class="dasha-summary-card">
 
-            <span>
-                AYANAMSA
+            <div class="dasha-summary-title">
+                Dates
+            </div>
+
+            <div id="dashaDates">
+                —
+            </div>
+
+        </div>
+
+
+        <!-- BIRTH DASHA LORD -->
+        <div class="dasha-summary-card">
+
+            <div class="dasha-summary-title">
+                Birth Dasha Lord
+            </div>
+
+            <div id="dashaBirthLord">
+                —
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Status -->
+    <div id="dashaStatus" class="dasha-status">
+        Calculating Dasha…
+    </div>
+
+
+    <!-- Mahadasha Timeline -->
+    <div id="dashaList" class="dasha-list">
+        <!-- dasha.js renders timeline -->
+    </div>
+
+</section>
+
+<!-- =====================================================
+     PLANETARY ASPECTS / BHAVA BALA / SHADBALA
+     ===================================================== -->
+<section class="kundli-section complete-analysis-section" id="completeAnalysis"></section>
+
+<!-- =====================================================
+     YOGAS
+     ===================================================== -->
+<section class="kundli-section yoga-section" id="yogaSection">
+    <div class="chart-section-heading">
+        <div class="chart-heading-icon">✦</div>
+        <div class="chart-heading-content">
+            <span class="chart-heading-label">YOGA ANALYSIS</span>
+            <h2>Important Yogas</h2>
+            <p>Significant planetary combinations detected in your birth chart.</p>
+        </div>
+        <span class="section-tag" id="yogaCount">0</span>
+    </div>
+
+    <div id="yogaSummary"></div>
+    <div id="yogaList"></div>
+</section>
+<div class="dashboard-card section-card ai-jyotish-card" id="ai">
+
+    <div class="ai-jyotish-header">
+
+        <div class="ai-jyotish-icon">
+            ✦
+        </div>
+
+        <div class="ai-jyotish-title">
+
+            <span class="section-eyebrow">
+                AI ASTROLOGY
             </span>
 
-            <strong>
-                Lahiri
-            </strong>
+            <h3>
+                ASK AI JYOTISH
+            </h3>
+
+            <p>
+                Ask questions about your calculated birth chart.
+            </p>
 
         </div>
 
     </div>
 
-</section>
+
+    <div class="ai-jyotish-divider"></div>
 
 
+    <form id="aiForm" class="ai-jyotish-form">
 
-<!-- CHARTS -->
+        <div class="ai-jyotish-input-row">
 
-<section class="section">
-
-    <div class="section-heading">
-
-        <p class="eyebrow">
-            RASHI CHARTS
-        </p>
-
-        <h2>
-            Vedic Birth Charts
-        </h2>
-
-        <p>
-            North Indian style Rashi charts.
-        </p>
-
-    </div>
+            <textarea
+                id="question"
+                class="chat-input ai-jyotish-input"
+                rows="1"
+                placeholder="Ask something about your Kundli..."
+                autocomplete="off"
+                required
+            ></textarea>
 
 
-    <div class="charts-grid">
+            <button
+                type="submit"
+                class="btn btn-gold ai-jyotish-button"
+            >
+                Ask AI
+                <span>→</span>
+            </button>
 
 
-        <!-- LAGNA -->
+            <div id="answer" class="chat-answer ai-jyotish-answer">
+    <div class="ai-thinking">
+        <div class="ai-orbit">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
 
-        <div class="chart-card">
-
-            <div class="chart-title">
-
-                <span>
-                    LAGNA KUNDLI
-                </span>
-
-                <strong id="lagnaChartSign">
-                    —
-                </strong>
-
+        <div class="ai-thinking-text">
+            <span>AI Jyotish is thinking</span>
+            <div class="ai-dots">
+                <i></i>
+                <i></i>
+                <i></i>
             </div>
-
-
-            <div
-                id="lagnaChart"
-                class="kundli-chart"
-            ></div>
+        </div>
+    </div>
+</div>
 
         </div>
-
-
-
-        <!-- CHANDRA -->
-
-        <div class="chart-card">
-
-            <div class="chart-title">
-
-                <span>
-                    CHANDRA KUNDLI
-                </span>
-
-                <strong id="chandraChartSign">
-                    —
-                </strong>
-
-            </div>
-
-
-            <div
-                id="chandraChart"
-                class="kundli-chart"
-            ></div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-
-<!-- QUICK DETAILS -->
-
-<section class="quick-grid">
-
-
-    <div class="info-card">
-
-        <span class="card-label">
-            Ascendant
-        </span>
-
-        <strong id="ascendantValue">
-            —
-        </strong>
-
-        <small id="ascendantDegree">
-            —
-        </small>
-
-    </div>
-
-
-    <div class="info-card">
-
-        <span class="card-label">
-            Sun Sign
-        </span>
-
-        <strong id="sunSign">
-            —
-        </strong>
-
-    </div>
-
-
-    <div class="info-card">
-
-        <span class="card-label">
-            Moon Sign
-        </span>
-
-        <strong id="moonSign">
-            —
-        </strong>
-
-        <small id="moonNakshatra">
-            —
-        </small>
-
-    </div>
-
-
-    <div class="info-card">
-
-        <span class="card-label">
-            Moon Degree
-        </span>
-
-        <strong id="moonDegree">
-            —
-        </strong>
-
-    </div>
-
-</section>
-
-
-
-<!-- PLANETS -->
-
-<section class="section">
-
-    <div class="section-heading">
-
-        <p class="eyebrow">
-            PLANETS
-        </p>
-
-        <h2>
-            Planetary Positions
-        </h2>
-
-        <p>
-            Exact planetary positions at birth.
-        </p>
-
-    </div>
-
-
-    <div class="table-card">
-
-        <div class="table-wrapper">
-
-            <table>
-
-                <thead>
-
-                    <tr>
-
-                        <th>Planet</th>
-                        <th>Sign</th>
-                        <th>Degree</th>
-                        <th>Nakshatra</th>
-                        <th>House</th>
-                        <th>Motion</th>
-
-                    </tr>
-
-                </thead>
-
-
-                <tbody id="planetTable">
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-
-<!-- GRAHA YUTI -->
-
-<section class="section">
-
-    <div class="section-heading">
-
-        <p class="eyebrow">
-            GRAHA YUTI
-        </p>
-
-        <h2>
-            Planetary Conjunctions
-        </h2>
-
-        <p>
-            Planets placed together in the same zodiac sign.
-        </p>
-
-    </div>
-
-
-    <div
-        id="yutiContent"
-        class="yoga-grid"
-    ></div>
-
-</section>
-
-
-
-<!-- PLANETARY STRENGTH -->
-
-<section class="section">
-
-    <div class="section-heading">
-
-        <p class="eyebrow">
-            PLANETARY CONDITION
-        </p>
-
-        <h2>
-            Planetary Strength
-        </h2>
-
-        <p>
-            Basic dignity and condition of the planets.
-        </p>
-
-    </div>
-
-
-    <div
-        id="strengthContent"
-        class="strength-grid"
-    ></div>
-
-</section>
-
-
-
-<!-- HOUSES -->
-
-<section class="section">
-
-    <div class="section-heading">
-
-        <p class="eyebrow">
-            HOUSES
-        </p>
-
-        <h2>
-            House Overview
-        </h2>
-
-        <p>
-            Twelve houses and their planetary placements.
-        </p>
-
-    </div>
-
-
-    <div
-        id="houseCards"
-        class="house-grid"
-    ></div>
-
-</section>
-
-
-
-<!-- ASPECTS -->
-
-<section class="section">
-
-    <div class="section-heading">
-
-        <p class="eyebrow">
-            DRISHTI
-        </p>
-
-        <h2>
-            Planetary Aspects
-        </h2>
-
-        <p>
-            Traditional Vedic planetary aspects.
-        </p>
-
-    </div>
-
-
-    <div
-        id="aspectContent"
-        class="aspect-grid"
-    ></div>
-
-</section>
-
-
-
-<!-- NAKSHATRA -->
-
-<section class="section">
-
-    <div class="section-heading">
-
-        <p class="eyebrow">
-            NAKSHATRA
-        </p>
-
-        <h2>
-            Birth Nakshatra
-        </h2>
-
-    </div>
-
-
-    <div
-        id="nakshatraContent"
-        class="nakshatra-card"
-    ></div>
-
-</section>
-
-
-
-<!-- YOGA -->
-
-<section class="section">
-
-    <div class="section-heading">
-
-        <p class="eyebrow">
-            YOGA
-        </p>
-
-        <h2>
-            Important Yogas
-        </h2>
-
-        <p>
-            Basic planetary combinations detected from
-            the available birth chart data.
-        </p>
-
-    </div>
-
-
-    <div
-        id="yogaContent"
-        class="yoga-grid"
-    ></div>
-
-</section>
-
-
-
-<!-- AI -->
-
-<section class="ai-card">
-
-    <p class="eyebrow">
-        AI ASTROLOGER
-    </p>
-
-    <h2>
-        Ask About Your Chart
-    </h2>
-
-    <p>
-        Ask a question about your planetary positions
-        or birth chart.
-    </p>
-
-
-    <div
-        id="aiMessages"
-        class="ai-messages"
-    ></div>
-
-
-    <form
-        id="aiForm"
-        class="ai-form"
-    >
-
-        <input
-            id="aiQuestion"
-            type="text"
-            placeholder="Ask something about your Kundli..."
-            autocomplete="off"
-        >
-
-        <button type="submit">
-            Ask
-        </button>
 
     </form>
 
-</section>
+</div>
 
 
-</main>
+<!-- =========================================================
+     APPLICATION SCRIPTS
+========================================================= -->
 
-
-
-<footer class="footer">
-
-    <p>
-        ✦ AI Jyotish
-    </p>
-
-    <span>
-        Traditional wisdom • Modern experience
-    </span>
-
-</footer>
-
-
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/planets.js"></script>
+<script src="js/nakshatra.js"></script>
+<script src="js/dasha.js"></script>
+<script src="js/yogas.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/kundli.js"></script>
 <script src="js/script.js"></script>
+
+
+<!-- =========================================================
+     NAKSHATRA HERO SYNCHRONIZATION
+     
+     This MUST remain at the very bottom of kundli.html,
+     after script.js.
+
+     It watches the actual #birthNakshatra value. Whenever
+     the user generates/loads another Kundli and the Nakshatra
+     changes, the large hero title changes automatically.
+
+     Therefore:
+     
+        Rohini     → Rohini
+        Ashwini    → Ashwini
+        Bharani    → Bharani
+        Krittika   → Krittika
+        Magha      → Magha
+        Mula       → Mula
+        etc.
+
+     Nothing is permanently hard-coded.
+========================================================= -->
+
+<script>
+(function () {
+    "use strict";
+
+    function getElement(id) {
+        return document.getElementById(id);
+    }
+
+
+    function cleanValue(value) {
+        if (
+            value === null ||
+            value === undefined
+        ) {
+            return "";
+        }
+
+        return String(value)
+            .replace(/\s+/g, " ")
+            .trim();
+    }
+
+
+    function syncNakshatraHero() {
+
+        const source =
+            getElement("birthNakshatra");
+
+        const heroTitle =
+            getElement("nakshatraHeroTitle");
+
+        const heroSubtitle =
+            getElement("nakshatraHeroSubtitle");
+
+        const aboutTitle =
+            getElement("nakshatraAboutTitle");
+
+        if (
+            !source ||
+            !heroTitle
+        ) {
+            return;
+        }
+
+
+        const nakshatra =
+            cleanValue(
+                source.textContent
+            );
+
+
+        /*
+         * Do not display stale data.
+         */
+
+        if (
+            !nakshatra ||
+            nakshatra === "—" ||
+            nakshatra === "-"
+        ) {
+
+            heroTitle.textContent =
+                "—";
+
+            if (heroSubtitle) {
+                heroSubtitle.textContent =
+                    "Loading your birth-star details…";
+            }
+
+            if (aboutTitle) {
+                aboutTitle.textContent =
+                    "ABOUT YOUR NAKSHATRA";
+            }
+
+            return;
+        }
+
+
+        /*
+         * Update the large hero title.
+         */
+
+        heroTitle.textContent =
+            nakshatra;
+
+
+        /*
+         * Update subtitle.
+         */
+
+        if (heroSubtitle) {
+
+            heroSubtitle.textContent =
+                nakshatra +
+                " · lunar constellation and birth-star details from your horoscope.";
+
+        }
+
+
+        /*
+         * Update the About heading.
+         */
+
+        if (aboutTitle) {
+
+            aboutTitle.textContent =
+                "ABOUT " +
+                nakshatra.toUpperCase() +
+                " NAKSHATRA";
+
+        }
+
+    }
+
+
+    /*
+     * Initial synchronization.
+     */
+
+    syncNakshatraHero();
+
+
+    /*
+     * Watch the actual Nakshatra value.
+     *
+     * This is important because script.js changes
+     * #birthNakshatra dynamically after every Kundli
+     * calculation.
+     */
+
+    const source =
+        getElement("birthNakshatra");
+
+
+    if (source) {
+
+        const observer =
+            new MutationObserver(
+                function () {
+
+                    syncNakshatraHero();
+
+                }
+            );
+
+
+        observer.observe(
+            source,
+            {
+                childList: true,
+                characterData: true,
+                subtree: true
+            }
+        );
+
+    }
+
+
+    /*
+     * Also check after the page has completely loaded.
+     */
+
+    window.addEventListener(
+        "load",
+        function () {
+
+            syncNakshatraHero();
+
+            /*
+             * Give the existing Kundli renderer time to
+             * finish loading the latest saved chart.
+             */
+
+            setTimeout(
+                syncNakshatraHero,
+                100
+            );
+
+            setTimeout(
+                syncNakshatraHero,
+                500
+            );
+
+            setTimeout(
+                syncNakshatraHero,
+                1000
+            );
+
+        }
+    );
+
+
+    /*
+     * Expose a small helper so the existing frontend can
+     * explicitly synchronize the hero if needed.
+     */
+
+    window.syncNakshatraHero =
+        syncNakshatraHero;
+
+})();
+</script>
 
 </body>
 </html>

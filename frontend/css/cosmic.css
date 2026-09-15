@@ -1,0 +1,1154 @@
+/* =========================================================
+   AI JYOTISH — COSMIC BLUE ATMOSPHERE
+   Deep Space • Stars • Vedic Gold • Zodiac Glow
+   ========================================================= */
+
+/*
+   This file is intentionally focused on the visual atmosphere.
+   Layout and components are handled by style.css.
+*/
+
+/* =========================================================
+   COSMIC BACKGROUND
+   ========================================================= */
+
+.cosmic-page {
+    position: relative;
+    min-height: 100vh;
+
+    overflow-x: hidden;
+    isolation: isolate;
+
+    background:
+        radial-gradient(
+            ellipse 80% 45% at 50% -10%,
+            rgba(34, 104, 205, 0.24),
+            transparent 65%
+        ),
+        radial-gradient(
+            ellipse 45% 35% at 8% 35%,
+            rgba(19, 78, 159, 0.13),
+            transparent 70%
+        ),
+        radial-gradient(
+            ellipse 45% 35% at 92% 55%,
+            rgba(25, 91, 178, 0.11),
+            transparent 70%
+        ),
+        linear-gradient(
+            180deg,
+            #020817 0%,
+            #04152f 45%,
+            #061a38 100%
+        );
+}
+
+/* =========================================================
+   STAR FIELD
+   ========================================================= */
+
+.cosmic-page::before {
+    content: '';
+
+    position: fixed;
+    inset: 0;
+
+    z-index: -3;
+
+    pointer-events: none;
+
+    opacity: 0.62;
+
+    background-image:
+        radial-gradient(circle, rgba(255, 255, 255, 0.85) 0 1px, transparent 1.5px),
+        radial-gradient(circle, rgba(151, 198, 255, 0.65) 0 1px, transparent 1.5px),
+        radial-gradient(circle, rgba(255, 220, 128, 0.50) 0 1px, transparent 1.5px);
+
+    background-size:
+        137px 137px,
+        211px 211px,
+        317px 317px;
+
+    background-position:
+        17px 29px,
+        91px 61px,
+        43px 137px;
+
+    animation: cosmicStars 35s linear infinite;
+}
+
+@keyframes cosmicStars {
+    from {
+        background-position:
+            17px 29px,
+            91px 61px,
+            43px 137px;
+    }
+
+    to {
+        background-position:
+            154px 166px,
+            -120px 272px,
+            180px -180px;
+    }
+}
+
+/* =========================================================
+   SOFT COSMIC VIGNETTE
+   ========================================================= */
+
+.cosmic-page::after {
+    content: '';
+
+    position: fixed;
+    inset: 0;
+
+    z-index: -2;
+
+    pointer-events: none;
+
+    background:
+        radial-gradient(
+            ellipse at center,
+            transparent 42%,
+            rgba(1, 6, 18, 0.22) 78%,
+            rgba(1, 5, 15, 0.60) 100%
+        );
+}
+
+/* =========================================================
+   DECORATIVE COSMIC ELEMENT
+   ========================================================= */
+
+.cosmic-glow {
+    position: absolute;
+
+    width: 420px;
+    height: 420px;
+
+    border-radius: 50%;
+
+    pointer-events: none;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(38, 113, 219, 0.16),
+            rgba(21, 74, 149, 0.08) 38%,
+            transparent 72%
+        );
+
+    filter: blur(8px);
+
+    opacity: 0.8;
+
+    z-index: -1;
+}
+
+.cosmic-glow.left {
+    top: 12%;
+    left: -230px;
+}
+
+.cosmic-glow.right {
+    top: 42%;
+    right: -230px;
+}
+
+.cosmic-glow.center {
+    top: 0;
+    left: 50%;
+
+    transform: translateX(-50%);
+}
+
+/* =========================================================
+   ZODIAC DECORATION
+   ========================================================= */
+
+.zodiac-ring {
+    position: relative;
+
+    width: min(360px, 70vw);
+    aspect-ratio: 1;
+
+    margin: 0 auto;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 50%;
+
+    border:
+        1px solid rgba(233, 189, 75, 0.26);
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(16, 58, 119, 0.24),
+            transparent 62%
+        );
+
+    box-shadow:
+        0 0 50px rgba(28, 105, 214, 0.12),
+        inset 0 0 45px rgba(17, 71, 144, 0.12);
+}
+
+.zodiac-ring::before {
+    content: '';
+
+    position: absolute;
+    inset: 9%;
+
+    border-radius: 50%;
+
+    border:
+        1px dashed rgba(233, 189, 75, 0.24);
+
+    animation:
+        zodiacRotate 80s linear infinite;
+}
+
+.zodiac-ring::after {
+    content: '';
+
+    position: absolute;
+    inset: 20%;
+
+    border-radius: 50%;
+
+    border:
+        1px solid rgba(91, 151, 229, 0.18);
+}
+
+@keyframes zodiacRotate {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* =========================================================
+   ZODIAC SYMBOLS
+   ========================================================= */
+
+.zodiac-symbol {
+    position: absolute;
+
+    width: 38px;
+    height: 38px;
+
+    display: grid;
+    place-items: center;
+
+    color: rgba(236, 203, 112, 0.86);
+
+    font-family: var(--font-devanagari);
+
+    font-size: 19px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(4, 21, 47, 0.72);
+
+    border:
+        1px solid rgba(233, 189, 75, 0.22);
+
+    box-shadow:
+        0 0 15px rgba(233, 189, 75, 0.06);
+
+    transform:
+        translate(-50%, -50%);
+}
+
+.zodiac-symbol:nth-child(1) {
+    top: 3%;
+    left: 50%;
+}
+
+.zodiac-symbol:nth-child(2) {
+    top: 10%;
+    left: 74%;
+}
+
+.zodiac-symbol:nth-child(3) {
+    top: 27%;
+    left: 91%;
+}
+
+.zodiac-symbol:nth-child(4) {
+    top: 50%;
+    left: 97%;
+}
+
+.zodiac-symbol:nth-child(5) {
+    top: 73%;
+    left: 91%;
+}
+
+.zodiac-symbol:nth-child(6) {
+    top: 90%;
+    left: 74%;
+}
+
+.zodiac-symbol:nth-child(7) {
+    top: 97%;
+    left: 50%;
+}
+
+.zodiac-symbol:nth-child(8) {
+    top: 90%;
+    left: 26%;
+}
+
+.zodiac-symbol:nth-child(9) {
+    top: 73%;
+    left: 9%;
+}
+
+.zodiac-symbol:nth-child(10) {
+    top: 50%;
+    left: 3%;
+}
+
+.zodiac-symbol:nth-child(11) {
+    top: 27%;
+    left: 9%;
+}
+
+.zodiac-symbol:nth-child(12) {
+    top: 10%;
+    left: 26%;
+}
+
+/* =========================================================
+   COSMIC HERO
+   ========================================================= */
+
+.cosmic-hero {
+    position: relative;
+
+    padding: 75px 0 70px;
+
+    overflow: hidden;
+
+    text-align: center;
+}
+
+.cosmic-hero::before {
+    content: '';
+
+    position: absolute;
+
+    width: 620px;
+    height: 300px;
+
+    top: -170px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            ellipse,
+            rgba(34, 105, 209, 0.30),
+            transparent 70%
+        );
+
+    filter: blur(10px);
+
+    pointer-events: none;
+}
+
+.cosmic-hero h1 {
+    position: relative;
+
+    max-width: 900px;
+
+    margin: 0 auto;
+
+    font-family: var(--font-heading);
+
+    font-size: clamp(35px, 6vw, 66px);
+
+    line-height: 1.08;
+
+    letter-spacing: 0.015em;
+
+    text-shadow:
+        0 3px 30px rgba(40, 112, 216, 0.24);
+}
+
+.cosmic-hero h1 .gold {
+    color: var(--gold-300);
+
+    text-shadow:
+        0 0 25px rgba(233, 189, 75, 0.14);
+}
+
+.cosmic-hero p {
+    max-width: 670px;
+
+    margin: 20px auto 0;
+
+    color: #a6b8d3;
+
+    font-size: 15px;
+}
+
+/* =========================================================
+   OM SYMBOL
+   ========================================================= */
+
+.om-symbol {
+    position: relative;
+
+    width: 74px;
+    height: 74px;
+
+    margin: 0 auto 20px;
+
+    display: grid;
+    place-items: center;
+
+    color: var(--gold-300);
+
+    font-family: var(--font-devanagari);
+    font-size: 42px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(233, 189, 75, 0.13),
+            rgba(5, 25, 55, 0.80)
+        );
+
+    border:
+        1px solid rgba(233, 189, 75, 0.34);
+
+    box-shadow:
+        0 0 30px rgba(233, 189, 75, 0.10),
+        inset 0 0 20px rgba(233, 189, 75, 0.05);
+}
+
+.om-symbol::before,
+.om-symbol::after {
+    content: '';
+
+    position: absolute;
+
+    border-radius: 50%;
+
+    border:
+        1px solid rgba(233, 189, 75, 0.13);
+}
+
+.om-symbol::before {
+    inset: -9px;
+}
+
+.om-symbol::after {
+    inset: -17px;
+
+    border-color:
+        rgba(75, 139, 221, 0.12);
+}
+
+/* =========================================================
+   GOLD DIVIDER
+   ========================================================= */
+
+.vedic-divider {
+    width: min(230px, 60%);
+
+    height: 1px;
+
+    margin: 20px auto;
+
+    position: relative;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(233, 189, 75, 0.72),
+            transparent
+        );
+}
+
+.vedic-divider::before {
+    content: '✦';
+
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+
+    padding: 0 9px;
+
+    color: var(--gold-300);
+
+    background: #04152f;
+
+    font-size: 12px;
+}
+
+/* =========================================================
+   COSMIC ORBIT
+   ========================================================= */
+
+.cosmic-orbit {
+    position: absolute;
+
+    border:
+        1px solid rgba(87, 148, 226, 0.13);
+
+    border-radius: 50%;
+
+    pointer-events: none;
+}
+
+.cosmic-orbit.orbit-1 {
+    width: 340px;
+    height: 125px;
+
+    transform: rotate(-23deg);
+}
+
+.cosmic-orbit.orbit-2 {
+    width: 430px;
+    height: 160px;
+
+    transform: rotate(25deg);
+
+    border-color:
+        rgba(233, 189, 75, 0.10);
+}
+
+.cosmic-orbit.orbit-3 {
+    width: 520px;
+    height: 190px;
+
+    transform: rotate(-40deg);
+
+    border-color:
+        rgba(87, 148, 226, 0.08);
+}
+
+/* =========================================================
+   PLANET DECORATION
+   ========================================================= */
+
+.cosmic-planet {
+    position: absolute;
+
+    width: 9px;
+    height: 9px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle at 35% 30%,
+            #fff4c3,
+            var(--gold-400) 45%,
+            #966612 100%
+        );
+
+    box-shadow:
+        0 0 12px rgba(233, 189, 75, 0.48);
+
+    pointer-events: none;
+}
+
+.cosmic-planet.blue {
+    background:
+        radial-gradient(
+            circle at 35% 30%,
+            #d8ebff,
+            #4c9aff 45%,
+            #15477f 100%
+        );
+
+    box-shadow:
+        0 0 12px rgba(72, 154, 255, 0.40);
+}
+
+.cosmic-planet.small {
+    width: 5px;
+    height: 5px;
+}
+
+.cosmic-planet.large {
+    width: 14px;
+    height: 14px;
+}
+
+/* =========================================================
+   FLOATING PLANETS
+   ========================================================= */
+
+.floating-planet {
+    position: absolute;
+
+    border-radius: 50%;
+
+    pointer-events: none;
+
+    opacity: 0.8;
+}
+
+.floating-planet.planet-a {
+    width: 13px;
+    height: 13px;
+
+    top: 22%;
+    left: 9%;
+
+    background:
+        radial-gradient(
+            circle at 35% 30%,
+            #fff4c5,
+            #d9a52e 45%,
+            #754c0d
+        );
+
+    box-shadow:
+        0 0 18px rgba(233, 189, 75, 0.32);
+
+    animation:
+        floatingPlanetA 8s ease-in-out infinite;
+}
+
+.floating-planet.planet-b {
+    width: 8px;
+    height: 8px;
+
+    top: 31%;
+    right: 11%;
+
+    background:
+        radial-gradient(
+            circle at 35% 30%,
+            #e5f2ff,
+            #5499ee 50%,
+            #17497f
+        );
+
+    box-shadow:
+        0 0 16px rgba(84, 153, 238, 0.32);
+
+    animation:
+        floatingPlanetB 10s ease-in-out infinite;
+}
+
+.floating-planet.planet-c {
+    width: 6px;
+    height: 6px;
+
+    bottom: 19%;
+    left: 17%;
+
+    background: #c4dcff;
+
+    box-shadow:
+        0 0 12px rgba(150, 197, 255, 0.55);
+
+    animation:
+        floatingPlanetC 7s ease-in-out infinite;
+}
+
+@keyframes floatingPlanetA {
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(16px, -13px);
+    }
+}
+
+@keyframes floatingPlanetB {
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(-18px, 15px);
+    }
+}
+
+@keyframes floatingPlanetC {
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(12px, -12px);
+    }
+}
+
+/* =========================================================
+   STAR PARTICLES
+   ========================================================= */
+
+.star {
+    position: absolute;
+
+    width: 3px;
+    height: 3px;
+
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.9);
+
+    box-shadow:
+        0 0 8px rgba(173, 211, 255, 0.75);
+
+    pointer-events: none;
+
+    animation:
+        starPulse 3s ease-in-out infinite;
+}
+
+.star.gold {
+    background: var(--gold-300);
+
+    box-shadow:
+        0 0 8px rgba(233, 189, 75, 0.62);
+}
+
+.star.large {
+    width: 5px;
+    height: 5px;
+}
+
+@keyframes starPulse {
+    0%,
+    100% {
+        opacity: 0.25;
+        transform: scale(0.8);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.15);
+    }
+}
+
+/* =========================================================
+   PREMIUM COSMIC CARD EFFECT
+   ========================================================= */
+
+.cosmic-card {
+    position: relative;
+
+    overflow: hidden;
+}
+
+.cosmic-card::before {
+    content: '';
+
+    position: absolute;
+
+    top: 0;
+    left: 20px;
+    right: 20px;
+
+    height: 1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(233, 189, 75, 0.32),
+            transparent
+        );
+
+    opacity: 0.65;
+}
+
+.cosmic-card::after {
+    content: '';
+
+    position: absolute;
+
+    width: 180px;
+    height: 180px;
+
+    top: -110px;
+    right: -90px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(44, 119, 225, 0.13),
+            transparent 70%
+        );
+
+    pointer-events: none;
+}
+
+/* =========================================================
+   DASHBOARD COSMIC HERO
+   ========================================================= */
+
+.dashboard-hero {
+    position: relative;
+
+    overflow: hidden;
+}
+
+.dashboard-hero::before {
+    content: '';
+
+    position: absolute;
+
+    width: 500px;
+    height: 500px;
+
+    right: -180px;
+    top: -300px;
+
+    border-radius: 50%;
+
+    border:
+        1px solid rgba(233, 189, 75, 0.12);
+
+    box-shadow:
+        0 0 0 25px rgba(86, 144, 222, 0.025),
+        0 0 0 55px rgba(86, 144, 222, 0.02),
+        0 0 0 90px rgba(86, 144, 222, 0.015);
+
+    pointer-events: none;
+}
+
+.dashboard-hero::after {
+    content: '✦';
+
+    position: absolute;
+
+    right: 55px;
+    top: 32px;
+
+    color: rgba(233, 189, 75, 0.38);
+
+    font-size: 44px;
+
+    text-shadow:
+        0 0 20px rgba(233, 189, 75, 0.20);
+}
+
+/* =========================================================
+   STAT CARD COSMIC GLOW
+   ========================================================= */
+
+.stat-card {
+    position: relative;
+
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+
+    position: absolute;
+
+    width: 100px;
+    height: 100px;
+
+    top: -60px;
+    right: -45px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(62, 137, 232, 0.16),
+            transparent 70%
+        );
+}
+
+.stat-card .stat-icon {
+    position: relative;
+
+    text-shadow:
+        0 0 14px rgba(233, 189, 75, 0.20);
+}
+
+/* =========================================================
+   AUTH COSMIC VISUAL
+   ========================================================= */
+
+.auth-visual {
+    position: relative;
+
+    overflow: hidden;
+}
+
+.auth-visual::after {
+    content: '';
+
+    position: absolute;
+
+    width: 440px;
+    height: 440px;
+
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    border:
+        1px solid rgba(91, 151, 229, 0.11);
+
+    box-shadow:
+        0 0 0 35px rgba(91, 151, 229, 0.025),
+        0 0 0 80px rgba(91, 151, 229, 0.018),
+        0 0 0 125px rgba(91, 151, 229, 0.012);
+
+    pointer-events: none;
+}
+
+/* =========================================================
+   KUNDLI HEADER COSMIC EFFECT
+   ========================================================= */
+
+.kundli-profile {
+    position: relative;
+
+    overflow: hidden;
+}
+
+.kundli-profile::before {
+    content: '';
+
+    position: absolute;
+
+    width: 360px;
+    height: 360px;
+
+    right: -130px;
+    top: -210px;
+
+    border-radius: 50%;
+
+    border:
+        1px solid rgba(233, 189, 75, 0.13);
+
+    box-shadow:
+        0 0 0 24px rgba(86, 144, 222, 0.025),
+        0 0 0 55px rgba(86, 144, 222, 0.018);
+
+    pointer-events: none;
+}
+
+/* =========================================================
+   KUNDLI SECTION DECORATION
+   ========================================================= */
+
+.kundli-section {
+    position: relative;
+}
+
+.kundli-section::before {
+    content: '';
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 70px;
+    height: 1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(233, 189, 75, 0.50),
+            transparent
+        );
+
+    opacity: 0.55;
+}
+
+/* =========================================================
+   BLUE GLOW TEXT
+   ========================================================= */
+
+.cosmic-text {
+    text-shadow:
+        0 0 22px rgba(65, 139, 232, 0.20);
+}
+
+.gold-glow {
+    color: var(--gold-300);
+
+    text-shadow:
+        0 0 20px rgba(233, 189, 75, 0.20);
+}
+
+/* =========================================================
+   GOLD BORDER
+   ========================================================= */
+
+.gold-border {
+    border-color:
+        rgba(233, 189, 75, 0.35) !important;
+}
+
+/* =========================================================
+   COSMIC SCROLLBAR
+   ========================================================= */
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #020817;
+}
+
+::-webkit-scrollbar-thumb {
+    background:
+        linear-gradient(
+            180deg,
+            #174f9d,
+            #0b2d5d
+        );
+
+    border-radius: 10px;
+
+    border:
+        1px solid rgba(233, 189, 75, 0.10);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background:
+        linear-gradient(
+            180deg,
+            #236cc7,
+            #12437d
+        );
+}
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    .cosmic-page::before,
+    .zodiac-ring::before,
+    .star,
+    .floating-planet {
+        animation: none !important;
+    }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 760px) {
+    .cosmic-hero {
+        padding: 48px 0 45px;
+    }
+
+    .cosmic-hero p {
+        font-size: 14px;
+    }
+
+    .zodiac-ring {
+        width: min(280px, 72vw);
+    }
+
+    .zodiac-symbol {
+        width: 30px;
+        height: 30px;
+
+        font-size: 15px;
+    }
+
+    .cosmic-glow {
+        width: 300px;
+        height: 300px;
+    }
+
+    .floating-planet.planet-a {
+        left: 5%;
+    }
+
+    .floating-planet.planet-b {
+        right: 5%;
+    }
+}
+
+@media (max-width: 460px) {
+    .cosmic-hero {
+        padding-top: 38px;
+    }
+
+    .om-symbol {
+        width: 62px;
+        height: 62px;
+
+        font-size: 35px;
+    }
+
+    .zodiac-ring {
+        width: 245px;
+    }
+
+    .zodiac-symbol {
+        width: 26px;
+        height: 26px;
+
+        font-size: 13px;
+    }
+
+    .cosmic-orbit.orbit-1 {
+        width: 250px;
+    }
+
+    .cosmic-orbit.orbit-2 {
+        width: 310px;
+    }
+
+    .cosmic-orbit.orbit-3 {
+        width: 370px;
+    }
+}
+
+/* =========================================================
+   PRINT
+   ========================================================= */
+
+@media print {
+    .cosmic-page {
+        background: #fff !important;
+    }
+
+    .cosmic-page::before,
+    .cosmic-page::after,
+    .cosmic-glow,
+    .floating-planet,
+    .cosmic-orbit,
+    .star {
+        display: none !important;
+    }
+}

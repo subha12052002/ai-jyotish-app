@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <meta
+        name="description"
+        content="Create your AI Jyotish account and explore Vedic astrology, Kundli analysis and AI-powered insights."
+    >
+
+    <meta name="theme-color" content="#06101f">
+
+    <title>Create Account — AI Jyotish</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/cosmic.css">
+    <link rel="stylesheet" href="css/responsive.css">
+
+    <style>
+        :root {
+            --auth-bg: #06101f;
+            --auth-bg-2: #09192d;
+            --auth-card: rgba(10, 28, 49, .84);
+            --auth-border: rgba(232, 177, 76, .18);
+            --auth-gold: #e8b14c;
+            --auth-gold-light: #f5d78f;
+            --auth-text: #f4f7fb;
+            --auth-muted: #8d9db2;
+            --auth-input: rgba(255,255,255,.035);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            min-height: 100%;
+        }
+
+        body.register-page {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--auth-text);
+            background:
+                radial-gradient(
+                    circle at 12% 15%,
+                    rgba(55, 117, 203, .15),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 88% 78%,
+                    rgba(232, 177, 76, .09),
+                    transparent 28%
+                ),
+                linear-gradient(
+                    145deg,
+                    #06101f 0%,
+                    #09182b 52%,
+                    #06101f 100%
+                );
+            overflow-x: hidden;
+        }
+
+        body.register-page::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            opacity: .28;
+            background-image:
+                radial-gradient(circle, rgba(255,255,255,.62) 0 1px, transparent 1.5px),
+                radial-gradient(circle, rgba(232,177,76,.4) 0 1px, transparent 1.5px);
+            background-size: 150px 150px, 240px 240px;
+            background-position: 20px 30px, 90px 80px;
+        }
+
+        .register-shell {
+            width: min(1120px, calc(100% - 32px));
+            min-height: 100vh;
+            margin: 0 auto;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+        }
+
+        /* =========================================================
+           HEADER
+           ========================================================= */
+
+        .register-header {
+            padding: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .register-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .register-brand-icon {
+            width: 39px;
+            height: 39px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            color: #091423;
+            font-size: 18px;
+            background:
+                radial-gradient(
+                    circle at 35% 30%,
+                    #fff2bd 0 8%,
+                    transparent 9%
+                ),
+                linear-gradient(145deg, #f6d88e, #d79536);
+            box-shadow:
+                0 0 25px rgba(232,177,76,.2),
+                inset 0 1px 0 rgba(255,255,255,.45);
+        }
+
+        .register-brand-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.05;
+        }
+
+        .register-brand-name {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .register-brand-subtitle {
+            margin-top: 4px;
+            color: #77899f;
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: .13em;
+            text-transform: uppercase;
+        }
+
+        .register-back {
+            color: #8293a9;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 550;
+            transition: color .2s ease;
+        }
+
+        .register-back:hover {
+            color: #fff;
+        }
+
+        /* =========================================================
+           MAIN
+           ========================================================= */
+
+        .register-main {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(360px, 450px);
+            align-items: center;
+            gap: 70px;
+            padding: 35px 0 65px;
+        }
+
+        /* =========================================================
+           INTRO
+           ========================================================= */
+
+        .register-intro {
+            max-width: 530px;
+        }
+
+        .register-kicker {
+            width: fit-content;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #dcb56a;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: .13em;
+            text-transform: uppercase;
+        }
+
+        .register-kicker::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--auth-gold);
+            box-shadow: 0 0 12px rgba(232,177,76,.7);
+        }
+
+        .register-intro h1 {
+            margin: 17px 0 14px;
+            max-width: 550px;
+            font-size: clamp(35px, 5vw, 57px);
+            line-height: 1.02;
+            letter-spacing: -.05em;
+        }
+
+        .register-intro h1 span {
+            color: var(--auth-gold-light);
+            background: linear-gradient(135deg, #fff0b5, #dda544);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .register-intro > p {
+            max-width: 500px;
+            margin: 0;
+            color: var(--auth-muted);
+            font-size: 14px;
+            line-height: 1.75;
+        }
+
+        /* Benefits */
+
+        .register-benefits {
+            display: flex;
+            flex-direction: column;
+            gap: 11px;
+            margin-top: 28px;
+            max-width: 490px;
+        }
+
+        .benefit {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .benefit-icon {
+            flex: 0 0 auto;
+            width: 30px;
+            height: 30px;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(232,177,76,.16);
+            border-radius: 9px;
+            color: #e5bd70;
+            background: rgba(232,177,76,.06);
+            font-size: 12px;
+        }
+
+        .benefit-content strong {
+            display: block;
+            margin: 1px 0 3px;
+            color: #c7d2e0;
+            font-size: 11px;
+            font-weight: 650;
+        }
+
+        .benefit-content span {
+            display: block;
+            color: #718399;
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+        /* =========================================================
+           REGISTER CARD
+           ========================================================= */
+
+        .register-card {
+            position: relative;
+            padding: 31px;
+            border: 1px solid var(--auth-border);
+            border-radius: 18px;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(17, 40, 67, .82),
+                    rgba(7, 20, 36, .91)
+                );
+            box-shadow:
+                0 25px 70px rgba(0,0,0,.28),
+                inset 0 1px 0 rgba(255,255,255,.035);
+            backdrop-filter: blur(18px);
+        }
+
+        .register-card::before {
+            content: "";
+            position: absolute;
+            width: 125px;
+            height: 125px;
+            top: -65px;
+            right: -50px;
+            border-radius: 50%;
+            background: rgba(232,177,76,.07);
+            filter: blur(15px);
+            pointer-events: none;
+        }
+
+        .register-card-header {
+            margin-bottom: 23px;
+        }
+
+        .register-card-header h2 {
+            margin: 0 0 7px;
+            font-size: 23px;
+            letter-spacing: -.025em;
+        }
+
+        .register-card-header p {
+            margin: 0;
+            color: #7f91a8;
+            font-size: 11px;
+            line-height: 1.55;
+        }
+
+        /* =========================================================
+           FORM
+           ========================================================= */
+
+        #registerForm {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .register-field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .register-field label {
+            color: #b6c2d1;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .register-field input {
+            width: 100%;
+            height: 44px;
+            padding: 0 13px;
+            border: 1px solid rgba(255,255,255,.09);
+            border-radius: 9px;
+            outline: none;
+            color: #edf2f8;
+            background: var(--auth-input);
+            font: inherit;
+            font-size: 12px;
+            transition:
+                border-color .2s ease,
+                background .2s ease,
+                box-shadow .2s ease;
+        }
+
+        .register-field input::placeholder {
+            color: #596c83;
+        }
+
+        .register-field input:hover {
+            border-color: rgba(255,255,255,.14);
+        }
+
+        .register-field input:focus {
+            border-color: rgba(232,177,76,.52);
+            background: rgba(255,255,255,.045);
+            box-shadow: 0 0 0 3px rgba(232,177,76,.08);
+        }
+
+        .password-hint {
+            color: #60738a;
+            font-size: 9px;
+            line-height: 1.45;
+        }
+
+        .register-submit {
+            width: 100%;
+            min-height: 45px;
+            margin-top: 4px;
+            border: 0;
+            border-radius: 9px;
+            cursor: pointer;
+            color: #071321;
+            background: linear-gradient(135deg, #f5d991, #d79a3b);
+            box-shadow: 0 10px 25px rgba(215,154,59,.17);
+            font: inherit;
+            font-size: 12px;
+            font-weight: 750;
+            transition:
+                transform .2s ease,
+                box-shadow .2s ease,
+                opacity .2s ease;
+        }
+
+        .register-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 14px 30px rgba(215,154,59,.24);
+        }
+
+        .register-submit:active {
+            transform: translateY(0);
+        }
+
+        .register-submit:disabled {
+            cursor: not-allowed;
+            opacity: .62;
+            transform: none;
+        }
+
+        #registerMessage {
+            min-height: 18px;
+            margin: -2px 0 0;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        /* =========================================================
+           TERMS
+           ========================================================= */
+
+        .terms {
+            margin: 2px 0 0;
+            color: #62748a;
+            font-size: 9px;
+            line-height: 1.55;
+            text-align: center;
+        }
+
+        .terms a {
+            color: #ad8a4e;
+            text-decoration: none;
+        }
+
+        .terms a:hover {
+            color: #d9b669;
+        }
+
+        .auth-divider {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            margin: 21px 0;
+            color: #52657c;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+        }
+
+        .auth-divider::before,
+        .auth-divider::after {
+            content: "";
+            height: 1px;
+            flex: 1;
+            background: rgba(255,255,255,.06);
+        }
+
+        .login-prompt {
+            margin: 0;
+            text-align: center;
+            color: #718399;
+            font-size: 11px;
+        }
+
+        .login-prompt a {
+            color: #dfb35f;
+            text-decoration: none;
+            font-weight: 650;
+        }
+
+        .login-prompt a:hover {
+            color: #f0cf84;
+        }
+
+        /* =========================================================
+           FOOTER
+           ========================================================= */
+
+        .register-footer {
+            padding: 20px 0 25px;
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            border-top: 1px solid rgba(255,255,255,.05);
+            color: #596c83;
+            font-size: 9px;
+        }
+
+        /* =========================================================
+           RESPONSIVE
+           ========================================================= */
+
+        @media (max-width: 850px) {
+            .register-main {
+                grid-template-columns: 1fr;
+                gap: 35px;
+                padding-top: 35px;
+            }
+
+            .register-intro {
+                max-width: 620px;
+                margin-inline: auto;
+                text-align: center;
+            }
+
+            .register-kicker {
+                margin-inline: auto;
+            }
+
+            .register-intro > p {
+                margin-inline: auto;
+            }
+
+            .register-benefits {
+                margin-inline: auto;
+                text-align: left;
+            }
+
+            .register-card {
+                width: min(450px, 100%);
+                margin-inline: auto;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .register-shell {
+                width: min(100% - 24px, 1120px);
+            }
+
+            .register-header {
+                padding: 14px 0;
+            }
+
+            .register-brand-icon {
+                width: 35px;
+                height: 35px;
+                border-radius: 10px;
+            }
+
+            .register-brand-name {
+                font-size: 14px;
+            }
+
+            .register-brand-subtitle {
+                font-size: 8px;
+            }
+
+            .register-back {
+                font-size: 10px;
+            }
+
+            .register-main {
+                padding: 28px 0 45px;
+            }
+
+            .register-intro h1 {
+                font-size: 38px;
+            }
+
+            .register-intro > p {
+                font-size: 12px;
+            }
+
+            .register-card {
+                padding: 23px 19px;
+                border-radius: 15px;
+            }
+
+            .register-card-header h2 {
+                font-size: 21px;
+            }
+
+            .register-footer {
+                flex-direction: column;
+                gap: 7px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                transition-duration: .01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="register-page">
+
+<div class="register-shell">
+
+    <!-- =========================================================
+         HEADER
+         ========================================================= -->
+    <header class="register-header">
+
+        <a class="register-brand" href="index.html">
+
+            <span
+                class="register-brand-icon"
+                aria-hidden="true"
+            >
+                ✦
+            </span>
+
+            <span class="register-brand-text">
+                <span class="register-brand-name">AI Jyotish</span>
+                <span class="register-brand-subtitle">
+                    Vedic Astrology
+                </span>
+            </span>
+
+        </a>
+
+        <a class="register-back" href="index.html">
+            ← Back to home
+        </a>
+
+    </header>
+
+
+    <!-- =========================================================
+         MAIN
+         ========================================================= -->
+    <main class="register-main">
+
+        <!-- Intro -->
+        <section class="register-intro">
+
+            <div class="register-kicker">
+                Begin your journey
+            </div>
+
+            <h1>
+                Create your
+                <span>astrology space.</span>
+            </h1>
+
+            <p>
+                Create an AI Jyotish account and bring your Vedic astrology
+                experience together in one place — from your Kundli and
+                planetary positions to Dashas, Yogas and AI guidance.
+            </p>
+
+
+            <div class="register-benefits">
+
+                <div class="benefit">
+
+                    <div class="benefit-icon">
+                        ✦
+                    </div>
+
+                    <div class="benefit-content">
+                        <strong>Personalized Kundli</strong>
+                        <span>
+                            Generate a birth chart using your exact birth details.
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <div class="benefit">
+
+                    <div class="benefit-icon">
+                        ◇
+                    </div>
+
+                    <div class="benefit-content">
+                        <strong>Deep chart analysis</strong>
+                        <span>
+                            Explore planets, houses, Nakshatra, Dashas and Yogas.
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <div class="benefit">
+
+                    <div class="benefit-icon">
+                        ☉
+                    </div>
+
+                    <div class="benefit-content">
+                        <strong>AI-powered questions</strong>
+                        <span>
+                            Ask questions and understand your chart in simpler terms.
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <div class="benefit">
+
+                    <div class="benefit-icon">
+                        ◎
+                    </div>
+
+                    <div class="benefit-content">
+                        <strong>One astrology dashboard</strong>
+                        <span>
+                            Keep your generated astrology experience organized.
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Register card -->
+        <section
+            class="register-card"
+            aria-labelledby="registerTitle"
+        >
+
+            <div class="register-card-header">
+
+                <h2 id="registerTitle">
+                    Create account
+                </h2>
+
+                <p>
+                    Start your AI Jyotish experience in a few seconds.
+                </p>
+
+            </div>
+
+
+            <form id="registerForm" novalidate>
+
+                <!-- Name -->
+                <div class="register-field">
+
+                    <label for="name">
+                        Full name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        autocomplete="name"
+                        placeholder="Enter your name"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Email -->
+                <div class="register-field">
+
+                    <label for="email">
+                        Email address
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        autocomplete="email"
+                        placeholder="you@example.com"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Password -->
+                <div class="register-field">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        autocomplete="new-password"
+                        placeholder="Create a password"
+                        required
+                    >
+
+                    <span class="password-hint">
+                        Use a password that is difficult for others to guess.
+                    </span>
+
+                </div>
+
+
+                <!-- Confirm password -->
+                <div class="register-field">
+
+                    <label for="confirm">
+                        Confirm password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="confirm"
+                        name="confirm"
+                        autocomplete="new-password"
+                        placeholder="Enter your password again"
+                        required
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    id="registerButton"
+                    class="register-submit"
+                >
+                    Create my account
+                </button>
+
+
+                <div
+                    id="registerMessage"
+                    role="status"
+                    aria-live="polite"
+                ></div>
+
+
+                <p class="terms">
+                    By creating an account, you agree to use AI Jyotish
+                    responsibly and understand that astrology is intended
+                    for guidance and personal reflection.
+                </p>
+
+            </form>
+
+
+            <div class="auth-divider">
+                <span>AI Jyotish</span>
+            </div>
+
+
+            <p class="login-prompt">
+                Already have an account?
+                <a href="login.html">Sign in</a>
+            </p>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================================================
+         FOOTER
+         ========================================================= -->
+    <footer class="register-footer">
+
+        <span>
+            © <span id="currentYear"></span> AI Jyotish
+        </span>
+
+        <span>
+            Astrology is for guidance and personal reflection.
+        </span>
+
+    </footer>
+
+</div>
+
+
+<!-- =============================================================
+     APPLICATION SCRIPTS
+     ============================================================= -->
+
+<script>
+    (function () {
+        const year = document.getElementById("currentYear");
+
+        if (year) {
+            year.textContent = new Date().getFullYear();
+        }
+    })();
+</script>
+
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/script.js"></script>
+
+</body>
+</html>

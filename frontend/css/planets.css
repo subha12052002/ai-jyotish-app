@@ -1,0 +1,703 @@
+/* =========================================================
+   AI JYOTISH — PLANETS
+   Premium Cosmic Blue + Gold Planetary System
+   ========================================================= */
+
+.planets-section {
+    position: relative;
+    overflow: hidden;
+}
+
+.planets-section::after {
+    content: "";
+    position: absolute;
+    width: 260px;
+    height: 260px;
+    right: -150px;
+    top: 40px;
+    border: 1px solid rgba(218, 175, 83, 0.08);
+    border-radius: 50%;
+    box-shadow:
+        0 0 0 35px rgba(218, 175, 83, 0.025),
+        0 0 0 75px rgba(218, 175, 83, 0.018);
+    pointer-events: none;
+}
+
+/* =========================================================
+   PLANET SECTION HEADER
+   ========================================================= */
+
+.planet-section-header {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 18px;
+}
+
+.planet-section-heading {
+    margin: 0;
+    color: #f1e5cb;
+    font-size: 1.12rem;
+    font-weight: 750;
+}
+
+.planet-section-description {
+    max-width: 650px;
+    margin: 5px 0 0;
+    color: #8199b2;
+    font-size: 0.79rem;
+    line-height: 1.55;
+}
+
+/* =========================================================
+   PLANET CARDS
+   ========================================================= */
+
+.planet-cards {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.planet-card {
+    position: relative;
+    min-width: 0;
+    overflow: hidden;
+    padding: 16px;
+    border: 1px solid rgba(135, 174, 214, 0.13);
+    border-radius: 14px;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(11, 43, 74, 0.88),
+            rgba(4, 21, 42, 0.94)
+        );
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.planet-card::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(
+        180deg,
+        rgba(218, 177, 88, 0.8),
+        rgba(218, 177, 88, 0)
+    );
+    opacity: 0.7;
+}
+
+.planet-card::after {
+    content: "";
+    position: absolute;
+    width: 90px;
+    height: 90px;
+    right: -45px;
+    top: -45px;
+    border-radius: 50%;
+    background: rgba(214, 171, 77, 0.055);
+}
+
+.planet-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(218, 177, 88, 0.3);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+.planet-card-header {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    margin-bottom: 13px;
+}
+
+.planet-card-symbol {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 39px;
+    height: 39px;
+    flex: 0 0 39px;
+    border: 1px solid rgba(222, 181, 95, 0.3);
+    border-radius: 50%;
+    background:
+        radial-gradient(
+            circle at 35% 30%,
+            rgba(231, 194, 111, 0.22),
+            rgba(91, 61, 16, 0.1)
+        );
+    color: #e0b968;
+    font-size: 0.95rem;
+    font-weight: 800;
+    box-shadow: inset 0 0 18px rgba(218, 174, 81, 0.04);
+}
+
+.planet-card-name {
+    min-width: 0;
+    color: #edf3f8;
+    font-size: 0.9rem;
+    font-weight: 750;
+}
+
+.planet-card-role {
+    margin-top: 2px;
+    color: #7891ac;
+    font-size: 0.68rem;
+}
+
+.planet-card-body {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 7px;
+}
+
+.planet-card-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(137, 172, 209, 0.07);
+}
+
+.planet-card-row:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.planet-card-label {
+    color: #718aa5;
+    font-size: 0.68rem;
+}
+
+.planet-card-value {
+    color: #c4d2df;
+    font-size: 0.74rem;
+    font-weight: 650;
+    text-align: right;
+}
+
+.planet-card-value.gold {
+    color: #dfb866;
+}
+
+/* =========================================================
+   PLANET STATUS
+   ========================================================= */
+
+.planet-status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    padding: 4px 8px;
+    border: 1px solid rgba(135, 173, 211, 0.14);
+    border-radius: 999px;
+    background: rgba(100, 143, 183, 0.08);
+    color: #9eb8d2;
+    font-size: 0.64rem;
+    font-weight: 750;
+    line-height: 1;
+}
+
+.planet-status-badge.retrograde {
+    border-color: rgba(207, 132, 89, 0.2);
+    background: rgba(173, 91, 56, 0.1);
+    color: #dda07d;
+}
+
+.planet-status-badge.combust {
+    border-color: rgba(210, 87, 74, 0.2);
+    background: rgba(174, 54, 47, 0.1);
+    color: #e09a91;
+}
+
+.planet-status-badge.exalted {
+    border-color: rgba(84, 170, 127, 0.2);
+    background: rgba(61, 141, 103, 0.1);
+    color: #86d1ad;
+}
+
+.planet-status-badge.debilitated {
+    border-color: rgba(174, 76, 92, 0.2);
+    background: rgba(153, 57, 74, 0.1);
+    color: #dc9ba7;
+}
+
+/* =========================================================
+   PLANET DETAILS / METRICS
+   ========================================================= */
+
+.planet-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.planet-metric {
+    padding: 9px 10px;
+    border: 1px solid rgba(135, 171, 209, 0.08);
+    border-radius: 9px;
+    background: rgba(2, 17, 35, 0.42);
+}
+
+.planet-metric-label {
+    display: block;
+    margin-bottom: 3px;
+    color: #718aa5;
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.planet-metric-value {
+    display: block;
+    color: #d6e0ea;
+    font-size: 0.76rem;
+    font-weight: 700;
+}
+
+/* =========================================================
+   PLANETARY ANALYSIS
+   ========================================================= */
+
+.planet-analysis-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.planet-analysis-card {
+    padding: 14px;
+    border: 1px solid rgba(133, 170, 207, 0.1);
+    border-radius: 11px;
+    background: rgba(3, 18, 36, 0.46);
+}
+
+.planet-analysis-card h4 {
+    margin: 0 0 6px;
+    color: #dfb86a;
+    font-size: 0.78rem;
+    font-weight: 750;
+}
+
+.planet-analysis-card p {
+    margin: 0;
+    color: #91a7bd;
+    font-size: 0.75rem;
+    line-height: 1.6;
+}
+
+/* =========================================================
+   PLANET POSITION MAP
+   ========================================================= */
+
+.planet-position-section {
+    position: relative;
+    overflow: hidden;
+}
+
+.planet-position-map {
+    position: relative;
+    min-height: 360px;
+    overflow: hidden;
+    border: 1px solid rgba(135, 174, 214, 0.14);
+    border-radius: 16px;
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(24, 89, 145, 0.18),
+            transparent 35%
+        ),
+        radial-gradient(
+            circle at center,
+            transparent 38%,
+            rgba(218, 176, 85, 0.04) 39%,
+            transparent 40%
+        ),
+        #041a34;
+}
+
+.planet-position-map::before,
+.planet-position-map::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    border: 1px solid rgba(218, 176, 85, 0.12);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+.planet-position-map::before {
+    width: 215px;
+    height: 215px;
+}
+
+.planet-position-map::after {
+    width: 310px;
+    height: 310px;
+    border-color: rgba(112, 164, 209, 0.09);
+}
+
+.planet-position-map .planet-position {
+    position: absolute;
+    z-index: 3;
+}
+
+/* =========================================================
+   ZODIAC TRACK
+   ========================================================= */
+
+.zodiac-track {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 285px;
+    height: 285px;
+    border: 1px dashed rgba(219, 177, 87, 0.22);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.zodiac-track::before {
+    content: "";
+    position: absolute;
+    inset: 18px;
+    border: 1px solid rgba(126, 169, 207, 0.09);
+    border-radius: 50%;
+}
+
+.zodiac-axis-label {
+    position: absolute;
+    z-index: 2;
+    color: #6f89a4;
+    font-size: 0.61rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+/* =========================================================
+   PLANET POSITION MARKERS
+   ========================================================= */
+
+.planet-position {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border: 1px solid rgba(224, 181, 88, 0.42);
+    border-radius: 50%;
+    background:
+        radial-gradient(
+            circle at 35% 30%,
+            rgba(239, 203, 124, 0.2),
+            rgba(6, 29, 54, 0.96)
+        );
+    color: #e4bd6a;
+    font-size: 0.69rem;
+    font-weight: 800;
+    box-shadow:
+        0 0 0 4px rgba(215, 171, 79, 0.035),
+        0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.planet-position:hover {
+    z-index: 10;
+    border-color: rgba(239, 203, 124, 0.75);
+    box-shadow:
+        0 0 18px rgba(218, 176, 84, 0.16),
+        0 0 0 5px rgba(218, 176, 84, 0.05);
+}
+
+.planet-position-label {
+    position: absolute;
+    left: 50%;
+    top: calc(100% + 4px);
+    transform: translateX(-50%);
+    white-space: nowrap;
+    color: #a4b8cc;
+    font-size: 0.58rem;
+    font-weight: 650;
+}
+
+/* =========================================================
+   PLANET TABLE ENHANCEMENT
+   ========================================================= */
+
+.planets-table-container {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid rgba(135, 174, 214, 0.12);
+    border-radius: 13px;
+    background: rgba(2, 17, 35, 0.45);
+}
+
+.planets-table {
+    width: 100%;
+    min-width: 800px;
+    border-collapse: collapse;
+}
+
+.planets-table th {
+    padding: 11px 10px;
+    border-bottom: 1px solid rgba(218, 176, 85, 0.18);
+    background: rgba(8, 38, 66, 0.88);
+    color: #cfa95d;
+    font-size: 0.67rem;
+    font-weight: 750;
+    letter-spacing: 0.07em;
+    text-align: left;
+    text-transform: uppercase;
+}
+
+.planets-table td {
+    padding: 11px 10px;
+    border-bottom: 1px solid rgba(130, 168, 207, 0.07);
+    color: #b7c7d7;
+    font-size: 0.76rem;
+}
+
+.planets-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.planets-table tbody tr:hover {
+    background: rgba(19, 62, 98, 0.25);
+}
+
+/* =========================================================
+   PLANETARY DIGNITY
+   ========================================================= */
+
+.dignity {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.68rem;
+    font-weight: 700;
+}
+
+.dignity::before {
+    content: "";
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.dignity.exalted {
+    color: #83d0aa;
+}
+
+.dignity.own-sign {
+    color: #dcb466;
+}
+
+.dignity.friendly {
+    color: #9dbdd9;
+}
+
+.dignity.neutral {
+    color: #849bb2;
+}
+
+.dignity.enemy {
+    color: #d19b86;
+}
+
+.dignity.debilitated {
+    color: #dc929e;
+}
+
+/* =========================================================
+   SHADBALA / ASHTAKAVARGA
+   ========================================================= */
+
+.strength-bar {
+    width: 100%;
+    height: 5px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(133, 170, 207, 0.1);
+}
+
+.strength-bar-fill {
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(
+        90deg,
+        #a8782e,
+        #e0bb68
+    );
+}
+
+.strength-value {
+    margin-top: 4px;
+    color: #b9c9d9;
+    font-size: 0.66rem;
+    font-weight: 700;
+}
+
+/* =========================================================
+   RETROGRADE ICON
+   ========================================================= */
+
+.retrograde-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 17px;
+    height: 17px;
+    margin-left: 4px;
+    border: 1px solid rgba(215, 143, 101, 0.25);
+    border-radius: 50%;
+    color: #dba17e;
+    font-size: 0.58rem;
+    font-weight: 800;
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 1050px) {
+    .planet-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .planet-section-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .planet-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .planet-analysis-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .planet-position-map {
+        min-height: 300px;
+    }
+
+    .zodiac-track {
+        width: 235px;
+        height: 235px;
+    }
+
+    .planet-position-map::before {
+        width: 180px;
+        height: 180px;
+    }
+
+    .planet-position-map::after {
+        width: 255px;
+        height: 255px;
+    }
+}
+
+@media (max-width: 450px) {
+    .planet-card {
+        padding: 14px;
+    }
+
+    .planet-card-symbol {
+        width: 35px;
+        height: 35px;
+        flex-basis: 35px;
+    }
+
+    .planet-metrics {
+        grid-template-columns: 1fr;
+    }
+
+    .planet-position-map {
+        min-height: 260px;
+    }
+
+    .zodiac-track {
+        width: 190px;
+        height: 190px;
+    }
+
+    .planet-position-map::before {
+        width: 145px;
+        height: 145px;
+    }
+
+    .planet-position-map::after {
+        width: 210px;
+        height: 210px;
+    }
+
+    .planet-position {
+        width: 29px;
+        height: 29px;
+        font-size: 0.62rem;
+    }
+}
+
+/* =========================================================
+   PRINT
+   ========================================================= */
+
+@media print {
+    .planet-card,
+    .planet-position-map,
+    .planets-table-container {
+        background: #fff !important;
+        border-color: #ccc !important;
+        box-shadow: none !important;
+    }
+
+    .planet-card::after,
+    .planet-position-map::before,
+    .planet-position-map::after {
+        display: none;
+    }
+
+    .planet-card-name,
+    .planet-card-value,
+    .planets-table td {
+        color: #222 !important;
+    }
+
+    .planet-card-role,
+    .planet-card-label {
+        color: #555 !important;
+    }
+
+    .planets-table th {
+        background: #eee !important;
+        color: #222 !important;
+    }
+
+    .planet-position {
+        color: #222 !important;
+        border-color: #999 !important;
+        background: #fff !important;
+    }
+}

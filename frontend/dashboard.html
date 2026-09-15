@@ -1,0 +1,1712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <title>AI Jyotish — Dashboard</title>
+
+    <meta
+        name="description"
+        content="AI Jyotish personalized Vedic astrology dashboard."
+    >
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/cosmic.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/theme.css">
+
+    <style>
+        /* =========================================================
+           AI JYOTISH — DASHBOARD
+           Premium cosmic blue / gold interface
+           ========================================================= */
+
+        :root {
+            --dash-bg: #020817;
+            --dash-panel: rgba(7, 20, 43, 0.78);
+            --dash-panel-strong: rgba(9, 27, 57, 0.94);
+            --dash-border: rgba(90, 155, 255, 0.18);
+            --dash-border-gold: rgba(232, 179, 78, 0.24);
+
+            --dash-blue: #4d9dff;
+            --dash-blue-soft: #78b7ff;
+            --dash-gold: #e9b44c;
+            --dash-gold-light: #ffd77d;
+
+            --dash-text: #eef5ff;
+            --dash-muted: #91a6c5;
+            --dash-success: #68d391;
+
+            --dash-radius: 20px;
+            --dash-shadow:
+                0 24px 70px rgba(0, 0, 0, 0.38),
+                inset 0 1px 0 rgba(255, 255, 255, 0.025);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--dash-text);
+            background:
+                radial-gradient(
+                    circle at 15% 5%,
+                    rgba(28, 92, 174, 0.17),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 85% 12%,
+                    rgba(232, 179, 78, 0.055),
+                    transparent 25%
+                ),
+                radial-gradient(
+                    circle at 50% 85%,
+                    rgba(21, 69, 135, 0.12),
+                    transparent 32%
+                ),
+                var(--dash-bg);
+            overflow-x: hidden;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button {
+            font: inherit;
+        }
+
+        /* ---------------------------------------------------------
+           STAR FIELD
+           --------------------------------------------------------- */
+
+        .dashboard-stars,
+        .dashboard-stars::before,
+        .dashboard-stars::after {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .dashboard-stars {
+            opacity: 0.42;
+            background-image:
+                radial-gradient(circle, rgba(255,255,255,.7) 0 1px, transparent 1.4px),
+                radial-gradient(circle, rgba(116,174,255,.55) 0 1px, transparent 1.4px);
+            background-size: 120px 120px, 190px 190px;
+            background-position: 15px 20px, 70px 80px;
+        }
+
+        .dashboard-stars::before {
+            content: "";
+            background:
+                radial-gradient(
+                    circle at 30% 20%,
+                    rgba(77,157,255,.13),
+                    transparent 20%
+                ),
+                radial-gradient(
+                    circle at 75% 60%,
+                    rgba(77,157,255,.08),
+                    transparent 25%
+                );
+        }
+
+        .dashboard-stars::after {
+            content: "";
+            background: linear-gradient(
+                115deg,
+                transparent 0%,
+                rgba(255,255,255,.018) 50%,
+                transparent 100%
+            );
+        }
+
+        /* ---------------------------------------------------------
+           PAGE SHELL
+           --------------------------------------------------------- */
+
+        #dashboardPage {
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        .dashboard-shell {
+            width: min(1240px, calc(100% - 36px));
+            margin: 0 auto;
+            padding: 22px 0 56px;
+        }
+
+        /* ---------------------------------------------------------
+           NAVBAR
+           --------------------------------------------------------- */
+
+        .dashboard-nav {
+            min-height: 68px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 22px;
+
+            padding: 12px 16px 12px 20px;
+
+            border: 1px solid var(--dash-border);
+            border-radius: 18px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(11, 32, 65, .92),
+                    rgba(4, 16, 36, .88)
+                );
+
+            box-shadow:
+                0 18px 50px rgba(0, 0, 0, .26),
+                inset 0 1px 0 rgba(255,255,255,.035);
+
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-nav::after {
+            content: "";
+            position: absolute;
+            left: 8%;
+            right: 8%;
+            bottom: -1px;
+            height: 1px;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(77,157,255,.5),
+                rgba(233,180,76,.45),
+                transparent
+            );
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .brand-mark {
+            width: 40px;
+            height: 40px;
+            flex: 0 0 40px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 13px;
+
+            color: var(--dash-gold-light);
+            border: 1px solid var(--dash-border-gold);
+
+            background:
+                radial-gradient(
+                    circle at 50% 40%,
+                    rgba(233,180,76,.18),
+                    transparent 65%
+                ),
+                rgba(8, 28, 57, .9);
+
+            box-shadow:
+                0 0 28px rgba(233,180,76,.08),
+                inset 0 1px 0 rgba(255,255,255,.04);
+
+            font-size: 19px;
+        }
+
+        .brand-copy {
+            min-width: 0;
+        }
+
+        .brand-name {
+            margin: 0;
+            font-size: 17px;
+            line-height: 1.1;
+            font-weight: 800;
+            letter-spacing: .02em;
+        }
+
+        .brand-subtitle {
+            margin: 4px 0 0;
+            color: var(--dash-muted);
+            font-size: 11px;
+            letter-spacing: .07em;
+            text-transform: uppercase;
+        }
+
+        .dashboard-nav-links {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-link {
+            padding: 9px 13px;
+            border-radius: 10px;
+            color: #a9bad3;
+            font-size: 13px;
+            font-weight: 600;
+            transition:
+                color .2s ease,
+                background .2s ease,
+                transform .2s ease;
+        }
+
+        .nav-link:hover {
+            color: #fff;
+            background: rgba(77,157,255,.09);
+            transform: translateY(-1px);
+        }
+
+        .nav-link.active {
+            color: #fff;
+            background: rgba(77,157,255,.12);
+            border: 1px solid rgba(77,157,255,.12);
+        }
+
+        .logout-btn {
+            border: 1px solid rgba(232,179,78,.25);
+            background: rgba(232,179,78,.055);
+            color: #f4ca73;
+
+            padding: 9px 14px;
+            border-radius: 10px;
+
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+
+            transition:
+                background .2s ease,
+                border-color .2s ease,
+                transform .2s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(232,179,78,.11);
+            border-color: rgba(232,179,78,.4);
+            transform: translateY(-1px);
+        }
+
+        /* ---------------------------------------------------------
+           WELCOME
+           --------------------------------------------------------- */
+
+        .dashboard-hero {
+            margin-top: 26px;
+
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 24px;
+
+            padding: 30px 32px;
+
+            border: 1px solid var(--dash-border);
+            border-radius: var(--dash-radius);
+
+            background:
+                radial-gradient(
+                    circle at 90% 20%,
+                    rgba(233,180,76,.08),
+                    transparent 25%
+                ),
+                linear-gradient(
+                    135deg,
+                    rgba(10, 32, 67, .92),
+                    rgba(4, 17, 38, .82)
+                );
+
+            box-shadow: var(--dash-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-hero::before {
+            content: "";
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            right: -85px;
+            top: -100px;
+
+            border-radius: 50%;
+            border: 1px solid rgba(233,180,76,.11);
+            box-shadow:
+                0 0 0 28px rgba(233,180,76,.025),
+                0 0 0 56px rgba(233,180,76,.015);
+        }
+
+        .hero-eyebrow {
+            margin: 0 0 8px;
+
+            color: var(--dash-gold);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+        }
+
+        .hero-title {
+            margin: 0;
+
+            font-size: clamp(26px, 3vw, 38px);
+            line-height: 1.12;
+            letter-spacing: -.025em;
+        }
+
+        .hero-title span {
+            color: var(--dash-gold-light);
+        }
+
+        .hero-description {
+            max-width: 650px;
+            margin: 10px 0 0;
+
+            color: var(--dash-muted);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .hero-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .hero-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+
+            min-height: 42px;
+            padding: 0 17px;
+
+            border-radius: 11px;
+            font-size: 12px;
+            font-weight: 800;
+
+            transition:
+                transform .2s ease,
+                box-shadow .2s ease,
+                background .2s ease;
+        }
+
+        .hero-action.primary {
+            color: #08111f;
+            background: linear-gradient(
+                135deg,
+                #f2c45f,
+                #dca33b
+            );
+            box-shadow: 0 8px 28px rgba(224,168,65,.16);
+        }
+
+        .hero-action.secondary {
+            color: #d9e8ff;
+            border: 1px solid rgba(77,157,255,.22);
+            background: rgba(77,157,255,.075);
+        }
+
+        .hero-action:hover {
+            transform: translateY(-2px);
+        }
+
+        /* ---------------------------------------------------------
+           SECTION HEADER
+           --------------------------------------------------------- */
+
+        .section-heading {
+            margin: 28px 2px 13px;
+
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .section-heading h2 {
+            margin: 0;
+            font-size: 17px;
+            letter-spacing: -.01em;
+        }
+
+        .section-heading p {
+            margin: 4px 0 0;
+            color: var(--dash-muted);
+            font-size: 12px;
+        }
+
+        .section-label {
+            color: #7894ba;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+        }
+
+        /* ---------------------------------------------------------
+           ASTRO SUMMARY CARDS
+           --------------------------------------------------------- */
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .astro-card {
+            min-height: 148px;
+
+            padding: 19px;
+
+            border: 1px solid var(--dash-border);
+            border-radius: 17px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(10, 31, 64, .91),
+                    rgba(4, 17, 38, .82)
+                );
+
+            box-shadow:
+                0 14px 40px rgba(0,0,0,.2),
+                inset 0 1px 0 rgba(255,255,255,.025);
+
+            position: relative;
+            overflow: hidden;
+
+            transition:
+                transform .25s ease,
+                border-color .25s ease,
+                box-shadow .25s ease;
+        }
+
+        .astro-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(77,157,255,.3);
+            box-shadow:
+                0 20px 48px rgba(0,0,0,.28),
+                0 0 32px rgba(77,157,255,.05);
+        }
+
+        .astro-card::after {
+            content: "";
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            right: -40px;
+            bottom: -45px;
+
+            border-radius: 50%;
+            border: 1px solid rgba(77,157,255,.08);
+            box-shadow:
+                0 0 0 14px rgba(77,157,255,.025),
+                0 0 0 28px rgba(77,157,255,.012);
+        }
+
+        .card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .card-icon {
+            width: 35px;
+            height: 35px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 10px;
+
+            color: var(--dash-gold-light);
+            background: rgba(233,180,76,.075);
+            border: 1px solid rgba(233,180,76,.13);
+
+            font-size: 15px;
+        }
+
+        .card-caption {
+            color: #7189ac;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+        }
+
+        .card-value {
+            margin: 19px 0 0;
+
+            font-size: 22px;
+            line-height: 1.15;
+            font-weight: 800;
+
+            color: #f5f8ff;
+        }
+
+        .card-meta {
+            margin: 7px 0 0;
+
+            color: var(--dash-muted);
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        /* ---------------------------------------------------------
+           MAIN GRID
+           --------------------------------------------------------- */
+
+        .dashboard-main-grid {
+            margin-top: 15px;
+
+            display: grid;
+            grid-template-columns: minmax(0, 1.35fr) minmax(300px, .65fr);
+            gap: 15px;
+            align-items: start;
+        }
+
+        .dashboard-panel {
+            border: 1px solid var(--dash-border);
+            border-radius: var(--dash-radius);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(8, 27, 57, .9),
+                    rgba(3, 15, 34, .84)
+                );
+
+            box-shadow: var(--dash-shadow);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            min-height: 62px;
+
+            padding: 15px 19px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+
+            border-bottom: 1px solid rgba(90,155,255,.09);
+        }
+
+        .panel-title-wrap {
+            min-width: 0;
+        }
+
+        .panel-title {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .panel-subtitle {
+            margin: 4px 0 0;
+            color: var(--dash-muted);
+            font-size: 11px;
+        }
+
+        .panel-badge {
+            flex: 0 0 auto;
+
+            padding: 6px 9px;
+            border-radius: 8px;
+
+            color: #91c4ff;
+            border: 1px solid rgba(77,157,255,.15);
+            background: rgba(77,157,255,.065);
+
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        /* ---------------------------------------------------------
+           QUICK ACCESS
+           --------------------------------------------------------- */
+
+        .quick-access {
+            padding: 14px;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .quick-link {
+            min-height: 92px;
+
+            padding: 14px;
+
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            border: 1px solid rgba(90,155,255,.1);
+            border-radius: 13px;
+
+            background: rgba(255,255,255,.018);
+
+            transition:
+                transform .2s ease,
+                background .2s ease,
+                border-color .2s ease;
+        }
+
+        .quick-link:hover {
+            transform: translateY(-2px);
+            background: rgba(77,157,255,.055);
+            border-color: rgba(77,157,255,.22);
+        }
+
+        .quick-icon {
+            width: 38px;
+            height: 38px;
+            flex: 0 0 38px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 11px;
+
+            color: var(--dash-gold-light);
+            border: 1px solid rgba(233,180,76,.14);
+            background: rgba(233,180,76,.06);
+
+            font-size: 16px;
+        }
+
+        .quick-copy {
+            min-width: 0;
+        }
+
+        .quick-title {
+            margin: 0;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .quick-text {
+            margin: 4px 0 0;
+            color: var(--dash-muted);
+            font-size: 10px;
+            line-height: 1.45;
+        }
+
+        .quick-arrow {
+            margin-left: auto;
+            color: #617b9f;
+            font-size: 14px;
+        }
+
+        /* ---------------------------------------------------------
+           CURRENT DASHA
+           --------------------------------------------------------- */
+
+        .dasha-content {
+            padding: 17px 19px 20px;
+        }
+
+        .dasha-highlight {
+            padding: 17px;
+
+            border-radius: 14px;
+
+            background:
+                radial-gradient(
+                    circle at 85% 25%,
+                    rgba(233,180,76,.075),
+                    transparent 35%
+                ),
+                rgba(255,255,255,.018);
+
+            border: 1px solid rgba(233,180,76,.12);
+        }
+
+        .dasha-label {
+            color: #829abd;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: .13em;
+            text-transform: uppercase;
+        }
+
+        .dasha-name {
+            margin: 9px 0 4px;
+
+            font-size: 21px;
+            font-weight: 800;
+        }
+
+        .dasha-description {
+            margin: 0;
+            color: var(--dash-muted);
+            font-size: 11px;
+            line-height: 1.55;
+        }
+
+        .dasha-timeline {
+            margin-top: 14px;
+            height: 5px;
+
+            border-radius: 99px;
+            background: rgba(255,255,255,.055);
+            overflow: hidden;
+        }
+
+        .dasha-timeline span {
+            display: block;
+            width: 62%;
+            height: 100%;
+
+            border-radius: inherit;
+
+            background: linear-gradient(
+                90deg,
+                #4d9dff,
+                #e9b44c
+            );
+        }
+
+        /* ---------------------------------------------------------
+           INSIGHT PANEL
+           --------------------------------------------------------- */
+
+        .insight-list {
+            padding: 5px 18px 15px;
+        }
+
+        .insight-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+
+            padding: 13px 2px;
+
+            border-bottom: 1px solid rgba(90,155,255,.075);
+        }
+
+        .insight-item:last-child {
+            border-bottom: 0;
+        }
+
+        .insight-dot {
+            width: 7px;
+            height: 7px;
+            flex: 0 0 7px;
+
+            margin-top: 5px;
+
+            border-radius: 50%;
+            background: var(--dash-gold);
+            box-shadow: 0 0 10px rgba(233,180,76,.3);
+        }
+
+        .insight-copy {
+            min-width: 0;
+        }
+
+        .insight-title {
+            margin: 0;
+            color: #dce8f9;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .insight-text {
+            margin: 4px 0 0;
+            color: #7f95b6;
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+        /* ---------------------------------------------------------
+           FOOTER
+           --------------------------------------------------------- */
+
+        .dashboard-footer {
+            margin-top: 28px;
+            padding: 18px 3px 0;
+
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+
+            color: #5f7597;
+            font-size: 10px;
+
+            border-top: 1px solid rgba(90,155,255,.07);
+        }
+
+        .footer-gold {
+            color: #a98545;
+        }
+
+        /* ---------------------------------------------------------
+           ACCESSIBILITY
+           --------------------------------------------------------- */
+
+        .nav-link:focus-visible,
+        .logout-btn:focus-visible,
+        .hero-action:focus-visible,
+        .quick-link:focus-visible {
+            outline: 2px solid rgba(77,157,255,.7);
+            outline-offset: 2px;
+        }
+
+        /* ---------------------------------------------------------
+           RESPONSIVE
+           --------------------------------------------------------- */
+
+        @media (max-width: 980px) {
+            .summary-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .dashboard-main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-hero {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-actions {
+                justify-content: flex-start;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .dashboard-shell {
+                width: min(100% - 22px, 1240px);
+                padding-top: 11px;
+            }
+
+            .dashboard-nav {
+                padding: 11px 12px;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .dashboard-nav-links {
+                width: 100%;
+                order: 3;
+
+                overflow-x: auto;
+                scrollbar-width: none;
+                padding-top: 2px;
+            }
+
+            .dashboard-nav-links::-webkit-scrollbar {
+                display: none;
+            }
+
+            .nav-link {
+                white-space: nowrap;
+            }
+
+            .logout-btn {
+                margin-left: auto;
+            }
+
+            .dashboard-hero {
+                margin-top: 14px;
+                padding: 23px 20px;
+            }
+
+            .hero-title {
+                font-size: 28px;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 9px;
+            }
+
+            .astro-card {
+                min-height: 132px;
+                padding: 15px;
+            }
+
+            .card-value {
+                margin-top: 14px;
+                font-size: 18px;
+            }
+
+            .dashboard-main-grid {
+                margin-top: 10px;
+                gap: 10px;
+            }
+
+            .quick-access {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 470px) {
+            .brand-subtitle {
+                display: none;
+            }
+
+            .brand-mark {
+                width: 36px;
+                height: 36px;
+                flex-basis: 36px;
+            }
+
+            .brand-name {
+                font-size: 15px;
+            }
+
+            .dashboard-hero {
+                padding: 21px 17px;
+            }
+
+            .hero-description {
+                font-size: 12px;
+            }
+
+            .hero-actions {
+                display: grid;
+                grid-template-columns: 1fr;
+            }
+
+            .hero-action {
+                width: 100%;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .astro-card {
+                min-height: 124px;
+                padding: 13px;
+            }
+
+            .card-icon {
+                width: 31px;
+                height: 31px;
+                font-size: 13px;
+            }
+
+            .card-caption {
+                font-size: 8px;
+            }
+
+            .card-value {
+                font-size: 16px;
+                overflow-wrap: anywhere;
+            }
+
+            .card-meta {
+                font-size: 9px;
+            }
+
+            .section-heading {
+                margin-top: 21px;
+            }
+
+            .section-heading p {
+                display: none;
+            }
+
+            .dashboard-footer {
+                flex-direction: column;
+            }
+        }
+
+        @media print {
+            .dashboard-stars,
+            .dashboard-nav,
+            .hero-actions,
+            .quick-access {
+                display: none !important;
+            }
+
+            body {
+                background: white;
+                color: #111;
+            }
+
+            .dashboard-shell {
+                width: 100%;
+                padding: 0;
+            }
+
+            .dashboard-hero,
+            .astro-card,
+            .dashboard-panel {
+                color: #111;
+                background: white;
+                box-shadow: none;
+                border-color: #ddd;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Cosmic background -->
+    <div class="dashboard-stars" aria-hidden="true"></div>
+
+    <main id="dashboardPage">
+
+        <div class="dashboard-shell">
+
+            <!-- =====================================================
+                 NAVIGATION
+                 ===================================================== -->
+            <nav class="dashboard-nav" aria-label="Main navigation">
+
+                <a href="dashboard.html" class="brand">
+                    <div class="brand-mark" aria-hidden="true">✦</div>
+
+                    <div class="brand-copy">
+                        <p class="brand-name">AI Jyotish</p>
+                        <p class="brand-subtitle">Vedic Astrology Intelligence</p>
+                    </div>
+                </a>
+
+                <div class="dashboard-nav-links">
+                    <a
+                        href="dashboard.html"
+                        class="nav-link active"
+                        aria-current="page"
+                    >
+                        Dashboard
+                    </a>
+
+                    <a href="kundli.html" class="nav-link">
+                        Kundli
+                    </a>
+
+                    <a href="birth-form.html" class="nav-link">
+                        New Chart
+                    </a>
+
+                    <a href="index.html" class="nav-link">
+                        Home
+                    </a>
+                </div>
+
+                <button
+                    type="button"
+                    id="logoutBtn"
+                    class="logout-btn"
+                >
+                    Sign Out
+                </button>
+
+            </nav>
+
+
+            <!-- =====================================================
+                 WELCOME HERO
+                 ===================================================== -->
+            <section class="dashboard-hero">
+
+                <div>
+                    <p class="hero-eyebrow">
+                        Your Cosmic Dashboard
+                    </p>
+
+                    <h1 class="hero-title">
+                        Welcome back,
+                        <span id="userName">Seeker</span>
+                    </h1>
+
+                    <p class="hero-description">
+                        Explore your Vedic birth chart, planetary influences,
+                        Nakshatra, Dashas and personalized astrological
+                        insights from your cosmic profile.
+                    </p>
+                </div>
+
+                <div class="hero-actions">
+
+                    <a
+                        href="kundli.html"
+                        class="hero-action primary"
+                    >
+                        ✦ View Full Kundli
+                    </a>
+
+                    <a
+                        href="birth-form.html"
+                        class="hero-action secondary"
+                    >
+                        + New Birth Chart
+                    </a>
+
+                </div>
+
+            </section>
+
+
+            <!-- =====================================================
+                 ASTROLOGICAL SNAPSHOT
+                 ===================================================== -->
+            <div class="section-heading">
+
+                <div>
+                    <span class="section-label">
+                        Birth Chart Snapshot
+                    </span>
+
+                    <h2>Your Cosmic Signature</h2>
+
+                    <p>
+                        Key placements calculated from your birth details.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <section class="summary-grid">
+
+                <!-- Sun -->
+                <article class="astro-card">
+
+                    <div class="card-top">
+                        <div class="card-icon" aria-hidden="true">
+                            ☉
+                        </div>
+
+                        <span class="card-caption">
+                            Sun Sign
+                        </span>
+                    </div>
+
+                    <div
+                        id="sunSign"
+                        class="card-value"
+                    >
+                        —
+                    </div>
+
+                    <p class="card-meta">
+                        Identity · vitality · purpose
+                    </p>
+
+                </article>
+
+
+                <!-- Moon -->
+                <article class="astro-card">
+
+                    <div class="card-top">
+                        <div class="card-icon" aria-hidden="true">
+                            ☽
+                        </div>
+
+                        <span class="card-caption">
+                            Moon Sign
+                        </span>
+                    </div>
+
+                    <div
+                        id="moonSign"
+                        class="card-value"
+                    >
+                        —
+                    </div>
+
+                    <p class="card-meta">
+                        Mind · emotions · instincts
+                    </p>
+
+                </article>
+
+
+                <!-- Ascendant -->
+                <article class="astro-card">
+
+                    <div class="card-top">
+                        <div class="card-icon" aria-hidden="true">
+                            ↑
+                        </div>
+
+                        <span class="card-caption">
+                            Ascendant
+                        </span>
+                    </div>
+
+                    <div
+                        id="ascendant"
+                        class="card-value"
+                    >
+                        —
+                    </div>
+
+                    <p class="card-meta">
+                        Personality · life direction
+                    </p>
+
+                </article>
+
+
+                <!-- Nakshatra -->
+                <article class="astro-card">
+
+                    <div class="card-top">
+                        <div class="card-icon" aria-hidden="true">
+                            ✧
+                        </div>
+
+                        <span class="card-caption">
+                            Nakshatra Lord
+                        </span>
+                    </div>
+
+                    <div
+                        id="nakshatraLord"
+                        class="card-value"
+                    >
+                        —
+                    </div>
+
+                    <p class="card-meta">
+                        Lunar mansion · deeper tendencies
+                    </p>
+
+                </article>
+
+            </section>
+
+
+            <!-- =====================================================
+                 MAIN DASHBOARD
+                 ===================================================== -->
+            <section class="dashboard-main-grid">
+
+                <!-- LEFT COLUMN -->
+                <div>
+
+                    <!-- Quick Access -->
+                    <article class="dashboard-panel">
+
+                        <header class="panel-header">
+
+                            <div class="panel-title-wrap">
+                                <h2 class="panel-title">
+                                    Quick Access
+                                </h2>
+
+                                <p class="panel-subtitle">
+                                    Jump directly into your astrology tools.
+                                </p>
+                            </div>
+
+                            <span class="panel-badge">
+                                Explore
+                            </span>
+
+                        </header>
+
+
+                        <div class="quick-access">
+
+                            <a
+                                href="kundli.html"
+                                class="quick-link"
+                            >
+                                <div class="quick-icon">
+                                    ◇
+                                </div>
+
+                                <div class="quick-copy">
+                                    <h3 class="quick-title">
+                                        Birth Chart
+                                    </h3>
+
+                                    <p class="quick-text">
+                                        View your complete North Indian
+                                        Kundli and planetary placements.
+                                    </p>
+                                </div>
+
+                                <span class="quick-arrow">
+                                    ›
+                                </span>
+                            </a>
+
+
+                            <a
+                                href="kundli.html#planetaryPositions"
+                                class="quick-link"
+                            >
+                                <div class="quick-icon">
+                                    ♃
+                                </div>
+
+                                <div class="quick-copy">
+                                    <h3 class="quick-title">
+                                        Planets
+                                    </h3>
+
+                                    <p class="quick-text">
+                                        Explore signs, degrees, houses,
+                                        Nakshatras and planetary status.
+                                    </p>
+                                </div>
+
+                                <span class="quick-arrow">
+                                    ›
+                                </span>
+                            </a>
+
+
+                            <a
+                                href="kundli.html#currentDasha"
+                                class="quick-link"
+                            >
+                                <div class="quick-icon">
+                                    ◷
+                                </div>
+
+                                <div class="quick-copy">
+                                    <h3 class="quick-title">
+                                        Vimshottari Dasha
+                                    </h3>
+
+                                    <p class="quick-text">
+                                        Understand your current planetary
+                                        period and timeline.
+                                    </p>
+                                </div>
+
+                                <span class="quick-arrow">
+                                    ›
+                                </span>
+                            </a>
+
+
+                            <a
+                                href="kundli.html#yogas"
+                                class="quick-link"
+                            >
+                                <div class="quick-icon">
+                                    ✦
+                                </div>
+
+                                <div class="quick-copy">
+                                    <h3 class="quick-title">
+                                        Yogas
+                                    </h3>
+
+                                    <p class="quick-text">
+                                        Discover important combinations
+                                        identified in your birth chart.
+                                    </p>
+                                </div>
+
+                                <span class="quick-arrow">
+                                    ›
+                                </span>
+                            </a>
+
+                        </div>
+
+                    </article>
+
+
+                    <!-- Current Dasha -->
+                    <article
+                        class="dashboard-panel"
+                        style="margin-top:15px;"
+                    >
+
+                        <header class="panel-header">
+
+                            <div class="panel-title-wrap">
+                                <h2 class="panel-title">
+                                    Current Dasha
+                                </h2>
+
+                                <p class="panel-subtitle">
+                                    Your active planetary period.
+                                </p>
+                            </div>
+
+                            <span class="panel-badge">
+                                Vimshottari
+                            </span>
+
+                        </header>
+
+
+                        <div class="dasha-content">
+
+                            <div class="dasha-highlight">
+
+                                <span class="dasha-label">
+                                    Active Planetary Period
+                                </span>
+
+                                <div
+                                    id="dasha"
+                                    class="dasha-name"
+                                >
+                                    —
+                                </div>
+
+                                <p class="dasha-description">
+                                    Your current Mahadasha or planetary
+                                    period will appear here after your
+                                    birth chart is calculated.
+                                </p>
+
+                                <div
+                                    class="dasha-timeline"
+                                    aria-hidden="true"
+                                >
+                                    <span></span>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+
+                <!-- RIGHT COLUMN -->
+                <aside>
+
+                    <!-- Yoga Count -->
+                    <article class="astro-card">
+
+                        <div class="card-top">
+
+                            <div class="card-icon" aria-hidden="true">
+                                ✦
+                            </div>
+
+                            <span class="card-caption">
+                                Chart Yogas
+                            </span>
+
+                        </div>
+
+                        <div
+                            id="yogaCount"
+                            class="card-value"
+                        >
+                            —
+                        </div>
+
+                        <p class="card-meta">
+                            Significant planetary combinations detected
+                            in your chart.
+                        </p>
+
+                    </article>
+
+
+                    <!-- Cosmic Guide -->
+                    <article
+                        class="dashboard-panel"
+                        style="margin-top:15px;"
+                    >
+
+                        <header class="panel-header">
+
+                            <div class="panel-title-wrap">
+                                <h2 class="panel-title">
+                                    Cosmic Guide
+                                </h2>
+
+                                <p class="panel-subtitle">
+                                    What to explore next.
+                                </p>
+                            </div>
+
+                            <span class="panel-badge">
+                                AI Jyotish
+                            </span>
+
+                        </header>
+
+
+                        <div class="insight-list">
+
+                            <div class="insight-item">
+
+                                <span
+                                    class="insight-dot"
+                                    aria-hidden="true"
+                                ></span>
+
+                                <div class="insight-copy">
+
+                                    <h3 class="insight-title">
+                                        Understand your Ascendant
+                                    </h3>
+
+                                    <p class="insight-text">
+                                        Your Lagna forms the foundation
+                                        of house interpretation and
+                                        personality analysis.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="insight-item">
+
+                                <span
+                                    class="insight-dot"
+                                    aria-hidden="true"
+                                ></span>
+
+                                <div class="insight-copy">
+
+                                    <h3 class="insight-title">
+                                        Explore your Moon Nakshatra
+                                    </h3>
+
+                                    <p class="insight-text">
+                                        The lunar mansion adds a deeper
+                                        layer to your emotional and
+                                        psychological profile.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="insight-item">
+
+                                <span
+                                    class="insight-dot"
+                                    aria-hidden="true"
+                                ></span>
+
+                                <div class="insight-copy">
+
+                                    <h3 class="insight-title">
+                                        Check your current Dasha
+                                    </h3>
+
+                                    <p class="insight-text">
+                                        Planetary periods help place
+                                        important life themes into
+                                        a meaningful timeline.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="insight-item">
+
+                                <span
+                                    class="insight-dot"
+                                    aria-hidden="true"
+                                ></span>
+
+                                <div class="insight-copy">
+
+                                    <h3 class="insight-title">
+                                        Review your planetary strength
+                                    </h3>
+
+                                    <p class="insight-text">
+                                        Compare planetary placements,
+                                        dignity and other calculated
+                                        chart factors.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                </aside>
+
+            </section>
+
+
+            <!-- =====================================================
+                 FOOTER
+                 ===================================================== -->
+            <footer class="dashboard-footer">
+
+                <span>
+                    © 2026 AI Jyotish
+                </span>
+
+                <span>
+                    Crafted for
+                    <span class="footer-gold">
+                        Vedic Astrology
+                    </span>
+                </span>
+
+            </footer>
+
+        </div>
+
+    </main>
+
+
+    <!-- =========================================================
+         APPLICATION SCRIPTS
+         ========================================================= -->
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/planets.js"></script>
+    <script src="js/nakshatra.js"></script>
+    <script src="js/dasha.js"></script>
+    <script src="js/yogas.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/ai.js"></script>
+    <script src="js/kundli.js"></script>
+    <script src="js/script.js"></script>
+
+</body>
+</html>

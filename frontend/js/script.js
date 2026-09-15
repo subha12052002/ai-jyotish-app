@@ -1,1871 +1,1953 @@
-/* =========================================================
-   AI JYOTISH - MAIN JAVASCRIPT
-   North Indian Kundli
-   Flask + Gemini AI
-========================================================= */
+/**
+ * AI Jyotish — Main Application Controller
+ * --------------------------------
+ * Connects the frontend modules with the existing backend API.
+ *
+ * Backend/API routes are intentionally unchanged.
+ */
 
+(function () {
+    "use strict";
 
-/* =========================================================
-   API
-========================================================= */
+    const APP = window.AIJyotishApp = {};
 
-const API_URL = "/api/kundli";
-const AI_API_URL = "/api/ai";
+    let currentChart = null;
 
+    const $ = id => document.getElementById(id);
 
-/* =========================================================
-   SIGNS
-========================================================= */
+    function escapeHtml(value) {
+        if (value === null || value === undefined) return "";
 
-const SIGNS = [
-    "Aries",
-    "Taurus",
-    "Gemini",
-    "Cancer",
-    "Leo",
-    "Virgo",
-    "Libra",
-    "Scorpio",
-    "Sagittarius",
-    "Capricorn",
-    "Aquarius",
-    "Pisces"
-];
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
 
+    function getValue(object, keys, fallback = "—") {
+        if (!object || typeof object !== "object") {
+            return fallback;
+        }
 
-/* =========================================================
-   PLANETS
-========================================================= */
+        for (const key of keys) {
+            if (
+                object[key] !== undefined &&
+                object[key] !== null &&
+                object[key] !== ""
+            ) {
+                return object[key];
+            }
+        }
 
-const PLANET_NAMES = {
-    Sun: "Su",
-    Moon: "Mo",
-    Mars: "Ma",
-    Mercury: "Me",
-    Jupiter: "Ju",
-    Venus: "Ve",
-    Saturn: "Sa",
-    Rahu: "Ra",
-    Ketu: "Ke"
-};
-
-
-/* =========================================================
-   NAKSHATRAS
-========================================================= */
-
-const NAKSHATRAS = [
-    "Ashwini",
-    "Bharani",
-    "Krittika",
-    "Rohini",
-    "Mrigashira",
-    "Ardra",
-    "Punarvasu",
-    "Pushya",
-    "Ashlesha",
-    "Magha",
-    "Purva Phalguni",
-    "Uttara Phalguni",
-    "Hasta",
-    "Chitra",
-    "Swati",
-    "Vishakha",
-    "Anuradha",
-    "Jyeshtha",
-    "Mula",
-    "Purva Ashadha",
-    "Uttara Ashadha",
-    "Shravana",
-    "Dhanishta",
-    "Shatabhisha",
-    "Purva Bhadrapada",
-    "Uttara Bhadrapada",
-    "Revati"
-];
-
-
-/* =========================================================
-   HELPERS
-========================================================= */
-
-function getElement(id) {
-    return document.getElementById(id);
-}
-
-
-function safeNumber(value, fallback = null) {
-
-    if (
-        value === null ||
-        value === undefined ||
-        value === ""
-    ) {
         return fallback;
     }
 
-    const number = Number(value);
+    function setText(id, value) {
+        const element = $(id);
 
-    return Number.isFinite(number)
-        ? number
-        : fallback;
-}
+        if (!element) return;
 
-
-/* =========================================================
-   SIGN NORMALIZATION
-========================================================= */
-
-function normalizeSign(value, zeroBased = false) {
-
-    if (
-        value === null ||
-        value === undefined ||
-        value === ""
-    ) {
-        return null;
+        element.textContent =
+            value === undefined ||
+            value === null ||
+            value === ""
+                ? "—"
+                : value;
     }
 
-    if (typeof value === "number") {
+    function showMessage(id, message, type = "info") {
+        const element = $(id);
 
-        if (zeroBased) {
+        if (!element) return;
 
-            if (
-                Number.isInteger(value) &&
-                value >= 0 &&
-                value <= 11
-            ) {
-                return value;
-            }
+        element.textContent = message;
+        element.className =
+            `form-message ${type}`;
 
+        element.hidden = !message;
+    }
+
+    function setLoading(button, loading, loadingText = "Loading...") {
+        if (!button) return;
+
+        if (loading) {
+            button.dataset.originalText =
+                button.textContent;
+
+            button.disabled = true;
+            button.classList.add("is-loading");
+            button.textContent = loadingText;
         } else {
+            button.disabled = false;
+            button.classList.remove("is-loading");
 
-            if (
-                Number.isInteger(value) &&
-                value >= 1 &&
-                value <= 12
-            ) {
-                return value - 1;
+            if (button.dataset.originalText) {
+                button.textContent =
+                    button.dataset.originalText;
             }
         }
     }
 
-    const text = String(value).trim();
-
-    const lower = text.toLowerCase();
-
-    const index = SIGNS.findIndex(
-        sign =>
-            sign.toLowerCase() === lower
-    );
-
-    if (index !== -1) {
-        return index;
+    function redirect(path) {
+        window.location.href = path;
     }
 
-    const match = text.match(/\d+/);
+    /* ---------------------------------------------------------
+       API
+    --------------------------------------------------------- */
 
-    if (match) {
-
-        const number = Number(match[0]);
-
+    async function apiCall(path, options = {}) {
         if (
-            number >= 1 &&
-            number <= 12
+            window.AIJyotishAPI &&
+            typeof window.AIJyotishAPI.request === "function"
         ) {
-            return number - 1;
+            return window.AIJyotishAPI.request(
+                path,
+                options
+            );
         }
-    }
 
-    return null;
-}
-
-
-function signName(index) {
-
-    if (
-        index === null ||
-        index === undefined ||
-        index < 0 ||
-        index > 11
-    ) {
-        return "—";
-    }
-
-    return SIGNS[index];
-}
-
-
-/* =========================================================
-   DEGREE
-========================================================= */
-
-function formatDegree(value) {
-
-    const number = safeNumber(value);
-
-    if (number === null) {
-        return "—";
-    }
-
-    return `${number.toFixed(2)}°`;
-}
-
-
-function degreeToDMS(value) {
-
-    const number = safeNumber(value);
-
-    if (number === null) {
-        return "—";
-    }
-
-    let degrees = Math.floor(number);
-
-    let minutesDecimal =
-        (number - degrees) * 60;
-
-    let minutes =
-        Math.floor(minutesDecimal);
-
-    let seconds =
-        Math.round(
-            (minutesDecimal - minutes) * 60
-        );
-
-    if (seconds === 60) {
-        seconds = 0;
-        minutes++;
-    }
-
-    if (minutes === 60) {
-        minutes = 0;
-        degrees++;
-    }
-
-    return `${degrees}° ${minutes}' ${seconds}"`;
-}
-
-
-/* =========================================================
-   NAKSHATRA
-========================================================= */
-
-function calculateNakshatra(longitude) {
-
-    if (longitude === null) {
-        return "—";
-    }
-
-    const normalized =
-        ((longitude % 360) + 360) % 360;
-
-    const size = 360 / 27;
-
-    const index =
-        Math.floor(
-            normalized / size
-        );
-
-    return NAKSHATRAS[index] || "—";
-}
-
-
-/* =========================================================
-   PLANET NORMALIZATION
-========================================================= */
-
-function normalizePlanets(result) {
-
-    const source = result?.planets;
-
-    if (!source) {
-        return [];
-    }
-
-    const planets = [];
-
-    if (Array.isArray(source)) {
-
-        source.forEach(
-            (planet, index) => {
-
-                if (!planet) {
-                    return;
-                }
-
-                planets.push(
-                    normalizePlanet(
-                        planet,
-                        index
-                    )
-                );
+        const response = await fetch(path, {
+            credentials: "include",
+            ...options,
+            headers: {
+                "Content-Type": "application/json",
+                ...(options.headers || {})
             }
-        );
+        });
 
-    } else {
+        let data = {};
 
-        Object.entries(source)
-            .forEach(
-                ([name, value], index) => {
+        try {
+            data = await response.json();
+        } catch {
+            data = {};
+        }
 
-                    let planet;
-
-                    if (
-                        value &&
-                        typeof value === "object" &&
-                        !Array.isArray(value)
-                    ) {
-
-                        planet = {
-                            ...value,
-                            name:
-                                value.name ||
-                                value.planet ||
-                                name
-                        };
-
-                    } else {
-
-                        planet = {
-                            name,
-                            longitude: value
-                        };
-                    }
-
-                    planets.push(
-                        normalizePlanet(
-                            planet,
-                            index
-                        )
-                    );
-                }
-            );
-    }
-
-    return planets.filter(
-        planet =>
-            planet &&
-            planet.name
-    );
-}
-
-
-/* =========================================================
-   NORMALIZE ONE PLANET
-========================================================= */
-
-function normalizePlanet(
-    planet,
-    index
-) {
-
-    const name =
-        planet.name ||
-        planet.planet ||
-        planet.body ||
-        `Planet ${index + 1}`;
-
-    let longitude =
-        planet.longitude ??
-        planet.lon ??
-        planet.longitude_degree ??
-        planet.absolute_longitude ??
-        null;
-
-    longitude = safeNumber(longitude);
-
-    let sign =
-        planet.sign ??
-        planet.rashi ??
-        planet.zodiac ??
-        planet.sign_name ??
-        null;
-
-    let signIndex = null;
-
-    if (longitude !== null) {
-
-        const normalizedLongitude =
-            ((longitude % 360) + 360) % 360;
-
-        signIndex =
-            Math.floor(
-                normalizedLongitude / 30
-            );
-    }
-
-    if (signIndex === null) {
-
-        signIndex =
-            normalizeSign(
-                sign,
-                false
-            );
-    }
-
-    let degreeInSign =
-        planet.degree_in_sign ??
-        planet.sign_degree ??
-        planet.degrees ??
-        null;
-
-    degreeInSign =
-        safeNumber(
-            degreeInSign
-        );
-
-    if (
-        degreeInSign === null &&
-        longitude !== null
-    ) {
-
-        const normalizedLongitude =
-            ((longitude % 360) + 360) % 360;
-
-        degreeInSign =
-            normalizedLongitude % 30;
-    }
-
-    const nakshatra =
-        planet.nakshatra ||
-        planet.nakshatra_name ||
-        calculateNakshatra(
-            longitude
-        );
-
-    const house =
-        safeNumber(
-            planet.house ??
-            planet.house_number
-        );
-
-    const retrograde =
-        planet.retrograde ??
-        planet.is_retrograde ??
-        false;
-
-    return {
-
-        name,
-
-        short:
-            PLANET_NAMES[name] ||
-            name.substring(0, 2),
-
-        longitude,
-
-        signIndex,
-
-        sign:
-            signIndex !== null
-                ? SIGNS[signIndex]
-                : sign || "—",
-
-        degree:
-            degreeInSign,
-
-        nakshatra,
-
-        house,
-
-        retrograde:
-            Boolean(retrograde)
-    };
-}
-
-
-/* =========================================================
-   ASCENDANT
-========================================================= */
-
-function getAscendantIndex(result) {
-
-    const asc = result?.ascendant;
-
-    if (
-        asc &&
-        typeof asc === "object"
-    ) {
-
-        const longitude =
-            safeNumber(
-                asc.longitude ??
-                asc.lon ??
-                asc.longitude_degree
-            );
-
-        if (longitude !== null) {
-
-            return Math.floor(
-                (
-                    ((longitude % 360) + 360) % 360
-                ) / 30
+        if (!response.ok) {
+            throw new Error(
+                data.error ||
+                data.message ||
+                "Request failed."
             );
         }
 
-        return normalizeSign(
-            asc.sign ??
-            asc.rashi ??
-            asc.zodiac ??
-            asc.name,
-            false
-        );
+        return data;
     }
 
-    return normalizeSign(
-        asc,
-        false
-    );
-}
-
-
-function getAscendantDegree(result) {
-
-    const asc = result?.ascendant;
-
-    if (!asc) {
-        return null;
-    }
-
-    if (
-        typeof asc === "object"
-    ) {
-
-        let degree =
-            asc.degree_in_sign ??
-            asc.sign_degree ??
-            asc.degrees ??
-            null;
-
-        degree = safeNumber(degree);
-
-        if (degree !== null) {
-            return degree;
+    async function getCurrentUser() {
+        if (
+            window.AIJyotishAPI &&
+            typeof window.AIJyotishAPI.getCurrentUser === "function"
+        ) {
+            return window.AIJyotishAPI.getCurrentUser();
         }
 
-        const longitude =
-            safeNumber(
-                asc.longitude ??
-                asc.lon ??
-                asc.longitude_degree
-            );
+        return apiCall("/me");
+    }
 
-        if (longitude !== null) {
-
-            const normalized =
-                ((longitude % 360) + 360) % 360;
-
-            return normalized % 30;
+    async function getLatestKundli() {
+        if (
+            window.AIJyotishAPI &&
+            typeof window.AIJyotishAPI.getLatestKundli === "function"
+        ) {
+            return window.AIJyotishAPI.getLatestKundli();
         }
+
+        return apiCall("/kundli/latest");
     }
 
-    return null;
-}
+    /* ---------------------------------------------------------
+       AUTH
+    --------------------------------------------------------- */
 
+    function initLogin() {
+        const form = $("loginForm");
 
-/* =========================================================
-   BIRTH FORM
-========================================================= */
+        if (!form) return;
 
-function initializeBirthForm() {
-
-    const form = getElement("birthForm");
-
-    if (!form) {
-        return;
-    }
-
-    form.addEventListener(
-        "submit",
-        async function(event) {
-
+        form.addEventListener("submit", async event => {
             event.preventDefault();
 
-            const errorBox =
-                getElement("formError");
-
-            if (errorBox) {
-                errorBox.textContent = "";
-            }
-
             const button =
-                getElement(
-                    "createKundliButton"
+                form.querySelector(
+                    'button[type="submit"]'
                 );
 
-            const buttonText =
-                getElement(
-                    "buttonText"
-                );
+            const email =
+                $("email")?.value.trim();
 
-            const loader =
-                getElement(
-                    "buttonLoader"
-                );
+            const password =
+                $("password")?.value || "";
 
-            if (button) {
-                button.disabled = true;
+            if (!email || !password) {
+                showMessage(
+                    "loginMessage",
+                    "Please enter your email and password.",
+                    "error"
+                );
+                return;
             }
 
-            if (buttonText) {
-                buttonText.classList.add(
-                    "hidden"
-                );
-            }
-
-            if (loader) {
-                loader.classList.remove(
-                    "hidden"
-                );
-            }
-
-            const data = {
-
-                name:
-                    getElement("name")?.value.trim(),
-
-                date:
-                    getElement("date")?.value,
-
-                time:
-                    getElement("time")?.value,
-
-                place:
-                    getElement("place")?.value.trim(),
-
-                latitude:
-                    getElement("latitude")?.value,
-
-                longitude:
-                    getElement("longitude")?.value,
-
-                timezone:
-                    getElement("timezone")?.value
-            };
-
-            console.log(
-                "Sending Kundli data:",
-                data
+            setLoading(
+                button,
+                true,
+                "Signing in..."
             );
 
             try {
-
-                const response =
-                    await fetch(
-                        API_URL,
+                if (
+                    window.AIJyotishAPI &&
+                    typeof window.AIJyotishAPI.loginUser === "function"
+                ) {
+                    await window.AIJyotishAPI.loginUser(
+                        email,
+                        password
+                    );
+                } else {
+                    await apiCall(
+                        "/login",
                         {
                             method: "POST",
-
-                            headers: {
-                                "Content-Type":
-                                    "application/json"
-                            },
-
-                            body:
-                                JSON.stringify(data)
+                            body: JSON.stringify({
+                                email,
+                                password
+                            })
                         }
                     );
+                }
 
-                const result =
-                    await response.json();
-
-                console.log(
-                    "Kundli API response:",
-                    result
+                showMessage(
+                    "loginMessage",
+                    "Login successful. Opening your dashboard...",
+                    "success"
                 );
 
-                if (!response.ok) {
+                setTimeout(
+                    () => redirect("dashboard.html"),
+                    400
+                );
+            } catch (error) {
+                showMessage(
+                    "loginMessage",
+                    error.message ||
+                        "Unable to login.",
+                    "error"
+                );
+            } finally {
+                setLoading(button, false);
+            }
+        });
+    }
 
-                    throw new Error(
-                        result.error ||
-                        result.details ||
-                        "Kundli calculation failed."
+    function initRegister() {
+        const form = $("registerForm");
+
+        if (!form) return;
+
+        form.addEventListener("submit", async event => {
+            event.preventDefault();
+
+            const button =
+                form.querySelector(
+                    'button[type="submit"]'
+                );
+
+            const name =
+                $("name")?.value.trim();
+
+            const email =
+                $("email")?.value.trim();
+
+            const password =
+                $("password")?.value || "";
+
+            const confirm =
+                $("confirm")?.value || "";
+
+            if (!name || !email || !password) {
+                showMessage(
+                    "registerMessage",
+                    "Please complete all required fields.",
+                    "error"
+                );
+                return;
+            }
+
+            if (password !== confirm) {
+                showMessage(
+                    "registerMessage",
+                    "Passwords do not match.",
+                    "error"
+                );
+                return;
+            }
+
+            setLoading(
+                button,
+                true,
+                "Creating account..."
+            );
+
+            try {
+                if (
+                    window.AIJyotishAPI &&
+                    typeof window.AIJyotishAPI.registerUser === "function"
+                ) {
+                    await window.AIJyotishAPI.registerUser(
+                        name,
+                        email,
+                        password
+                    );
+                } else {
+                    await apiCall(
+                        "/register",
+                        {
+                            method: "POST",
+                            body: JSON.stringify({
+                                name,
+                                email,
+                                password,
+                                confirm
+                            })
+                        }
                     );
                 }
+
+                showMessage(
+                    "registerMessage",
+                    "Account created successfully. You can now login.",
+                    "success"
+                );
+
+                form.reset();
+
+                setTimeout(
+                    () => redirect("login.html"),
+                    800
+                );
+            } catch (error) {
+                showMessage(
+                    "registerMessage",
+                    error.message ||
+                        "Unable to create account.",
+                    "error"
+                );
+            } finally {
+                setLoading(button, false);
+            }
+        });
+    }
+
+    async function logout() {
+        try {
+            if (
+                window.AIJyotishAPI &&
+                typeof window.AIJyotishAPI.logoutUser === "function"
+            ) {
+                await window.AIJyotishAPI.logoutUser();
+            } else {
+                await apiCall(
+                    "/logout",
+                    {
+                        method: "POST"
+                    }
+                );
+            }
+        } catch {
+            // Continue redirecting even if the logout request fails.
+        }
+
+        redirect("login.html");
+    }
+
+    function initLogout() {
+        const buttons =
+            document.querySelectorAll(
+                "#logoutBtn, [data-action='logout']"
+            );
+
+        buttons.forEach(button => {
+            button.addEventListener(
+                "click",
+                event => {
+                    event.preventDefault();
+                    logout();
+                }
+            );
+        });
+    }
+
+    /* ---------------------------------------------------------
+       BIRTH FORM
+    --------------------------------------------------------- */
+
+    function initBirthForm() {
+        const form = $("birthForm");
+
+        if (!form) return;
+        // ---------------------------------------------------------
+// CURRENT LOCATION
+// ---------------------------------------------------------
+
+// CURRENT LOCATION + BIRTHPLACE SEARCH
+const locationBtn = $("useLocationBtn");
+const locationStatus = $("locationStatus");
+const placeInput = $("place");
+
+
+// =====================================================
+// FUNCTION: SET LOCATION DATA
+// =====================================================
+function setLocationData(latitude, longitude, placeName = "") {
+
+    const latitudeInput = $("latitude");
+    const longitudeInput = $("longitude");
+    const timezoneInput = $("timezone");
+
+    if (latitudeInput) {
+        latitudeInput.value = Number(latitude).toFixed(6);
+    }
+
+    if (longitudeInput) {
+        longitudeInput.value = Number(longitude).toFixed(6);
+    }
+
+    // Browser local timezone
+    const timezoneOffset =
+        -new Date().getTimezoneOffset() / 60;
+
+    if (timezoneInput) {
+        timezoneInput.value = timezoneOffset;
+    }
+
+    if (placeInput && placeName) {
+        placeInput.value = placeName;
+    }
+}
+
+
+// =====================================================
+// USE CURRENT GPS LOCATION
+// =====================================================
+if (locationBtn) {
+
+    locationBtn.addEventListener("click", () => {
+
+        if (!navigator.geolocation) {
+
+            if (locationStatus) {
+                locationStatus.textContent =
+                    "Location access is not supported by your browser.";
+            }
+
+            return;
+        }
+
+        locationBtn.disabled = true;
+
+        locationBtn.textContent =
+            "📍 Detecting location...";
+
+        if (locationStatus) {
+            locationStatus.textContent =
+                "Please allow location access when your browser asks.";
+        }
+
+
+        navigator.geolocation.getCurrentPosition(
+
+            async position => {
+
+                const latitude =
+                    position.coords.latitude;
+
+                const longitude =
+                    position.coords.longitude;
+
+
+                setLocationData(
+                    latitude,
+                    longitude
+                );
+
+
+                if (locationStatus) {
+                    locationStatus.textContent =
+                        "📍 Finding place name...";
+                }
+
+
+                try {
+
+                    const url =
+                        "https://nominatim.openstreetmap.org/reverse" +
+                        "?format=jsonv2" +
+                        "&lat=" +
+                        encodeURIComponent(latitude) +
+                        "&lon=" +
+                        encodeURIComponent(longitude) +
+                        "&addressdetails=1" +
+                        "&zoom=10" +
+                        "&accept-language=en";
+
+
+                    const response =
+                        await fetch(url);
+
+
+                    if (!response.ok) {
+                        throw new Error(
+                            "Reverse geocoding failed"
+                        );
+                    }
+
+
+                    const data =
+                        await response.json();
+
+                    const address =
+                        data?.address || {};
+
+
+                    const city =
+                        address.city ||
+                        address.town ||
+                        address.village ||
+                        address.municipality ||
+                        address.county ||
+                        "";
+
+
+                    const state =
+                        address.state ||
+                        address.state_district ||
+                        "";
+
+
+                    const country =
+                        address.country ||
+                        "";
+
+
+                    const birthplace =
+                        [
+                            city,
+                            state,
+                            country
+                        ]
+                        .filter(Boolean)
+                        .join(", ");
+
+
+                    if (
+                        placeInput &&
+                        birthplace
+                    ) {
+                        placeInput.value =
+                            birthplace;
+                    }
+
+
+                    locationBtn.disabled = false;
+
+                    locationBtn.textContent =
+                        "✓ Location detected";
+
+
+                    if (locationStatus) {
+
+                        locationStatus.textContent =
+                            birthplace
+                                ? `✓ ${birthplace} — edit if this is not your birthplace`
+                                : "✓ Location detected. Please enter your birthplace.";
+                    }
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Reverse geocoding error:",
+                        error
+                    );
+
+
+                    locationBtn.disabled = false;
+
+                    locationBtn.textContent =
+                        "✓ Coordinates detected";
+
+
+                    if (locationStatus) {
+
+                        locationStatus.textContent =
+                            "Coordinates detected. Please enter your birthplace manually.";
+                    }
+                }
+            },
+
+
+            error => {
+
+                locationBtn.disabled = false;
+
+                locationBtn.textContent =
+                    "📍 Use my current location";
+
+
+                if (!locationStatus) return;
+
+
+                if (error.code === 1) {
+
+                    locationStatus.textContent =
+                        "Location permission was denied. Please allow it and try again.";
+
+                } else if (error.code === 2) {
+
+                    locationStatus.textContent =
+                        "Your location could not be determined. Please try again.";
+
+                } else if (error.code === 3) {
+
+                    locationStatus.textContent =
+                        "Location request timed out. Please try again.";
+
+                } else {
+
+                    locationStatus.textContent =
+                        "Unable to detect your location.";
+                }
+            },
+
+
+            {
+                enableHighAccuracy: true,
+                timeout: 15000,
+                maximumAge: 300000
+            }
+        );
+    });
+}
+
+
+// =====================================================
+// BIRTHPLACE SEARCH
+// User types a place and selects the correct result.
+// Latitude + Longitude are automatically filled.
+// =====================================================
+
+if (placeInput) {
+
+    // Create suggestion box
+    const suggestionBox =
+        document.createElement("div");
+
+    suggestionBox.id =
+        "birthplaceSuggestions";
+
+    suggestionBox.style.position =
+        "absolute";
+
+    suggestionBox.style.zIndex =
+        "9999";
+
+    suggestionBox.style.background =
+        "#ffffff";
+
+    suggestionBox.style.border =
+        "1px solid #ddd";
+
+    suggestionBox.style.borderRadius =
+        "8px";
+
+    suggestionBox.style.boxShadow =
+        "0 4px 12px rgba(0,0,0,0.12)";
+
+    suggestionBox.style.width =
+        "100%";
+
+    suggestionBox.style.maxHeight =
+        "250px";
+
+    suggestionBox.style.overflowY =
+        "auto";
+
+    suggestionBox.style.display =
+        "none";
+
+
+    // Make parent relative
+    const placeParent =
+        placeInput.parentElement;
+
+    if (placeParent) {
+
+        placeParent.style.position =
+            "relative";
+
+        placeParent.appendChild(
+            suggestionBox
+        );
+    }
+
+
+    let searchTimer = null;
+
+
+    placeInput.addEventListener(
+        "input",
+        () => {
+
+            const query =
+                placeInput.value.trim();
+
+
+            clearTimeout(searchTimer);
+
+
+            if (query.length < 2) {
+
+                suggestionBox.innerHTML =
+                    "";
+
+                suggestionBox.style.display =
+                    "none";
+
+                return;
+            }
+
+
+            searchTimer =
+                setTimeout(
+                    async () => {
+
+                        try {
+
+                            suggestionBox.innerHTML =
+                                "<div style='padding:10px;color:#777;'>Searching...</div>";
+
+                            suggestionBox.style.display =
+                                "block";
+
+
+                            const url =
+                                "https://nominatim.openstreetmap.org/search" +
+                                "?format=jsonv2" +
+                                "&q=" +
+                                encodeURIComponent(query) +
+                                "&addressdetails=1" +
+                                "&limit=5" +
+                                "&accept-language=en";
+
+
+                            const response =
+                                await fetch(url);
+
+
+                            if (!response.ok) {
+                                throw new Error(
+                                    "Place search failed"
+                                );
+                            }
+
+
+                            const results =
+                                await response.json();
+
+
+                            suggestionBox.innerHTML =
+                                "";
+
+
+                            if (
+                                !results ||
+                                results.length === 0
+                            ) {
+
+                                suggestionBox.innerHTML =
+                                    "<div style='padding:10px;color:#777;'>No location found</div>";
+
+                                return;
+                            }
+
+
+                          results.forEach(result => {
+
+    const item =
+        document.createElement("div");
+
+    item.style.padding =
+        "12px 14px";
+
+    item.style.cursor =
+        "pointer";
+
+    item.style.borderBottom =
+        "1px solid #eeeeee";
+
+    item.style.fontSize =
+        "14px";
+
+    // FIX: suggestion text color
+    item.style.color =
+        "#111827";
+
+    item.style.backgroundColor =
+        "#ffffff";
+
+    item.style.fontWeight =
+        "500";
+
+    item.style.lineHeight =
+        "1.4";
+
+    item.textContent =
+        result.display_name;
+
+
+    item.addEventListener(
+        "mouseenter",
+        () => {
+            item.style.backgroundColor =
+                "#f3f4f6";
+        }
+    );
+
+
+    item.addEventListener(
+        "mouseleave",
+        () => {
+            item.style.backgroundColor =
+                "#ffffff";
+        }
+    );
+
+
+    item.addEventListener(
+        "click",
+        () => {
+
+            const latitude =
+                parseFloat(result.lat);
+
+            const longitude =
+                parseFloat(result.lon);
+
+            const address =
+                result.address || {};
+
+            const city =
+                address.city ||
+                address.town ||
+                address.village ||
+                address.municipality ||
+                address.county ||
+                "";
+
+            const state =
+                address.state ||
+                address.state_district ||
+                "";
+
+            const country =
+                address.country ||
+                "";
+
+            const birthplace =
+                [
+                    city,
+                    state,
+                    country
+                ]
+                .filter(Boolean)
+                .join(", ");
+
+
+            setLocationData(
+                latitude,
+                longitude,
+                birthplace ||
+                result.display_name
+            );
+
+
+            suggestionBox.innerHTML =
+                "";
+
+            suggestionBox.style.display =
+                "none";
+
+
+            if (locationStatus) {
+                locationStatus.textContent =
+                    `✓ Birthplace selected: ${birthplace || result.display_name}`;
+            }
+        }
+    );
+
+
+    suggestionBox.appendChild(item);
+});
+
+
+                        } catch (error) {
+
+                            console.error(
+                                "Birthplace search error:",
+                                error
+                            );
+
+
+                            suggestionBox.innerHTML =
+                                "<div style='padding:10px;color:#b00;'>Unable to search location. Please try again.</div>";
+
+                            suggestionBox.style.display =
+                                "block";
+                        }
+
+                    },
+                    500
+                );
+        }
+    );
+
+
+    // Hide suggestions when clicking outside
+    document.addEventListener(
+        "click",
+        event => {
+
+            if (
+                event.target !== placeInput &&
+                !suggestionBox.contains(
+                    event.target
+                )
+            ) {
+
+                suggestionBox.style.display =
+                    "none";
+            }
+        }
+    );
+}
+
+        form.addEventListener("submit", async event => {
+            event.preventDefault();
+
+            const button = $("generateBtn");
+
+            const name =
+                $("name")?.value.trim();
+
+            const date =
+                $("date")?.value;
+
+            const time =
+                ($("time")?.value || "").slice(0, 5);
+
+            const place =
+                $("place")?.value.trim();
+
+            const latitude =
+                $("latitude")?.value;
+
+            const longitude =
+                $("longitude")?.value;
+
+            const timezone =
+                $("timezone")?.value;
+
+            if (
+                !name ||
+                !date ||
+                !time ||
+                !place ||
+                latitude === "" ||
+                longitude === "" ||
+                timezone === ""
+            ) {
+                showMessage(
+                    "birthMessage",
+                    "Please complete all birth details.",
+                    "error"
+                );
+                return;
+            }
+
+            setLoading(
+                button,
+                true,
+                "Calculating Kundli..."
+            );
+
+            try {
+                const body = {
+                    name,
+                    date,
+                    time,
+                    place,
+                    latitude: Number(latitude),
+                    longitude: Number(longitude),
+                    timezone: Number(timezone)
+                };
+
+                let result;
 
                 if (
-                    result.success !== true
+                    window.AIJyotishAPI &&
+                    typeof window.AIJyotishAPI.generateKundli === "function"
                 ) {
-
-                    throw new Error(
-                        result.error ||
-                        "Kundli was not created."
-                    );
+                    result =
+                        await window.AIJyotishAPI.generateKundli(
+                            body
+                        );
+                } else {
+                    result =
+                        await apiCall(
+                            "/kundli",
+                            {
+                                method: "POST",
+                                body: JSON.stringify(body)
+                            }
+                        );
                 }
 
-                sessionStorage.setItem(
-                    "kundliData",
-                    JSON.stringify(result)
-                );
-
-                window.location.href =
-                    "kundli.html";
-
-            } catch (error) {
-
-                console.error(
-                    "Kundli error:",
-                    error
-                );
-
-                if (errorBox) {
-
-                    errorBox.textContent =
-                        error.message ||
-                        "Unable to create Kundli.";
-                }
-
-            } finally {
-
-                if (button) {
-                    button.disabled = false;
-                }
-
-                if (buttonText) {
-                    buttonText.classList.remove(
-                        "hidden"
-                    );
-                }
-
-                if (loader) {
-                    loader.classList.add(
-                        "hidden"
-                    );
-                }
-            }
-        }
-    );
-}
-
-
-/* =========================================================
-   KUNDLI PAGE
-========================================================= */
-
-function initializeKundliPage() {
-
-    const lagnaChart =
-        getElement("lagnaChart");
-
-    if (!lagnaChart) {
-        return;
-    }
-
-    const raw =
-        sessionStorage.getItem(
-            "kundliData"
-        );
-
-    if (!raw) {
-
-        showKundliError(
-            "No Kundli data found. Please create a new Kundli."
-        );
-
-        return;
-    }
-
-    let result;
-
-    try {
-
-        result =
-            JSON.parse(raw);
-
-    } catch (error) {
-
-        showKundliError(
-            "Saved Kundli data is invalid."
-        );
-
-        return;
-    }
-
-    console.log(
-        "========== KUNDLI RESULT =========="
-    );
-
-    console.log(result);
-
-    const planets =
-        normalizePlanets(result);
-
-    console.table(planets);
-
-    renderProfile(result);
-
-    renderQuickDetails(
-        result,
-        planets
-    );
-
-    renderLagnaChart(
-        result,
-        planets
-    );
-
-    renderChandraChart(
-        result,
-        planets
-    );
-
-    renderPlanetTable(
-        planets
-    );
-
-    renderYuti(
-        planets
-    );
-
-    renderStrength(
-        planets
-    );
-
-    renderHouses(
-        result,
-        planets
-    );
-
-    renderAspects(
-        planets
-    );
-
-    renderNakshatra(
-        planets
-    );
-
-    renderYogas(
-        result,
-        planets
-    );
-
-    initializeAIForm(
-        result,
-        planets
-    );
-}
-
-
-/* =========================================================
-   PROFILE
-========================================================= */
-
-function renderProfile(result) {
-
-    const name =
-        result.name ||
-        "Your Kundli";
-
-    const date =
-        result.birth_date ||
-        result.date ||
-        "—";
-
-    const time =
-        result.birth_time ||
-        result.time ||
-        "—";
-
-    const place =
-        result.birth_place ||
-        result.place ||
-        "—";
-
-    const personName =
-        getElement("personName");
-
-    if (personName) {
-        personName.textContent = name;
-    }
-
-    const personInfo =
-        getElement("personInfo");
-
-    if (personInfo) {
-
-        personInfo.textContent =
-            `${date} • ${time} • ${place}`;
-    }
-
-    const ascIndex =
-        getAscendantIndex(result);
-
-    const ascendantSign =
-        getElement("ascendantSign");
-
-    if (ascendantSign) {
-
-        ascendantSign.textContent =
-            signName(ascIndex);
-    }
-
-    const lagnaChartSign =
-        getElement("lagnaChartSign");
-
-    if (lagnaChartSign) {
-
-        lagnaChartSign.textContent =
-            signName(ascIndex);
-    }
-}
-
-
-/* =========================================================
-   QUICK DETAILS
-========================================================= */
-
-function renderQuickDetails(
-    result,
-    planets
-) {
-
-    const ascIndex =
-        getAscendantIndex(result);
-
-    const ascDegree =
-        getAscendantDegree(result);
-
-    const ascendantValue =
-        getElement("ascendantValue");
-
-    if (ascendantValue) {
-
-        ascendantValue.textContent =
-            signName(ascIndex);
-    }
-
-    const ascendantDegree =
-        getElement("ascendantDegree");
-
-    if (ascendantDegree) {
-
-        ascendantDegree.textContent =
-            ascDegree === null
-                ? "—"
-                : degreeToDMS(
-                    ascDegree
-                );
-    }
-
-    const sun =
-        findPlanet(
-            planets,
-            "Sun"
-        );
-
-    const moon =
-        findPlanet(
-            planets,
-            "Moon"
-        );
-
-    const sunSign =
-        getElement("sunSign");
-
-    if (sunSign) {
-
-        sunSign.textContent =
-            sun
-                ? sun.sign
-                : "—";
-    }
-
-    const moonSign =
-        getElement("moonSign");
-
-    if (moonSign) {
-
-        moonSign.textContent =
-            moon
-                ? moon.sign
-                : "—";
-    }
-
-    const moonDegree =
-        getElement("moonDegree");
-
-    if (moonDegree) {
-
-        moonDegree.textContent =
-            moon
-                ? formatDegree(
-                    moon.degree
-                )
-                : "—";
-    }
-
-    const moonNakshatra =
-        getElement("moonNakshatra");
-
-    if (moonNakshatra) {
-
-        moonNakshatra.textContent =
-            moon
-                ? moon.nakshatra
-                : "—";
-    }
-
-    const chandraChartSign =
-        getElement("chandraChartSign");
-
-    if (chandraChartSign) {
-
-        chandraChartSign.textContent =
-            moon
-                ? moon.sign
-                : "—";
-    }
-}
-
-
-/* =========================================================
-   FIND PLANET
-========================================================= */
-
-function findPlanet(
-    planets,
+           currentChart =
+    result?.chart ||
+    result?.kundli ||
+    result?.data ||
+    result;
+
+sessionStorage.setItem(
+    "aiJyotishKundliName",
     name
-) {
+);
 
-    return planets.find(
-        planet =>
-            planet.name &&
-            planet.name.toLowerCase() ===
-            name.toLowerCase()
-    );
-}
+sessionStorage.setItem(
+    "aiJyotishLatestChart",
+    JSON.stringify(currentChart)
+);
+
+showMessage(
+    "Kundli generated successfully!",
+    "success"
+);
+
+setTimeout(() => {
+    redirect("kundli.html");
+}, 500);
+/* =================================================
+   SAVE THE NAME OF THE PERSON WHOSE KUNDLI
+   WAS JUST CREATED
+   ================================================= */
+
+sessionStorage.setItem(
+    "aiJyotishKundliName",
+    name
+);
 
 
-/* =========================================================
-   NORTH INDIAN CHART
-========================================================= */
+/* =================================================
+   SAVE COMPLETE CHART
+   ================================================= */
 
-function createNorthIndianChart(
-    planets,
-    startingSign,
-    ascendantSign,
-    chartType
-) {
+sessionStorage.setItem(
+    "aiJyotishLatestChart",
+    JSON.stringify(
+        currentChart
+    )
+);
 
-    if (
-        startingSign === null ||
-        startingSign === undefined
-    ) {
+                showMessage(
+                    "birthMessage",
+                    "Kundli calculated successfully.",
+                    "success"
+                );
 
-        return `
-            <div class="muted">
-                Chart data unavailable.
+                setTimeout(
+                    () => redirect("kundli.html"),
+                    500
+                );
+            } catch (error) {
+                showMessage(
+                    "birthMessage",
+                    error.message ||
+                        "Unable to calculate Kundli.",
+                    "error"
+                );
+            } finally {
+                setLoading(
+                    button,
+                    false
+                );
+            }
+        });
+    }
+
+    /* ---------------------------------------------------------
+       KUNDLI RENDERING
+    --------------------------------------------------------- */
+
+    function getPlanetArray(chart) {
+        const source =
+            chart?.planets ||
+            chart?.planetary_positions ||
+            chart?.planetaryPositions ||
+            [];
+
+        if (Array.isArray(source)) {
+            return source;
+        }
+
+        if (
+            source &&
+            typeof source === "object"
+        ) {
+            return Object.entries(source)
+                .map(([name, data]) => ({
+                    ...(data || {}),
+                    name:
+                        data?.name ||
+                        data?.planet ||
+                        name
+                }));
+        }
+
+        return [];
+    }
+
+    function renderHeader(chart) {
+        const name = getValue(
+            chart,
+            ["name", "full_name", "fullName"],
+            "Birth Chart"
+        );
+
+        const date = getValue(
+            chart,
+            ["birth_date", "birthDate", "date"],
+            "—"
+        );
+
+        const time = getValue(
+            chart,
+            ["birth_time", "birthTime", "time"],
+            "—"
+        );
+
+        const place = getValue(
+            chart,
+            ["place", "birth_place", "birthPlace"],
+            "—"
+        );
+
+        const ascObject = chart?.ascendant;
+        const asc =
+            (ascObject && typeof ascObject === "object"
+                ? getValue(ascObject, ["sign", "rashi", "name"], "—")
+                : ascObject) ||
+            getValue(chart, ["ascendant_sign", "ascendantSign", "lagna"], "—");
+
+        const sun = getValue(
+            chart,
+            ["sun_sign", "sunSign", "sun_rashi"],
+            "—"
+        );
+
+        const moon = getValue(
+            chart,
+            ["moon_sign", "moonSign", "moon_rashi"],
+            "—"
+        );
+
+        const moonPlanet = getPlanetArray(chart).find(
+            planet => String(planet?.name || planet?.planet || "").toLowerCase() === "moon"
+        ) || {};
+
+        const nakshatra =
+            getValue(chart, ["moon_nakshatra", "birth_nakshatra", "birthNakshatra", "nakshatra"], null) ||
+            getValue(moonPlanet, ["nakshatra", "star"], "—");
+
+        const lord =
+            getValue(chart, ["moon_nakshatra_lord", "birth_nakshatra_lord", "birthNakshatraLord", "nakshatra_lord"], null) ||
+            getValue(moonPlanet, ["nakshatra_lord", "nakshatraLord", "star_lord"], "—");
+
+        const pada =
+            getValue(chart, ["moon_pada", "birth_pada", "birthPada", "pada"], null) ||
+            getValue(moonPlanet, ["pada", "quarter"], "—");
+
+        setText("chartName", name);
+        setText("chartBirth", `${date} • ${time}`);
+        setText("chartPlace", place);
+        setText("chartAsc", asc);
+        setText("chartSun", sun);
+        setText("chartMoon", moon);
+        setText("birthNakshatra", nakshatra);
+        setText("birthNakshatraLord", lord);
+        setText("birthPada", pada);
+    }
+
+    function renderCalculationDetails(chart) {
+        const calculation = chart?.calculation || {};
+
+        setText(
+            "calcZodiac",
+            getValue(calculation, ["zodiac", "zodiac_system", "zodiacSystem"],
+                getValue(chart, ["zodiac", "zodiac_system", "zodiacSystem"], "—"))
+        );
+
+        setText(
+            "calcAyanamsha",
+            getValue(calculation, ["ayanamsha", "ayanamsa", "ayanamsha_value"],
+                getValue(chart, ["ayanamsha", "ayanamsa", "ayanamsha_value"], "—"))
+        );
+
+        setText(
+            "calcHouse",
+            getValue(calculation, ["house_system", "houseSystem"],
+                getValue(chart, ["house_system", "houseSystem"], "—"))
+        );
+
+        setText(
+            "julianDay",
+            getValue(chart, ["julian_day", "julianDay", "jd"], "—")
+        );
+    }
+function renderAscendantDetails(chart) {
+    const container = $("ascDetails");
+
+    if (!container) return;
+
+    /*
+     * Backend normally provides ascendant data as:
+     *
+     * chart.ascendant = {
+     *     sign: "Kanya",
+     *     degree: 8.2751,
+     *     longitude: 158.2751
+     * }
+     *
+     * Support both the old and new structures.
+     */
+    const asc =
+        chart?.ascendant_details ||
+        chart?.ascendantDetails ||
+        chart?.ascendant_info ||
+        chart?.ascendant ||
+        null;
+
+    if (!asc) {
+        container.innerHTML = `
+            <div class="asc-details-empty">
+                Ascendant information unavailable.
             </div>
         `;
+        return;
     }
 
-    const positions = [
+    /* -----------------------------------------
+       BASIC ASCENDANT DATA
+    ----------------------------------------- */
 
-        { x: 250, y: 130 },
-        { x: 135, y: 80 },
-        { x: 75, y: 145 },
-        { x: 75, y: 250 },
-        { x: 75, y: 355 },
-        { x: 135, y: 420 },
-        { x: 250, y: 370 },
-        { x: 365, y: 420 },
-        { x: 425, y: 355 },
-        { x: 425, y: 250 },
-        { x: 425, y: 145 },
-        { x: 365, y: 80 }
-
-    ];
-
-    const housePlanets =
-        Array.from(
-            { length: 12 },
-            () => []
+    const sign =
+        getValue(
+            asc,
+            ["sign", "rashi", "name"],
+            getValue(
+                chart,
+                [
+                    "ascendant_sign",
+                    "ascendantSign",
+                    "lagna"
+                ],
+                "—"
+            )
         );
 
-    planets.forEach(
-        planet => {
+    const degree =
+        getValue(
+            asc,
+            [
+                "degree",
+                "degrees",
+                "degree_in_sign"
+            ],
+            "—"
+        );
 
-            if (
-                planet.signIndex === null
-            ) {
-                return;
-            }
+    const longitude =
+        getValue(
+            asc,
+            [
+                "longitude",
+                "absolute_longitude",
+                "longitude_deg"
+            ],
+            "—"
+        );
 
-            const house =
-                (
-                    planet.signIndex -
-                    startingSign +
-                    12
-                ) % 12;
+    /* -----------------------------------------
+       NAKSHATRA
+    ----------------------------------------- */
 
-            housePlanets[
-                house
-            ].push(
-                planet
-            );
-        }
-    );
+    let nakshatra =
+        getValue(
+            asc,
+            [
+                "nakshatra",
+                "star"
+            ],
+            ""
+        );
 
-    let signText = "";
+    let nakshatraLord =
+        getValue(
+            asc,
+            [
+                "nakshatra_lord",
+                "lord"
+            ],
+            ""
+        );
 
-    for (
-        let house = 0;
-        house < 12;
-        house++
+    /*
+     * If backend does not directly provide
+     * Nakshatra, calculate it from longitude.
+     */
+    if (
+        !nakshatra ||
+        nakshatra === "—"
     ) {
+        const lon = Number(longitude);
 
-        const signIndex =
-            (
-                startingSign +
-                house
-            ) % 12;
+        if (Number.isFinite(lon)) {
 
-        const pos =
-            positions[house];
+            const nakshatras = [
+                ["Ashwini", "Ketu"],
+                ["Bharani", "Venus"],
+                ["Krittika", "Sun"],
+                ["Rohini", "Moon"],
+                ["Mrigashira", "Mars"],
+                ["Ardra", "Rahu"],
+                ["Punarvasu", "Jupiter"],
+                ["Pushya", "Saturn"],
+                ["Ashlesha", "Mercury"],
+                ["Magha", "Ketu"],
+                ["Purva Phalguni", "Venus"],
+                ["Uttara Phalguni", "Sun"],
+                ["Hasta", "Moon"],
+                ["Chitra", "Mars"],
+                ["Swati", "Rahu"],
+                ["Vishakha", "Jupiter"],
+                ["Anuradha", "Saturn"],
+                ["Jyeshtha", "Mercury"],
+                ["Mula", "Ketu"],
+                ["Purva Ashadha", "Venus"],
+                ["Uttara Ashadha", "Sun"],
+                ["Shravana", "Moon"],
+                ["Dhanishta", "Mars"],
+                ["Shatabhisha", "Rahu"],
+                ["Purva Bhadrapada", "Jupiter"],
+                ["Uttara Bhadrapada", "Saturn"],
+                ["Revati", "Mercury"]
+            ];
 
-        signText += `
+            const normalizedLongitude =
+                ((lon % 360) + 360) % 360;
 
-            <text
-                x="${pos.x}"
-                y="${pos.y - 35}"
-                class="chart-house-number"
-                text-anchor="middle"
-            >
-                ${signIndex + 1}
-            </text>
-        `;
+            const nakshatraSize =
+                360 / 27;
+
+            const index =
+                Math.floor(
+                    normalizedLongitude /
+                    nakshatraSize
+                );
+
+            if (nakshatras[index]) {
+                nakshatra =
+                    nakshatras[index][0];
+
+                if (
+                    !nakshatraLord ||
+                    nakshatraLord === "—"
+                ) {
+                    nakshatraLord =
+                        nakshatras[index][1];
+                }
+            }
+        }
     }
 
-    let planetText = "";
+    /*
+     * -----------------------------------------
+       RASHI LORD
+    ----------------------------------------- */
 
-    housePlanets.forEach(
-        (items, houseIndex) => {
+    const rashiLords = {
+        Aries: "Mars",
+        Taurus: "Venus",
+        Gemini: "Mercury",
+        Cancer: "Moon",
+        Leo: "Sun",
+        Virgo: "Mercury",
+        Libra: "Venus",
+        Scorpio: "Mars",
+        Sagittarius: "Jupiter",
+        Capricorn: "Saturn",
+        Aquarius: "Saturn",
+        Pisces: "Jupiter",
 
-            if (!items.length) {
-                return;
-            }
+        Mesha: "Mars",
+        Vrishabha: "Venus",
+        Mithuna: "Mercury",
+        Karka: "Moon",
+        Simha: "Sun",
+        Kanya: "Mercury",
+        Tula: "Venus",
+        Vrishchika: "Mars",
+        Dhanu: "Jupiter",
+        Makara: "Saturn",
+        Kumbha: "Saturn",
+        Meena: "Jupiter"
+    };
 
-            const pos =
-                positions[houseIndex];
+    const rashiLord =
+        rashiLords[sign] || "—";
 
-            let displayItems =
-                [...items];
+    /*
+     * -----------------------------------------
+       DISPLAY
+    ----------------------------------------- */
 
-            if (
-                chartType === "lagna" &&
-                houseIndex === 0 &&
-                ascendantSign === startingSign
-            ) {
+    container.innerHTML = `
+        <div class="asc-details-list">
 
-                displayItems.unshift({
-                    short: "Asc"
-                });
-            }
+            <div class="asc-detail-row">
+                <span>Ascendant:</span>
+                <strong>
+                    ${escapeHtml(sign)}
+                </strong>
+            </div>
 
-            const lineHeight =
-                displayItems.length > 4
-                    ? 19
-                    : 23;
+            <div class="asc-detail-row">
+                <span>Degree:</span>
+                <strong>
+                    ${escapeHtml(degree)}
+                </strong>
+            </div>
 
-            const totalHeight =
-                displayItems.length *
-                lineHeight;
+            <div class="asc-detail-row">
+                <span>Longitude:</span>
+                <strong>
+                    ${escapeHtml(longitude)}
+                </strong>
+            </div>
 
-            const startY =
-                pos.y -
-                (totalHeight / 2) +
-                5;
+            <div class="asc-detail-row">
+                <span>Nakshatra:</span>
+                <strong>
+                    ${escapeHtml(
+                        nakshatra || "—"
+                    )}
+                </strong>
+            </div>
 
-            displayItems.forEach(
-                (planet, index) => {
+            <div class="asc-detail-row">
+                <span>Nakshatra Lord:</span>
+                <strong>
+                    ${escapeHtml(
+                        nakshatraLord || "—"
+                    )}
+                </strong>
+            </div>
 
-                    const y =
-                        startY +
-                        (
-                            index *
-                            lineHeight
-                        );
+            <div class="asc-detail-row">
+                <span>Rashi Lord:</span>
+                <strong>
+                    ${escapeHtml(rashiLord)}
+                </strong>
+            </div>
 
-                    const isAsc =
-                        planet.short === "Asc";
-
-                    planetText += `
-
-                        <text
-                            x="${pos.x}"
-                            y="${y}"
-                            text-anchor="middle"
-                            class="${
-                                isAsc
-                                    ? "chart-asc"
-                                    : "chart-planet"
-                            }"
-                        >
-                            ${escapeHTML(
-                                planet.short
-                            )}
-                        </text>
-                    `;
-                }
-            );
-        }
-    );
-
-    return `
-
-        <svg
-            viewBox="0 0 500 500"
-            class="kundli-svg"
-            xmlns="http://www.w3.org/2000/svg"
-        >
-
-            <rect
-                x="5"
-                y="5"
-                width="490"
-                height="490"
-                class="chart-border"
-            />
-
-            <line
-                x1="5"
-                y1="5"
-                x2="495"
-                y2="495"
-                class="chart-line"
-            />
-
-            <line
-                x1="495"
-                y1="5"
-                x2="5"
-                y2="495"
-                class="chart-line"
-            />
-
-            <polygon
-                points="
-                    250,5
-                    495,250
-                    250,495
-                    5,250
-                "
-                class="chart-line"
-            />
-
-            <polygon
-                points="
-                    250,155
-                    345,250
-                    250,345
-                    155,250
-                "
-                class="chart-line"
-            />
-
-            ${signText}
-
-            ${planetText}
-
-        </svg>
+        </div>
     `;
 }
+function getPlanetStatus(planet) {
+    const name = String(
+        getValue(
+            planet,
+            ["name", "planet", "body"],
+            ""
+        )
+    ).trim();
 
+    const sign = String(
+        getValue(
+            planet,
+            ["sign", "rashi", "zodiac"],
+            ""
+        )
+    ).trim();
 
-/* =========================================================
-   LAGNA CHART
-========================================================= */
-
-function renderLagnaChart(
-    result,
-    planets
-) {
-
-    const container =
-        getElement(
-            "lagnaChart"
-        );
-
-    if (!container) {
-        return;
+    if (!name || !sign) {
+        return "—";
     }
 
-    const ascIndex =
-        getAscendantIndex(result);
+    const dignity = {
+        Sun: {
+            exalted: ["Aries", "Mesha"],
+            debilitated: ["Libra", "Tula"],
+            own: ["Leo", "Simha"]
+        },
 
-    if (ascIndex === null) {
+        Moon: {
+            exalted: ["Taurus", "Vrishabha"],
+            debilitated: ["Scorpio", "Vrishchika"],
+            own: ["Cancer", "Karka"]
+        },
 
-        container.innerHTML = `
-            <div class="muted">
-                Ascendant data unavailable.
-            </div>
-        `;
+        Mars: {
+            exalted: ["Capricorn", "Makara"],
+            debilitated: ["Cancer", "Karka"],
+            own: ["Aries", "Mesha", "Scorpio", "Vrishchika"]
+        },
 
-        return;
+        Mercury: {
+            exalted: ["Virgo", "Kanya"],
+            debilitated: ["Pisces", "Meena"],
+            own: ["Gemini", "Mithuna", "Virgo", "Kanya"]
+        },
+
+        Jupiter: {
+            exalted: ["Cancer", "Karka"],
+            debilitated: ["Capricorn", "Makara"],
+            own: ["Sagittarius", "Dhanu", "Pisces", "Meena"]
+        },
+
+        Venus: {
+            exalted: ["Pisces", "Meena"],
+            debilitated: ["Virgo", "Kanya"],
+            own: ["Taurus", "Vrishabha", "Libra", "Tula"]
+        },
+
+        Saturn: {
+            exalted: ["Libra", "Tula"],
+            debilitated: ["Aries", "Mesha"],
+            own: ["Capricorn", "Makara", "Aquarius", "Kumbha"]
+        }
+    };
+
+    const data = dignity[name];
+
+    if (!data) {
+        /*
+         * Rahu and Ketu have differing traditional
+         * dignity systems, so don't make a
+         * potentially misleading claim here.
+         */
+        return "R";
     }
 
-    container.innerHTML =
-        createNorthIndianChart(
-            planets,
-            ascIndex,
-            ascIndex,
-            "lagna"
-        );
+    if (data.exalted.includes(sign)) {
+        return "Exalted";
+    }
+
+    if (data.debilitated.includes(sign)) {
+        return "Debilitated";
+    }
+
+    if (data.own.includes(sign)) {
+        return "Own Sign";
+    }
+
+    return "Normal";
 }
 
+    function renderPlanetTable(chart) {
+        const tbody =
+            $("planetBody");
 
-/* =========================================================
-   CHANDRA CHART
-========================================================= */
+        if (!tbody) return;
 
-function renderChandraChart(
-    result,
-    planets
-) {
+        const planets =
+            getPlanetArray(chart);
 
-    const container =
-        getElement(
-            "chandraChart"
-        );
+        if (!planets.length) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="9">
+                        No planetary data available.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
 
-    if (!container) {
-        return;
+        tbody.innerHTML =
+            planets.map(planet => {
+                const name =
+                    getValue(
+                        planet,
+                        ["name", "planet", "body"],
+                        "—"
+                    );
+
+                const sign =
+                    getValue(
+                        planet,
+                        ["sign", "rashi", "zodiac"],
+                        "—"
+                    );
+
+                const degree =
+                    getValue(
+                        planet,
+                        ["degree", "degrees"],
+                        "—"
+                    );
+
+                const longitude =
+                    getValue(
+                        planet,
+                        [
+                            "longitude",
+                            "absolute_longitude",
+                            "absoluteLongitude"
+                        ],
+                        "—"
+                    );
+
+                const house =
+                    getValue(
+                        planet,
+                        [
+                            "house",
+                            "house_number",
+                            "houseNumber"
+                        ],
+                        "—"
+                    );
+
+                        const nakshatraModule = window.AIJyotishNakshatra;
+                const derivedNakshatra =
+                    nakshatraModule &&
+                    typeof nakshatraModule.getNakshatraData === "function"
+                        ? nakshatraModule.getNakshatraData(planet)
+                        : null;
+
+                const nakshatra =
+                    getValue(
+                        planet,
+                        ["nakshatra", "star"],
+                        derivedNakshatra?.name || "—"
+                    );
+
+                const lord =
+                    getValue(
+                        planet,
+                        [
+                            "nakshatra_lord",
+                            "nakshatraLord",
+                            "star_lord"
+                        ],
+                        derivedNakshatra?.lord || "—"
+                    );
+
+                const pada =
+                    getValue(
+                        planet,
+                        ["pada", "quarter"],
+                        derivedNakshatra?.pada || "—"
+                    );
+
+                const status = getPlanetStatus(planet);
+
+                return `
+                    <tr>
+                        <td>
+                            <strong>
+                                ${escapeHtml(name)}
+                            </strong>
+                        </td>
+
+                        <td>
+                            ${escapeHtml(sign)}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(degree)}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(longitude)}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(house)}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(nakshatra)}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(lord)}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(pada)}
+                        </td>
+
+                        <td>
+                            <span class="planet-status">
+                                ${escapeHtml(status)}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            }).join("");
     }
 
-    const moon =
-        findPlanet(
-            planets,
-            "Moon"
+    function renderNorthIndianChart(chart) {
+        const container =
+            $("kundliSvg");
+
+        if (!container) return;
+
+        if (
+            window.AIJyotishCharts &&
+            typeof window.AIJyotishCharts.renderNorthIndianChart ===
+                "function"
+        ) {
+            window.AIJyotishCharts.renderNorthIndianChart(
+                container,
+                chart
+            );
+            return;
+        }
+
+        container.innerHTML = `
+            <div class="chart-fallback">
+                <span>✦</span>
+                <p>Birth chart visual unavailable.</p>
+            </div>
+        `;
+    }
+
+    function renderPlanetPositionVisual(chart) {
+        /*
+         * A separate planetary-position visual.
+         *
+         * The data comes from the actual calculated
+         * longitude/sign values returned by the backend.
+         */
+        let container =
+            $("planetPositionVisual");
+
+        if (!container) {
+            const section =
+                $("kundliPage") ||
+                document.querySelector(
+                    ".kundli-page"
+                );
+
+            if (!section) return;
+
+            container =
+                document.createElement("div");
+
+            container.id =
+                "planetPositionVisual";
+
+            container.className =
+                "planet-position-visual";
+
+            const anchor =
+                $("kundliSvg")?.closest(
+                    "section"
+                );
+
+            if (anchor) {
+                anchor.insertAdjacentElement(
+                    "afterend",
+                    container
+                );
+            } else {
+                section.appendChild(
+                    container
+                );
+            }
+        }
+
+        if (
+            window.AIJyotishCharts &&
+            typeof window.AIJyotishCharts
+                .renderPlanetPositionVisual ===
+                "function"
+        ) {
+            window.AIJyotishCharts
+                .renderPlanetPositionVisual(
+                    container,
+                    chart
+                );
+        }
+    }
+
+    function renderDasha(chart) {
+        if (
+            window.AIJyotishDasha &&
+            typeof window.AIJyotishDasha.render ===
+                "function"
+        ) {
+            window.AIJyotishDasha.render(
+                chart
+            );
+        }
+    }
+
+    function renderYogas(chart) {
+        if (
+            window.AIJyotishYogas &&
+            typeof window.AIJyotishYogas.render ===
+                "function"
+        ) {
+            window.AIJyotishYogas.render(
+                chart
+            );
+        }
+    }
+
+    function renderDashboard(chart) {
+        if (
+            window.AIJyotishDashboard &&
+            typeof window.AIJyotishDashboard.render ===
+                "function"
+        ) {
+            window.AIJyotishDashboard.render(
+                chart
+            );
+        }
+    }
+
+    function renderPlanets(chart) {
+        const container = $("planetCards");
+        if (!container) return;
+
+        if (
+            window.AIJyotishPlanets &&
+            typeof window.AIJyotishPlanets.renderPlanetCards === "function"
+        ) {
+            window.AIJyotishPlanets.renderPlanetCards(
+                container,
+                chart
+            );
+            return;
+        }
+
+        container.innerHTML = "<div class=\"planet-empty\">Planet analysis unavailable.</div>";
+    }
+
+    function renderNakshatra(chart) {
+        const planets = getPlanetArray(chart);
+        const moon = planets.find(
+            planet => String(planet?.name || planet?.planet || "").toLowerCase() === "moon"
         );
 
+        const birth = window.AIJyotishNakshatra;
+
+        let nakshatra =
+            getValue(chart, ["moon_nakshatra", "birth_nakshatra"], null) ||
+            getValue(moon, ["nakshatra", "star"], null);
+
+        let lord =
+            getValue(chart, ["moon_nakshatra_lord", "birth_nakshatra_lord"], null) ||
+            getValue(moon, ["nakshatra_lord", "nakshatraLord"], null);
+
+        let pada =
+            getValue(chart, ["moon_pada", "birth_pada"], null) ||
+            getValue(moon, ["pada", "quarter"], null);
+
+        // Final frontend fallback: derive Nakshatra directly from the
+        // already-calculated Moon longitude. This does not recalculate
+        // planetary positions; it only labels the existing longitude.
+        if ((!nakshatra || !lord || !pada) && birth && moon) {
+            const longitude = getValue(moon, ["longitude", "absolute_longitude", "absoluteLongitude"], null);
+            if (longitude !== null && typeof birth.getNakshatraData === "function") {
+                const data = birth.getNakshatraData(moon);
+                if (data) {
+                    nakshatra = nakshatra || data.name;
+                    lord = lord || data.lord;
+                    pada = pada || data.pada;
+                }
+            }
+        }
+
+        setText("birthNakshatra", nakshatra || "—");
+        setText("birthNakshatraLord", lord || "—");
+        setText("birthPada", pada || "—");
+    }
+
+    function renderCompleteAnalysis(chart) {
+        if (
+            window.AIJyotishKundli &&
+            typeof window.AIJyotishKundli
+                .renderCompleteAnalysis ===
+                "function"
+        ) {
+            window.AIJyotishKundli
+                .renderCompleteAnalysis(
+                    chart
+                );
+        }
+    }
+
+    function renderKundli(chart) {
+    if (!chart) return;
+
+    currentChart = chart;
+
+    renderHeader(chart);
+    renderCalculationDetails(chart);
+    renderAscendantDetails(chart);
+
+    // Main Birth Chart
+    renderNorthIndianChart(chart);
+
+    // 🌙 Chandra Kundli + ⭐ Navamsha D9
     if (
-        !moon ||
-        moon.signIndex === null
+        window.AIJyotishCharts &&
+        typeof window.AIJyotishCharts.renderSpecialCharts === "function"
     ) {
-
-        container.innerHTML = `
-            <div class="muted">
-                Moon data unavailable.
-            </div>
-        `;
-
-        return;
+        window.AIJyotishCharts.renderSpecialCharts(chart);
     }
 
-    container.innerHTML =
-        createNorthIndianChart(
-            planets,
-            moon.signIndex,
-            null,
-            "chandra"
-        );
+    renderPlanetPositionVisual(chart);
+    renderPlanetTable(chart);
+
+    renderPlanets(chart);
+    renderNakshatra(chart);
+    renderDasha(chart);
+    renderYogas(chart);
+    renderCompleteAnalysis(chart);
 }
 
+    /* ---------------------------------------------------------
+       HOUSES
+    --------------------------------------------------------- */
 
-/* =========================================================
-   PLANET TABLE
-========================================================= */
+   function renderHouses(chart) {
+    const container = $("houseGrid");
 
-function renderPlanetTable(
-    planets
-) {
+    if (!container || !chart) return;
 
-    const tbody =
-        getElement(
-            "planetTable"
-        );
+    /* ---------------------------------------------
+       HOUSE NAMES
+    --------------------------------------------- */
 
-    if (!tbody) {
-        return;
-    }
-
-    tbody.innerHTML = "";
-
-    if (!planets.length) {
-
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="6">
-                    No planetary data available.
-                </td>
-            </tr>
-        `;
-
-        return;
-    }
-
-    planets.forEach(
-        planet => {
-
-            const row =
-                document.createElement(
-                    "tr"
-                );
-
-            row.innerHTML = `
-
-                <td>
-                    <strong>
-                        ${escapeHTML(
-                            planet.name
-                        )}
-                    </strong>
-                </td>
-
-                <td>
-                    ${escapeHTML(
-                        planet.sign
-                    )}
-                </td>
-
-                <td>
-                    ${
-                        planet.degree === null
-                            ? "—"
-                            : degreeToDMS(
-                                planet.degree
-                            )
-                    }
-                </td>
-
-                <td>
-                    ${escapeHTML(
-                        planet.nakshatra
-                    )}
-                </td>
-
-                <td>
-                    ${
-                        planet.house === null
-                            ? "—"
-                            : planet.house
-                    }
-                </td>
-
-                <td>
-                    ${
-                        planet.retrograde
-                            ? "Retrograde"
-                            : "Direct"
-                    }
-                </td>
-            `;
-
-            tbody.appendChild(row);
-        }
-    );
-}
-
-
-/* =========================================================
-   GRAHA YUTI
-========================================================= */
-
-function renderYuti(
-    planets
-) {
-
-    const container =
-        getElement(
-            "yutiContent"
-        );
-
-    if (!container) {
-        return;
-    }
-
-    container.innerHTML = "";
-
-    const groups = {};
-
-    planets.forEach(
-        planet => {
-
-            if (
-                planet.signIndex === null
-            ) {
-                return;
-            }
-
-            const key =
-                planet.signIndex;
-
-            if (!groups[key]) {
-                groups[key] = [];
-            }
-
-            groups[key].push(
-                planet
-            );
-        }
-    );
-
-    const conjunctions =
-        Object.values(groups)
-            .filter(
-                group =>
-                    group.length >= 2
-            );
-
-    if (!conjunctions.length) {
-
-        container.innerHTML = `
-            <div class="yoga-card">
-
-                <h3>
-                    No major Graha Yuti
-                </h3>
-
-                <p class="muted">
-                    No two or more planets are
-                    placed in the same zodiac sign.
-                </p>
-
-            </div>
-        `;
-
-        return;
-    }
-
-    conjunctions.forEach(
-        group => {
-
-            const names =
-                group
-                    .map(
-                        planet =>
-                            planet.name
-                    )
-                    .join(" + ");
-
-            const sign =
-                group[0].sign;
-
-            const degrees =
-                group
-                    .map(
-                        planet =>
-                            `${planet.name} ${formatDegree(
-                                planet.degree
-                            )}`
-                    )
-                    .join(" • ");
-
-            container.innerHTML += `
-                <div class="yoga-card">
-
-                    <p class="eyebrow">
-                        GRAHA YUTI
-                    </p>
-
-                    <h3>
-                        ${escapeHTML(
-                            names
-                        )}
-                    </h3>
-
-                    <p>
-                        ${escapeHTML(
-                            sign
-                        )}
-                    </p>
-
-                    <p class="muted">
-                        ${escapeHTML(
-                            degrees
-                        )}
-                    </p>
-
-                </div>
-            `;
-        }
-    );
-}
-
-
-/* =========================================================
-   PLANETARY STRENGTH
-========================================================= */
-
-function renderStrength(
-    planets
-) {
-
-    const container =
-        getElement(
-            "strengthContent"
-        );
-
-    if (!container) {
-        return;
-    }
-
-    container.innerHTML = "";
-
-    planets.forEach(
-        planet => {
-
-            let score = 50;
-
-            let condition =
-                "Neutral";
-
-            const sign =
-                planet.sign;
-
-            if (
-                planet.name === "Sun" &&
-                sign === "Aries"
-            ) {
-
-                score = 90;
-                condition = "Exalted";
-
-            }
-
-            else if (
-                planet.name === "Sun" &&
-                sign === "Libra"
-            ) {
-
-                score = 20;
-                condition = "Debilitated";
-            }
-
-            else if (
-                planet.name === "Moon" &&
-                sign === "Taurus"
-            ) {
-
-                score = 90;
-                condition = "Exalted";
-
-            }
-
-            else if (
-                planet.name === "Moon" &&
-                sign === "Scorpio"
-            ) {
-
-                score = 20;
-                condition = "Debilitated";
-            }
-
-            else if (
-                planet.name === "Mars" &&
-                sign === "Capricorn"
-            ) {
-
-                score = 90;
-                condition = "Exalted";
-
-            }
-
-            else if (
-                planet.name === "Mars" &&
-                sign === "Cancer"
-            ) {
-
-                score = 20;
-                condition = "Debilitated";
-            }
-
-            else if (
-                planet.name === "Mercury" &&
-                sign === "Virgo"
-            ) {
-
-                score = 90;
-                condition = "Exalted";
-
-            }
-
-            else if (
-                planet.name === "Mercury" &&
-                sign === "Pisces"
-            ) {
-
-                score = 20;
-                condition = "Debilitated";
-            }
-
-            else if (
-                planet.name === "Jupiter" &&
-                sign === "Cancer"
-            ) {
-
-                score = 90;
-                condition = "Exalted";
-
-            }
-
-            else if (
-                planet.name === "Jupiter" &&
-                sign === "Capricorn"
-            ) {
-
-                score = 20;
-                condition = "Debilitated";
-            }
-
-            else if (
-                planet.name === "Venus" &&
-                sign === "Pisces"
-            ) {
-
-                score = 90;
-                condition = "Exalted";
-
-            }
-
-            else if (
-                planet.name === "Venus" &&
-                sign === "Virgo"
-            ) {
-
-                score = 20;
-                condition = "Debilitated";
-            }
-
-            else if (
-                planet.name === "Saturn" &&
-                sign === "Libra"
-            ) {
-
-                score = 90;
-                condition = "Exalted";
-
-            }
-
-            else if (
-                planet.name === "Saturn" &&
-                sign === "Aries"
-            ) {
-
-                score = 20;
-                condition = "Debilitated";
-            }
-
-            container.innerHTML += `
-                <div class="strength-card">
-
-                    <h3>
-                        ${escapeHTML(
-                            planet.name
-                        )}
-                    </h3>
-
-                    <p class="muted">
-                        ${escapeHTML(
-                            condition
-                        )}
-                    </p>
-
-                    <div class="strength-bar">
-
-                        <div
-                            class="strength-fill"
-                            style="width:${score}%"
-                        ></div>
-
-                    </div>
-
-                </div>
-            `;
-        }
-    );
-}
-
-
-/* =========================================================
-   HOUSES
-========================================================= */
-
-function renderHouses(
-    result,
-    planets
-) {
-
-    const container =
-        getElement(
-            "houseCards"
-        );
-
-    if (!container) {
-        return;
-    }
-
-    container.innerHTML = "";
-
-    const houseGroups =
-        Array.from(
-            { length: 12 },
-            () => []
-        );
-
-    planets.forEach(
-        planet => {
-
-            if (
-                planet.house !== null &&
-                planet.house >= 1 &&
-                planet.house <= 12
-            ) {
-
-                houseGroups[
-                    planet.house - 1
-                ].push(
-                    planet.name
-                );
-            }
-        }
-    );
-
-    for (
-        let i = 0;
-        i < 12;
-        i++
-    ) {
-
-        const content =
-            houseGroups[i].length
-                ? houseGroups[i].join(", ")
-                : "No planets";
-
-        container.innerHTML += `
-            <div class="house-card">
-
-                <p class="eyebrow">
-                    HOUSE ${i + 1}
-                </p>
-
-                <h3>
-                    ${houseMeaning(
-                        i + 1
-                    )}
-                </h3>
-
-                <p class="muted">
-                    ${escapeHTML(
-                        content
-                    )}
-                </p>
-
-            </div>
-        `;
-    }
-}
-
-
-/* =========================================================
-   HOUSE MEANINGS
-========================================================= */
-
-function houseMeaning(house) {
-
-    const meanings = {
-
+    const houseNames = {
         1: "Self & Personality",
         2: "Wealth & Family",
         3: "Courage & Siblings",
@@ -1878,840 +1960,669 @@ function houseMeaning(house) {
         10: "Career & Status",
         11: "Gains & Networks",
         12: "Expenses & Spirituality"
-
     };
 
-    return meanings[house] ||
-        `House ${house}`;
+    /* ---------------------------------------------
+       RASHI DATA
+    --------------------------------------------- */
+
+    const rashiData = [
+        { name: "Mesha", lord: "Mars" },
+        { name: "Vrishabha", lord: "Venus" },
+        { name: "Mithuna", lord: "Mercury" },
+        { name: "Karka", lord: "Moon" },
+        { name: "Simha", lord: "Sun" },
+        { name: "Kanya", lord: "Mercury" },
+        { name: "Tula", lord: "Venus" },
+        { name: "Vrishchika", lord: "Mars" },
+        { name: "Dhanu", lord: "Jupiter" },
+        { name: "Makara", lord: "Saturn" },
+        { name: "Kumbha", lord: "Saturn" },
+        { name: "Meena", lord: "Jupiter" }
+    ];
+
+    const signAliases = {
+        mesha: 0,
+        aries: 0,
+
+        vrishabha: 1,
+        taurus: 1,
+
+        mithuna: 2,
+        gemini: 2,
+
+        karka: 3,
+        cancer: 3,
+
+        simha: 4,
+        leo: 4,
+
+        kanya: 5,
+        virgo: 5,
+
+        tula: 6,
+        libra: 6,
+
+        vrishchika: 7,
+        scorpio: 7,
+
+        dhanu: 8,
+        sagittarius: 8,
+
+        makara: 9,
+        capricorn: 9,
+
+        kumbha: 10,
+        aquarius: 10,
+
+        meena: 11,
+        pisces: 11
+    };
+
+    /* ---------------------------------------------
+       GET ASCENDANT
+    --------------------------------------------- */
+
+    const ascendant =
+        chart.ascendant ||
+        chart.ascendant_sign ||
+        chart.ascendantSign ||
+        chart.lagna;
+
+    let ascSignIndex = null;
+
+    if (
+        ascendant &&
+        typeof ascendant === "object"
+    ) {
+        const rawIndex =
+            ascendant.sign_index ??
+            ascendant.signIndex ??
+            ascendant.rashi_index ??
+            ascendant.rashiIndex;
+
+        const numericIndex = Number(rawIndex);
+
+        if (
+            Number.isInteger(numericIndex) &&
+            numericIndex >= 0 &&
+            numericIndex <= 11
+        ) {
+            ascSignIndex = numericIndex;
+        }
+
+        if (ascSignIndex === null) {
+            const signText = String(
+                ascendant.sign ||
+                ascendant.rashi ||
+                ascendant.name ||
+                ""
+            )
+                .trim()
+                .toLowerCase();
+
+            if (
+                signAliases[signText] !== undefined
+            ) {
+                ascSignIndex =
+                    signAliases[signText];
+            }
+        }
+    } else {
+        const signText = String(
+            ascendant || ""
+        )
+            .trim()
+            .toLowerCase();
+
+        if (
+            signAliases[signText] !== undefined
+        ) {
+            ascSignIndex =
+                signAliases[signText];
+        }
+    }
+
+    /* ---------------------------------------------
+       GET ACTUAL PLANETS
+    --------------------------------------------- */
+
+    const source =
+        chart.planets ||
+        chart.planetary_positions ||
+        chart.planetaryPositions ||
+        [];
+
+    const planets = Array.isArray(source)
+        ? source
+        : Object.entries(source || {}).map(
+            ([name, data]) => ({
+                ...(data || {}),
+                name:
+                    data?.name ||
+                    data?.planet ||
+                    name
+            })
+        );
+
+    /* ---------------------------------------------
+       CREATE 12 EMPTY HOUSES
+    --------------------------------------------- */
+
+    const planetsByHouse = {};
+
+    for (let house = 1; house <= 12; house++) {
+        planetsByHouse[house] = [];
+    }
+
+    /* ---------------------------------------------
+       PUT EVERY PLANET INTO ITS ACTUAL HOUSE
+    --------------------------------------------- */
+
+    planets.forEach(planet => {
+
+        let house = Number(
+            planet?.house ??
+            planet?.house_number ??
+            planet?.houseNumber ??
+            planet?.bhava
+        );
+
+        /*
+         * If backend already gives house,
+         * use that directly.
+         */
+
+        if (
+            Number.isInteger(house) &&
+            house >= 1 &&
+            house <= 12
+        ) {
+            planetsByHouse[house].push(
+                String(
+                    planet?.name ||
+                    planet?.planet ||
+                    planet?.body ||
+                    "Planet"
+                )
+            );
+
+            return;
+        }
+
+        /*
+         * Fallback:
+         * If house is missing but sign is available,
+         * calculate whole-sign house from Ascendant.
+         */
+
+        if (ascSignIndex !== null) {
+
+            const planetSign =
+                String(
+                    planet?.sign ||
+                    planet?.rashi ||
+                    planet?.zodiac ||
+                    ""
+                )
+                    .trim()
+                    .toLowerCase();
+
+            const planetSignIndex =
+                signAliases[planetSign];
+
+            if (
+                planetSignIndex !== undefined
+            ) {
+                house =
+                    ((planetSignIndex -
+                        ascSignIndex +
+                        12) % 12) + 1;
+
+                planetsByHouse[house].push(
+                    String(
+                        planet?.name ||
+                        planet?.planet ||
+                        planet?.body ||
+                        "Planet"
+                    )
+                );
+            }
+        }
+    });
+
+    /* ---------------------------------------------
+       BUILD HOUSE CARDS
+    --------------------------------------------- */
+
+    const houses = [];
+
+    for (let house = 1; house <= 12; house++) {
+
+        let signIndex = null;
+
+        if (ascSignIndex !== null) {
+            signIndex =
+                (ascSignIndex +
+                    house -
+                    1) % 12;
+        }
+
+        const sign =
+            signIndex !== null
+                ? rashiData[signIndex]
+                : null;
+
+        houses.push({
+            number: house,
+            sign,
+            planets: planetsByHouse[house]
+        });
+    }
+
+    /* ---------------------------------------------
+       RENDER
+    --------------------------------------------- */
+
+    container.innerHTML =
+        houses.map(item => {
+
+            const planetsText =
+                item.planets.length
+                    ? item.planets.join(", ")
+                    : "No planets";
+
+            return `
+                <article class="house-card">
+
+                    <span class="house-number">
+                        ${escapeHtml(item.number)}
+                    </span>
+
+                    <div class="house-content">
+
+                        <span class="house-label">
+                            HOUSE ${escapeHtml(item.number)}
+                        </span>
+
+                        <h3 class="house-title">
+                            ${escapeHtml(
+                                houseNames[item.number]
+                            )}
+                        </h3>
+
+                        <div class="house-sign">
+                            ${
+                                item.sign
+                                    ? escapeHtml(
+                                        item.sign.name
+                                    )
+                                    : "—"
+                            }
+                        </div>
+
+                        <div class="house-lord">
+                            Lord:
+                            ${
+                                item.sign
+                                    ? escapeHtml(
+                                        item.sign.lord
+                                    )
+                                    : "—"
+                            }
+                        </div>
+
+                        <div class="house-planets">
+                            <strong>Planets:</strong>
+                            ${escapeHtml(
+                                planetsText
+                            )}
+                        </div>
+
+                    </div>
+
+                </article>
+            `;
+        })
+        .join("");
 }
 
 
-/* =========================================================
-   ASPECTS
-========================================================= */
 
-function renderAspects(planets) {
 
-    const container =
-        getElement(
-            "aspectContent"
-        );
+    /* ---------------------------------------------------------
+       AI ASSISTANT
+    --------------------------------------------------------- */
 
-    if (!container) {
-        return;
-    }
+    function initAI() {
+        const form =
+            $("aiForm");
 
-    container.innerHTML = "";
+        if (!form) return;
 
-    planets.forEach(
-        planet => {
+        form.addEventListener(
+            "submit",
+            async event => {
+                event.preventDefault();
 
-            if (
-                planet.signIndex === null
-            ) {
-                return;
-            }
+                const input =
+                    $("question");
 
-            let aspects = [7];
+                const answer =
+                    $("answer");
 
-            if (
-                planet.name === "Mars"
-            ) {
+                const button =
+                    form.querySelector(
+                        'button[type="submit"]'
+                    );
 
-                aspects = [
-                    4,
-                    7,
-                    8
-                ];
+                if (!input || !answer) {
+                    return;
+                }
 
-            }
+                const question =
+                    input.value.trim();
 
-            else if (
-                planet.name === "Jupiter"
-            ) {
+                if (!question) {
+                    answer.textContent =
+                        "Please enter a question.";
+                    return;
+                }
 
-                aspects = [
-                    5,
-                    7,
-                    9
-                ];
-
-            }
-
-            else if (
-                planet.name === "Saturn"
-            ) {
-
-                aspects = [
-                    3,
-                    7,
-                    10
-                ];
-            }
-
-            const targetSigns =
-                aspects.map(
-                    aspect => {
-
-                        const index =
-                            (
-                                planet.signIndex +
-                                aspect -
-                                1
-                            ) % 12;
-
-                        return SIGNS[index];
-                    }
+                setLoading(
+                    button,
+                    true,
+                    "Thinking..."
                 );
 
-            container.innerHTML += `
-                <div class="aspect-card">
+                answer.classList.add(
+                    "is-loading"
+                );
 
-                    <p class="eyebrow">
-                        DRISHTI
-                    </p>
+                try {
+                    if (
+                        window.AIJyotishAI &&
+                        typeof window.AIJyotishAI.ask ===
+                            "function"
+                    ) {
+                        const result =
+                            await window.AIJyotishAI.ask(
+                                question,
+                                currentChart
+                            );
 
-                    <h3>
-                        ${escapeHTML(
-                            planet.name
-                        )}
-                    </h3>
+                        answer.innerHTML =
+                            escapeHtml(
+                                result?.answer ||
+                                result?.response ||
+                                result ||
+                                "No answer returned."
+                            );
+                    } else {
+                        const result =
+                            await apiCall(
+                                "/ai/ask",
+                                {
+                                    method: "POST",
+                                    body:
+                                        JSON.stringify({
+                                            question
+                                        })
+                                }
+                            );
 
-                    <p class="muted">
-                        Aspects:
-                        ${escapeHTML(
-                            targetSigns.join(", ")
-                        )}
-                    </p>
+                        answer.textContent =
+                            result?.answer ||
+                            result?.response ||
+                            "No answer returned.";
+                    }
+                } catch (error) {
+                    answer.textContent =
+                        error.message ||
+                        "Unable to get an AI response.";
+                } finally {
+                    answer.classList.remove(
+                        "is-loading"
+                    );
 
-                </div>
-            `;
+                    setLoading(
+                        button,
+                        false
+                    );
+                }
+            }
+        );
+    }
+
+    /* ---------------------------------------------------------
+       PRINT
+    --------------------------------------------------------- */
+
+    function initPrint() {
+        const button =
+            $("printBtn");
+
+        if (!button) return;
+
+        button.addEventListener(
+            "click",
+            event => {
+                event.preventDefault();
+                window.print();
+            }
+        );
+    }
+
+    /* ---------------------------------------------------------
+       PAGE INITIALIZATION
+    --------------------------------------------------------- */
+
+    async function initDashboardPage() {
+        const page =
+            $("dashboardPage");
+
+        if (!page) return;
+
+        try {
+            const result =
+                await getLatestKundli();
+
+            const chart =
+                result?.chart ||
+                result?.kundli ||
+                result?.data ||
+                result;
+
+            if (chart) {
+                currentChart = chart;
+
+                sessionStorage.setItem(
+                    "aiJyotishLatestChart",
+                    JSON.stringify(chart)
+                );
+
+                renderDashboard(chart);
+            }
+        } catch (error) {
+            console.error(
+                "Dashboard:",
+                error
+            );
         }
-    );
-}
+    }
 
+    async function initKundliPage() {
+    const page = $("kundliPage");
 
-/* =========================================================
-   NAKSHATRA
-========================================================= */
-
-function renderNakshatra(planets) {
-
-    const container =
-        getElement(
-            "nakshatraContent"
-        );
-
-    if (!container) {
+    if (!page) {
         return;
     }
 
-    const moon =
-        findPlanet(
-            planets,
-            "Moon"
+    let chart = null;
+
+    /*
+     * IMPORTANT:
+     * First use the chart that was JUST generated.
+     * This prevents /kundli/latest from replacing it
+     * with an older saved Kundli.
+     */
+    try {
+        const cached =
+            sessionStorage.getItem(
+                "aiJyotishLatestChart"
+            );
+
+        if (cached) {
+            const parsed = JSON.parse(cached);
+
+            if (
+                parsed &&
+                typeof parsed === "object"
+            ) {
+                chart = parsed;
+            }
+        }
+    } catch (error) {
+        console.warn(
+            "Could not read cached Kundli:",
+            error
         );
 
-    if (!moon) {
-
-        container.innerHTML = `
-            <p class="muted">
-                Moon data unavailable.
-            </p>
-        `;
-
-        return;
+        chart = null;
     }
 
-    let pada = "—";
+    /*
+     * Only use backend /kundli/latest
+     * when there is no freshly generated chart.
+     */
+    if (!chart) {
+        try {
+            const result =
+                await getLatestKundli();
 
-    if (
-        moon.longitude !== null
-    ) {
-
-        const normalized =
-            (
-                moon.longitude %
-                360 +
-                360
-            ) % 360;
-
-        const nakshatraSize =
-            360 / 27;
-
-        const padaSize =
-            nakshatraSize / 4;
-
-        pada =
-            Math.floor(
-                (
-                    normalized %
-                    nakshatraSize
-                ) / padaSize
-            ) + 1;
+            chart =
+                result?.chart ||
+                result?.kundli ||
+                result?.data ||
+                result;
+        } catch (error) {
+            console.warn(
+                "Latest Kundli request failed:",
+                error
+            );
+        }
     }
 
-    container.innerHTML = `
-
-        <div class="nakshatra-item">
-
-            <span>
-                Nakshatra
-            </span>
-
-            <strong>
-                ${escapeHTML(
-                    moon.nakshatra
-                )}
-            </strong>
-
-        </div>
-
-        <div class="nakshatra-item">
-
-            <span>
-                Moon Sign
-            </span>
-
-            <strong>
-                ${escapeHTML(
-                    moon.sign
-                )}
-            </strong>
-
-        </div>
-
-        <div class="nakshatra-item">
-
-            <span>
-                Degree
-            </span>
-
-            <strong>
-                ${degreeToDMS(
-                    moon.degree
-                )}
-            </strong>
-
-        </div>
-
-        <div class="nakshatra-item">
-
-            <span>
-                Pada
-            </span>
-
-            <strong>
-                ${pada}
-            </strong>
-
-        </div>
-    `;
-}
-
-
-/* =========================================================
-   YOGAS
-========================================================= */
-
-function renderYogas(
-    result,
-    planets
-) {
-
-    const container =
-        getElement(
-            "yogaContent"
+    if (!chart) {
+        console.warn(
+            "No Kundli data available."
         );
 
-    if (!container) {
-        return;
-    }
-
-    container.innerHTML = "";
-
-    const sun =
-        findPlanet(
-            planets,
-            "Sun"
-        );
-
-    const moon =
-        findPlanet(
-            planets,
-            "Moon"
-        );
-
-    const mars =
-        findPlanet(
-            planets,
-            "Mars"
-        );
-
-    const jupiter =
-        findPlanet(
-            planets,
-            "Jupiter"
-        );
-
-    let found = false;
-
-    if (
-        sun &&
-        moon &&
-        sun.signIndex ===
-        moon.signIndex
-    ) {
-
-        addYoga(
-            container,
-            "Sun-Moon Yuti",
-            "Sun and Moon are placed in the same sign."
-        );
-
-        found = true;
-    }
-
-    if (
-        mars &&
-        jupiter &&
-        mars.signIndex ===
-        jupiter.signIndex
-    ) {
-
-        addYoga(
-            container,
-            "Mars-Jupiter Yuti",
-            "Mars and Jupiter occupy the same zodiac sign."
-        );
-
-        found = true;
-    }
-
-    if (
-        planets.length >= 7
-    ) {
-
-        addYoga(
-            container,
-            "Strong Planetary Activity",
-            "Multiple classical planets are available for detailed chart analysis."
-        );
-
-        found = true;
-    }
-
-    if (!found) {
-
-        addYoga(
-            container,
-            "No Basic Yoga Detected",
-            "No basic combination was detected from the available API data."
-        );
-    }
-}
-
-
-/* =========================================================
-   ADD YOGA
-========================================================= */
-
-function addYoga(
-    container,
-    title,
-    description
-) {
-
-    container.innerHTML += `
-
-        <div class="yoga-card">
-
-            <p class="eyebrow">
-                YOGA
-            </p>
-
-            <h3>
-                ${escapeHTML(
-                    title
-                )}
-            </h3>
-
-            <p class="muted">
-                ${escapeHTML(
-                    description
-                )}
-            </p>
-
-        </div>
-    `;
-}
-
-
-/* =========================================================
-   AI FORM
-   FIXED VERSION
-========================================================= */
-
-function initializeAIForm(
-    result,
-    planets
-) {
-
-    const form =
-        getElement("aiForm");
-
-    if (!form) {
-        console.log(
-            "AI form not found."
-        );
         return;
     }
 
     /*
-       Prevent duplicate event listeners
-       if this function is accidentally called again.
-    */
-
-    if (
-        form.dataset.aiInitialized === "true"
-    ) {
-        return;
+     * Store the chart again so every section
+     * uses exactly the same birth chart.
+     */
+    try {
+        sessionStorage.setItem(
+            "aiJyotishLatestChart",
+            JSON.stringify(chart)
+        );
+    } catch (error) {
+        console.warn(
+            "Could not cache Kundli:",
+            error
+        );
     }
 
-    form.dataset.aiInitialized = "true";
+    /*
+     * IMPORTANT:
+     * Render everything from THIS chart.
+     */
+    currentChart = chart;
 
+    renderKundli(chart);
 
-    form.addEventListener(
-        "submit",
-        async function(event) {
+    /* Ensure the two derived charts are rendered after the full DOM render. */
+    if (
+        window.AIJyotishCharts &&
+        typeof window.AIJyotishCharts.renderSpecialCharts === "function"
+    ) {
+        window.AIJyotishCharts.renderSpecialCharts(chart);
+    }
 
-            event.preventDefault();
+    renderHouses(chart);
+}
 
+    async function initSessionProtection() {
+        const authPages =
+            document.body?.dataset?.authPage === "true";
 
-            const input =
-                getElement(
-                    "aiQuestion"
+        if (authPages) return;
+
+        const protectedPage =
+            $("dashboardPage") ||
+            $("kundliPage") ||
+            $("birthForm");
+
+        if (!protectedPage) return;
+
+        try {
+            const result =
+                await getCurrentUser();
+
+            const authenticated =
+                result?.authenticated ??
+                result?.logged_in ??
+                result?.loggedIn ??
+                Boolean(
+                    result?.user
                 );
 
-            const messages =
-                getElement(
-                    "aiMessages"
-                );
-
-
-            if (
-                !input ||
-                !messages
-            ) {
-
-                console.error(
-                    "AI input or messages container not found."
-                );
-
-                return;
+            if (authenticated === false) {
+                redirect("login.html");
             }
-
-
-            const question =
-                input.value.trim();
-
-
-            if (!question) {
-                return;
-            }
-
-
-            /* ============================================
-               SHOW USER MESSAGE
-            ============================================ */
-
-            messages.innerHTML += `
-
-                <div class="ai-message">
-
-                    <strong>
-                        You
-                    </strong>
-
-                    <p>
-                        ${escapeHTML(
-                            question
-                        )}
-                    </p>
-
-                </div>
-            `;
-
-
-            input.value = "";
-
-
-            /* ============================================
-               LOADING
-            ============================================ */
-
-            const loadingId =
-                "ai-loading-" +
-                Date.now();
-
-
-            messages.innerHTML += `
-
-                <div
-                    class="ai-message"
-                    id="${loadingId}"
-                >
-
-                    <strong>
-                        AI Jyotish
-                    </strong>
-
-                    <p>
-                        Thinking...
-                    </p>
-
-                </div>
-            `;
-
-
-            const loading =
-                getElement(
-                    loadingId
-                );
-
-
-            /* ============================================
-               DISABLE BUTTON
-            ============================================ */
-
-            const submitButton =
-                form.querySelector(
-                    'button[type="submit"]'
-                );
-
-
-            if (submitButton) {
-                submitButton.disabled = true;
-            }
-
-
-            try {
-
-                console.log(
-                    "Sending AI question..."
-                );
-
-
-                console.log(
-                    "Question:",
-                    question
-                );
-
-
-                console.log(
-                    "Kundli:",
-                    result
-                );
-
-
-                /* ========================================
-                   SEND REQUEST TO FLASK
-                ======================================== */
-
-                const response =
-                    await fetch(
-                        AI_API_URL,
-                        {
-
-                            method: "POST",
-
-                            headers: {
-
-                                "Content-Type":
-                                    "application/json"
-
-                            },
-
-                            body:
-                                JSON.stringify({
-
-                                    question:
-                                        question,
-
-                                    kundli:
-                                        result
-
-                                })
-
-                        }
-                    );
-
-
-                /* ========================================
-                   READ RESPONSE
-                ======================================== */
-
-                let data;
-
-
-                try {
-
-                    data =
-                        await response.json();
-
-                } catch (jsonError) {
-
-                    throw new Error(
-                        "Server returned an invalid JSON response."
-                    );
-                }
-
-
-                console.log(
-                    "AI API response:",
-                    data
-                );
-
-
-                /* ========================================
-                   CHECK RESPONSE
-                ======================================== */
-
-                if (
-                    !response.ok ||
-                    data.success !== true
-                ) {
-
-                    throw new Error(
-
-                        data.message ||
-
-                        data.error ||
-
-                        data.details ||
-
-                        "AI could not generate an answer."
-
-                    );
-                }
-
-
-                const answer =
-                    data.answer;
-
-
-                if (!answer) {
-
-                    throw new Error(
-                        "AI returned an empty answer."
-                    );
-                }
-
-
-                /* ========================================
-                   DISPLAY ANSWER
-                ======================================== */
-
-                if (loading) {
-
-                    loading.innerHTML = `
-
-                        <strong>
-                            AI Jyotish
-                        </strong>
-
-                        <p>
-                            ${formatAIAnswer(
-                                answer
-                            )}
-                        </p>
-
-                    `;
-                }
-
-
-                /* ========================================
-                   SCROLL
-                ======================================== */
-
-                messages.lastElementChild?.scrollIntoView({
-
-                    behavior: "smooth",
-
-                    block: "nearest"
-
-                });
-
-
-            } catch (error) {
-
-                console.error(
-                    "AI Error:",
-                    error
-                );
-
-
-                if (loading) {
-
-                    loading.innerHTML = `
-
-                        <strong>
-                            AI Jyotish
-                        </strong>
-
-                        <p>
-                            Sorry, I couldn't generate
-                            an answer right now.
-                        </p>
-
-                        <p class="muted">
-                            ${escapeHTML(
-                                error.message
-                            )}
-                        </p>
-
-                    `;
-                }
-
-            } finally {
-
-                if (submitButton) {
-                    submitButton.disabled = false;
-                }
-            }
-
+        } catch {
+            // Do not aggressively redirect if /me
+            // is unavailable for a temporary reason.
         }
-    );
-}
+    }
 
+    function init() {
+        initLogin();
+        initRegister();
+        initBirthForm();
+        initLogout();
+        initAI();
+        initPrint();
 
-/* =========================================================
-   FORMAT AI ANSWER
-========================================================= */
+        initSessionProtection();
 
-function formatAIAnswer(text) {
+        initDashboardPage();
+        initKundliPage();
+    }
+
+    /* ---------------------------------------------------------
+       PUBLIC API
+    --------------------------------------------------------- */
+
+    APP.renderKundli = renderKundli;
+    APP.renderDashboard = renderDashboard;
+    APP.renderHouses = renderHouses;
+    APP.getCurrentChart = () => currentChart;
+    APP.logout = logout;
 
     if (
-        text === null ||
-        text === undefined
+        document.readyState ===
+        "loading"
     ) {
-        return "";
-    }
-
-    return escapeHTML(
-        String(text)
-    )
-    .replace(
-        /\*\*(.*?)\*\*/g,
-        "<strong>$1</strong>"
-    )
-    .replace(
-        /\n/g,
-        "<br>"
-    );
-}
-
-
-/* =========================================================
-   KUNDLI ERROR
-========================================================= */
-
-function showKundliError(message) {
-
-    const container =
-        getElement(
-            "lagnaChart"
+        document.addEventListener(
+            "DOMContentLoaded",
+            init
         );
-
-    if (!container) {
-        return;
+    } else {
+        init();
     }
-
-    container.innerHTML = `
-
-        <div class="yoga-card">
-
-            <h3>
-                Unable to load Kundli
-            </h3>
-
-            <p class="muted">
-                ${escapeHTML(
-                    message
-                )}
-            </p>
-
-            <br>
-
-            <a
-                href="birth-form.html"
-                class="primary-button"
-            >
-                Create Kundli
-            </a>
-
-        </div>
-    `;
-}
-
-
-/* =========================================================
-   HTML ESCAPE
-========================================================= */
-
-function escapeHTML(value) {
-
-    if (
-        value === null ||
-        value === undefined
-    ) {
-        return "";
-    }
-
-    return String(value)
-
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-
-        .replace(
-            /</g,
-            "&lt;"
-        )
-
-        .replace(
-            />/g,
-            "&gt;"
-        )
-
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-}
-
-
-/* =========================================================
-   START APPLICATION
-========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function() {
-
-        console.log(
-            "AI Jyotish JavaScript loaded."
-        );
-
-        initializeBirthForm();
-
-        initializeKundliPage();
-
-    }
-);
+})();

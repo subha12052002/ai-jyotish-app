@@ -1,316 +1,1131 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     >
 
-    <title>Create Kundli • AI Jyotish</title>
-
-    <link
-        rel="stylesheet"
-        href="css/style.css"
+    <meta
+        name="description"
+        content="Enter your birth details to generate a personalized Vedic Kundli with AI Jyotish."
     >
 
+    <meta name="theme-color" content="#06101f">
+
+    <title>Create Kundli — AI Jyotish</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/cosmic.css">
+    <link rel="stylesheet" href="css/charts.css">
+    <link rel="stylesheet" href="css/kundli.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/theme.css">
+
+    <style>
+        :root {
+            --bg: #06101f;
+            --bg-soft: #09192d;
+            --card: rgba(10, 28, 49, .84);
+            --card-soft: rgba(255,255,255,.025);
+            --border: rgba(232,177,76,.18);
+            --border-soft: rgba(255,255,255,.075);
+            --gold: #e8b14c;
+            --gold-light: #f5d78f;
+            --text: #f4f7fb;
+            --muted: #8d9db2;
+            --muted-2: #687b92;
+            --input: rgba(255,255,255,.035);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body.birth-form-page {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--text);
+            background:
+                radial-gradient(
+                    circle at 10% 12%,
+                    rgba(55,117,203,.15),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 90% 75%,
+                    rgba(232,177,76,.08),
+                    transparent 28%
+                ),
+                linear-gradient(
+                    145deg,
+                    #06101f 0%,
+                    #09182b 52%,
+                    #06101f 100%
+                );
+            overflow-x: hidden;
+        }
+
+        body.birth-form-page::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            opacity: .28;
+            background-image:
+                radial-gradient(circle, rgba(255,255,255,.62) 0 1px, transparent 1.5px),
+                radial-gradient(circle, rgba(232,177,76,.4) 0 1px, transparent 1.5px);
+            background-size: 150px 150px, 240px 240px;
+            background-position: 20px 30px, 90px 80px;
+        }
+
+        .birth-shell {
+            width: min(1160px, calc(100% - 32px));
+            min-height: 100vh;
+            margin: 0 auto;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+        }
+
+        /* =========================================================
+           HEADER
+           ========================================================= */
+
+        .birth-header {
+            padding: 19px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            border-bottom: 1px solid rgba(255,255,255,.045);
+        }
+
+        .birth-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .birth-brand-icon {
+            width: 39px;
+            height: 39px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            color: #091423;
+            font-size: 18px;
+            background:
+                radial-gradient(
+                    circle at 35% 30%,
+                    #fff2bd 0 8%,
+                    transparent 9%
+                ),
+                linear-gradient(145deg, #f6d88e, #d79536);
+            box-shadow:
+                0 0 25px rgba(232,177,76,.2),
+                inset 0 1px 0 rgba(255,255,255,.45);
+        }
+
+        .birth-brand-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.05;
+        }
+
+        .birth-brand-name {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .birth-brand-subtitle {
+            margin-top: 4px;
+            color: #77899f;
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: .13em;
+            text-transform: uppercase;
+        }
+
+        .birth-header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .birth-back {
+            color: #8293a9;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 550;
+            transition: color .2s ease;
+        }
+
+        .birth-back:hover {
+            color: #fff;
+        }
+
+        /* =========================================================
+           MAIN LAYOUT
+           ========================================================= */
+
+        .birth-main {
+            display: grid;
+            grid-template-columns: minmax(0, .82fr) minmax(480px, 1.18fr);
+            align-items: center;
+            gap: 65px;
+            padding: 55px 0 70px;
+        }
+
+        /* =========================================================
+           INTRO / COSMIC SIDE
+           ========================================================= */
+
+        .birth-intro {
+            max-width: 460px;
+        }
+
+        .birth-kicker {
+            width: fit-content;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #dcb56a;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: .13em;
+            text-transform: uppercase;
+        }
+
+        .birth-kicker::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--gold);
+            box-shadow: 0 0 12px rgba(232,177,76,.7);
+        }
+
+        .birth-intro h1 {
+            margin: 17px 0 15px;
+            font-size: clamp(36px, 5vw, 56px);
+            line-height: 1.02;
+            letter-spacing: -.05em;
+        }
+
+        .birth-intro h1 span {
+            color: var(--gold-light);
+            background: linear-gradient(135deg, #fff0b5, #dda544);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .birth-intro > p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.75;
+        }
+
+        /* Small visual */
+
+        .birth-orbit {
+            width: min(330px, 80%);
+            aspect-ratio: 1;
+            margin: 38px auto 0;
+            position: relative;
+            display: grid;
+            place-items: center;
+        }
+
+        .birth-orbit::before,
+        .birth-orbit::after {
+            content: "";
+            position: absolute;
+            border: 1px solid rgba(105,158,220,.15);
+            border-radius: 50%;
+        }
+
+        .birth-orbit::before {
+            inset: 7%;
+            transform: rotate(25deg) scaleY(.52);
+        }
+
+        .birth-orbit::after {
+            inset: 16%;
+            transform: rotate(-35deg) scaleY(.58);
+        }
+
+        .birth-orbit-glow {
+            position: absolute;
+            width: 45%;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(232,177,76,.18),
+                    rgba(58,126,218,.08) 45%,
+                    transparent 72%
+                );
+            filter: blur(9px);
+        }
+
+        .birth-mandala {
+            width: 38%;
+            aspect-ratio: 1;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(232,177,76,.28);
+            border-radius: 50%;
+            color: #e8bd6a;
+            font-size: 32px;
+            background: rgba(8,23,41,.8);
+            box-shadow:
+                0 0 45px rgba(48,111,188,.14),
+                inset 0 0 25px rgba(0,0,0,.3);
+        }
+
+        .birth-orbit-star {
+            position: absolute;
+            color: #d9b263;
+            font-size: 12px;
+        }
+
+        .birth-orbit-star.s1 {
+            top: 9%;
+            left: 22%;
+        }
+
+        .birth-orbit-star.s2 {
+            top: 24%;
+            right: 10%;
+        }
+
+        .birth-orbit-star.s3 {
+            bottom: 16%;
+            right: 20%;
+        }
+
+        .birth-orbit-star.s4 {
+            bottom: 12%;
+            left: 17%;
+        }
+
+        .birth-orbit-star.s5 {
+            top: 47%;
+            left: 2%;
+        }
+
+        .birth-info-note {
+            margin-top: 25px;
+            padding: 13px 15px;
+            border: 1px solid rgba(255,255,255,.055);
+            border-radius: 11px;
+            background: rgba(255,255,255,.018);
+        }
+
+        .birth-info-note strong {
+            display: block;
+            margin-bottom: 4px;
+            color: #bfcbd9;
+            font-size: 10px;
+        }
+
+        .birth-info-note span {
+            display: block;
+            color: #697c93;
+            font-size: 9px;
+            line-height: 1.55;
+        }
+
+        /* =========================================================
+           FORM CARD
+           ========================================================= */
+
+        .birth-card {
+            position: relative;
+            padding: 31px;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(17,40,67,.84),
+                    rgba(7,20,36,.92)
+                );
+            box-shadow:
+                0 25px 70px rgba(0,0,0,.28),
+                inset 0 1px 0 rgba(255,255,255,.035);
+            backdrop-filter: blur(18px);
+        }
+
+        .birth-card::before {
+            content: "";
+            position: absolute;
+            width: 130px;
+            height: 130px;
+            top: -65px;
+            right: -55px;
+            border-radius: 50%;
+            background: rgba(232,177,76,.07);
+            filter: blur(15px);
+            pointer-events: none;
+        }
+
+        .birth-card-header {
+            margin-bottom: 24px;
+        }
+
+        .birth-card-header h2 {
+            margin: 0 0 7px;
+            font-size: 23px;
+            letter-spacing: -.025em;
+        }
+
+        .birth-card-header p {
+            margin: 0;
+            color: #7f91a8;
+            font-size: 11px;
+            line-height: 1.55;
+        }
+
+        /* =========================================================
+           FORM
+           ========================================================= */
+
+        #birthForm {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .birth-field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .birth-field label {
+            color: #b8c4d2;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .birth-field input {
+            width: 100%;
+            height: 44px;
+            padding: 0 13px;
+            border: 1px solid rgba(255,255,255,.09);
+            border-radius: 9px;
+            outline: none;
+            color: #edf2f8;
+            background: var(--input);
+            font: inherit;
+            font-size: 12px;
+            transition:
+                border-color .2s ease,
+                background .2s ease,
+                box-shadow .2s ease;
+        }
+
+        .birth-field input::placeholder {
+            color: #596c83;
+        }
+
+        .birth-field input:hover {
+            border-color: rgba(255,255,255,.14);
+        }
+
+        .birth-field input:focus {
+            border-color: rgba(232,177,76,.52);
+            background: rgba(255,255,255,.045);
+            box-shadow: 0 0 0 3px rgba(232,177,76,.08);
+        }
+
+        .birth-field input[type="date"],
+        .birth-field input[type="time"] {
+            color-scheme: dark;
+        }
+
+        /* Two-column fields */
+
+        .birth-row {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .birth-row.three {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .field-help {
+            color: #62748a;
+            font-size: 9px;
+            line-height: 1.45;
+        }
+
+        /* =========================================================
+           LOCATION SECTION
+           ========================================================= */
+
+        .location-heading {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 5px 0 0;
+            padding-top: 17px;
+            border-top: 1px solid rgba(255,255,255,.055);
+        }
+
+        .location-heading-icon {
+            width: 27px;
+            height: 27px;
+            display: grid;
+            place-items: center;
+            border-radius: 8px;
+            color: #dcb668;
+            border: 1px solid rgba(232,177,76,.13);
+            background: rgba(232,177,76,.055);
+            font-size: 12px;
+        }
+
+        .location-heading-text strong {
+            display: block;
+            color: #c2cedc;
+            font-size: 10px;
+        }
+
+        .location-heading-text span {
+            display: block;
+            margin-top: 2px;
+            color: #63758c;
+            font-size: 8px;
+        }
+
+        /* =========================================================
+           SUBMIT
+           ========================================================= */
+
+        #generateBtn {
+            width: 100%;
+            min-height: 46px;
+            margin-top: 5px;
+            border: 0;
+            border-radius: 9px;
+            cursor: pointer;
+            color: #071321;
+            background: linear-gradient(135deg, #f5d991, #d79a3b);
+            box-shadow: 0 10px 26px rgba(215,154,59,.18);
+            font: inherit;
+            font-size: 12px;
+            font-weight: 750;
+            transition:
+                transform .2s ease,
+                box-shadow .2s ease,
+                opacity .2s ease;
+        }
+
+        #generateBtn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 14px 31px rgba(215,154,59,.25);
+        }
+
+        #generateBtn:active {
+            transform: translateY(0);
+        }
+
+        #generateBtn:disabled {
+            cursor: not-allowed;
+            opacity: .62;
+            transform: none;
+        }
+
+        #birthMessage {
+            min-height: 18px;
+            margin: -2px 0 0;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .form-footnote {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-top: 1px;
+            color: #60738a;
+            font-size: 9px;
+            line-height: 1.5;
+        }
+
+        .form-footnote-icon {
+            color: #b9985b;
+            flex: 0 0 auto;
+        }
+
+        /* =========================================================
+           FOOTER
+           ========================================================= */
+
+        .birth-footer {
+            padding: 20px 0 25px;
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            border-top: 1px solid rgba(255,255,255,.05);
+            color: #596c83;
+            font-size: 9px;
+        }
+
+        /* =========================================================
+           RESPONSIVE
+           ========================================================= */
+
+        @media (max-width: 900px) {
+            .birth-main {
+                grid-template-columns: 1fr;
+                gap: 35px;
+                padding-top: 40px;
+            }
+
+            .birth-intro {
+                max-width: 620px;
+                margin-inline: auto;
+                text-align: center;
+            }
+
+            .birth-kicker {
+                margin-inline: auto;
+            }
+
+            .birth-intro > p {
+                margin-inline: auto;
+            }
+
+            .birth-orbit {
+                margin-top: 25px;
+                width: min(270px, 70%);
+            }
+
+            .birth-info-note {
+                text-align: left;
+            }
+
+            .birth-card {
+                width: min(650px, 100%);
+                margin-inline: auto;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .birth-shell {
+                width: min(100% - 24px, 1160px);
+            }
+
+            .birth-header {
+                padding: 14px 0;
+            }
+
+            .birth-brand-icon {
+                width: 35px;
+                height: 35px;
+                border-radius: 10px;
+            }
+
+            .birth-brand-name {
+                font-size: 14px;
+            }
+
+            .birth-brand-subtitle {
+                font-size: 8px;
+            }
+
+            .birth-back {
+                font-size: 10px;
+            }
+
+            .birth-main {
+                padding: 30px 0 45px;
+            }
+
+            .birth-intro h1 {
+                font-size: 38px;
+            }
+
+            .birth-intro > p {
+                font-size: 12px;
+            }
+
+            .birth-orbit {
+                width: 220px;
+            }
+
+            .birth-card {
+                padding: 22px 18px;
+                border-radius: 15px;
+            }
+
+            .birth-card-header h2 {
+                font-size: 21px;
+            }
+
+            .birth-row,
+            .birth-row.three {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .birth-footer {
+                flex-direction: column;
+                gap: 7px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            *,
+            *::before,
+            *::after {
+                transition-duration: .01ms !important;
+            }
+        }
+    </style>
 </head>
 
+<body class="birth-form-page">
 
-<body>
+<div class="birth-shell">
 
+    <!-- =========================================================
+         HEADER
+         ========================================================= -->
+    <header class="birth-header">
 
-<header class="navbar">
+        <a class="birth-brand" href="index.html">
 
-    <div class="nav-container">
+            <span
+                class="birth-brand-icon"
+                aria-hidden="true"
+            >
+                ✦
+            </span>
 
-        <a
-            href="index.html"
-            class="brand"
-        >
-            ✦ AI Jyotish
+            <span class="birth-brand-text">
+                <span class="birth-brand-name">
+                    AI Jyotish
+                </span>
+
+                <span class="birth-brand-subtitle">
+                    Vedic Astrology
+                </span>
+            </span>
+
         </a>
 
-        <nav class="nav-links">
 
-            <a href="index.html">
-                Home
+        <div class="birth-header-right">
+
+            <a
+                class="birth-back"
+                href="dashboard.html"
+            >
+                ← Dashboard
             </a>
-
-        </nav>
-
-    </div>
-
-</header>
-
-
-
-<main class="form-page">
-
-    <section class="form-card">
-
-        <div class="form-heading">
-
-            <p class="eyebrow">
-                BIRTH INFORMATION
-            </p>
-
-            <h1>
-                Create Your Kundli
-            </h1>
-
-            <p>
-                Enter your exact birth details to calculate
-                your Vedic birth chart.
-            </p>
 
         </div>
 
+    </header>
 
-        <form id="birthForm">
 
+    <!-- =========================================================
+         MAIN
+         ========================================================= -->
+    <main class="birth-main">
 
-            <div class="form-group">
+        <!-- =====================================================
+             INTRO
+             ===================================================== -->
+        <section class="birth-intro">
 
-                <label for="name">
-                    Full Name
-                </label>
-
-                <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    placeholder="Enter your name"
-                    required
-                >
-
+            <div class="birth-kicker">
+                Birth chart
             </div>
 
+            <h1>
+                Let's map your
+                <span>cosmic blueprint.</span>
+            </h1>
+
+            <p>
+                Enter your birth information carefully. Your date, exact time,
+                location and timezone are used to calculate your personalized
+                Vedic Kundli and planetary positions.
+            </p>
 
 
-            <div class="form-row">
+            <!-- Decorative cosmic visual -->
+            <div class="birth-orbit" aria-hidden="true">
 
-                <div class="form-group">
+                <div class="birth-orbit-glow"></div>
 
-                    <label for="date">
-                        Date of Birth
-                    </label>
-
-                    <input
-                        type="date"
-                        id="date"
-                        name="date"
-                        required
-                    >
-
+                <div class="birth-mandala">
+                    ✦
                 </div>
 
-
-                <div class="form-group">
-
-                    <label for="time">
-                        Time of Birth
-                    </label>
-
-                    <input
-                        type="time"
-                        id="time"
-                        name="time"
-                        required
-                    >
-
-                </div>
+                <span class="birth-orbit-star s1">✦</span>
+                <span class="birth-orbit-star s2">·</span>
+                <span class="birth-orbit-star s3">✧</span>
+                <span class="birth-orbit-star s4">·</span>
+                <span class="birth-orbit-star s5">✦</span>
 
             </div>
 
 
+            <div class="birth-info-note">
 
-            <div class="form-group">
+                <strong>
+                    Why exact birth time matters
+                </strong>
 
-                <label for="place">
-                    Birth Place
-                </label>
-
-                <input
-                    type="text"
-                    id="place"
-                    name="place"
-                    placeholder="Example: Kolkata, India"
-                    required
-                >
-
-            </div>
-
-
-
-            <div class="form-row">
-
-                <div class="form-group">
-
-                    <label for="latitude">
-                        Latitude
-                    </label>
-
-                    <input
-                        type="number"
-                        id="latitude"
-                        name="latitude"
-                        step="any"
-                        placeholder="Example: 22.5726"
-                        required
-                    >
-
-                    <small>
-                        North = positive, South = negative
-                    </small>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="longitude">
-                        Longitude
-                    </label>
-
-                    <input
-                        type="number"
-                        id="longitude"
-                        name="longitude"
-                        step="any"
-                        placeholder="Example: 88.3639"
-                        required
-                    >
-
-                    <small>
-                        East = positive, West = negative
-                    </small>
-
-                </div>
-
-            </div>
-
-
-
-            <div class="form-group">
-
-                <label for="timezone">
-                    Timezone
-                </label>
-
-                <select
-                    id="timezone"
-                    name="timezone"
-                >
-
-                    <option value="5.5">
-                        India Standard Time (UTC +5:30)
-                    </option>
-
-                    <option value="0">
-                        UTC
-                    </option>
-
-                    <option value="-5">
-                        UTC -5
-                    </option>
-
-                    <option value="-4">
-                        UTC -4
-                    </option>
-
-                    <option value="1">
-                        UTC +1
-                    </option>
-
-                    <option value="2">
-                        UTC +2
-                    </option>
-
-                    <option value="3">
-                        UTC +3
-                    </option>
-
-                    <option value="4">
-                        UTC +4
-                    </option>
-
-                    <option value="5">
-                        UTC +5
-                    </option>
-
-                    <option value="5.5" selected>
-                        UTC +5:30
-                    </option>
-
-                    <option value="6">
-                        UTC +6
-                    </option>
-
-                    <option value="7">
-                        UTC +7
-                    </option>
-
-                    <option value="8">
-                        UTC +8
-                    </option>
-
-                    <option value="9">
-                        UTC +9
-                    </option>
-
-                </select>
-
-            </div>
-
-
-
-            <div
-                id="formError"
-                class="form-error"
-            ></div>
-
-
-            <button
-                type="submit"
-                id="createKundliButton"
-                class="primary-button full-button"
-            >
-
-                <span id="buttonText">
-                    Create Kundli
+                <span>
+                    Even a small difference in birth time can affect the
+                    Ascendant and house placements. Use the most accurate
+                    time available to you.
                 </span>
 
-                <span id="buttonLoader" class="loader hidden">
-                    Calculating...
-                </span>
+            </div>
 
-            </button>
+        </section>
 
 
-        </form>
+        <!-- =====================================================
+             FORM CARD
+             ===================================================== -->
+        <section
+            class="birth-card"
+            aria-labelledby="birthFormTitle"
+        >
 
-    </section>
+            <div class="birth-card-header">
 
-</main>
+                <h2 id="birthFormTitle">
+                    Enter birth details
+                </h2>
+
+                <p>
+                    Fill in the details below to generate your Kundli.
+                </p>
+
+            </div>
 
 
-<footer class="footer">
+            <form id="birthForm" novalidate>
 
-    <p>
-        ✦ AI Jyotish
-    </p>
+                <!-- =================================================
+                     NAME
+                     ================================================= -->
+                <div class="birth-field">
 
-    <span>
-        Traditional wisdom • Modern experience
+                    <label for="name">
+                        Full name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        autocomplete="name"
+                        placeholder="Enter your full name"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- =================================================
+                     DATE + TIME
+                     ================================================= -->
+                <div class="birth-row">
+
+                    <div class="birth-field">
+
+                        <label for="date">
+                            Date of birth
+                        </label>
+
+                        <input
+                            type="date"
+                            id="date"
+                            name="date"
+                            autocomplete="bday"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="birth-field">
+
+                        <label for="time">
+                            Exact birth time
+                        </label>
+
+                        <input
+                            type="time"
+                            id="time"
+                            name="time"
+                            autocomplete="off"
+                            step="1"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     PLACE
+                     ================================================= -->
+                <div class="birth-field">
+
+    <label for="place">
+        Birthplace
+    </label>
+
+    <input
+        type="text"
+        id="place"
+        name="place"
+        autocomplete="address-level2"
+        placeholder="City, State, Country"
+        required
+    >
+
+    <span class="field-help">
+        Enter the city where you were born.
     </span>
 
-</footer>
+    <button
+        type="button"
+        id="useLocationBtn"
+        class="location-btn"
+    >
+        📍 Use my current location
+    </button>
+
+    <span
+        id="locationStatus"
+        class="field-help"
+        aria-live="polite"
+    ></span>
+
+</div>
 
 
+                <!-- =================================================
+                     LOCATION HEADING
+                     ================================================= -->
+                <div class="location-heading">
+
+                    <div
+                        class="location-heading-icon"
+                        aria-hidden="true"
+                    >
+                        ◎
+                    </div>
+
+                    <div class="location-heading-text">
+
+                        <strong>
+                            Location & timezone
+                        </strong>
+
+                        <span>
+                            Required for accurate astronomical calculations
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     LATITUDE + LONGITUDE
+                     ================================================= -->
+                <div class="birth-row">
+
+                    <div class="birth-field">
+
+                        <label for="latitude">
+                            Latitude
+                        </label>
+
+                        <input
+                            type="number"
+                            id="latitude"
+                            name="latitude"
+                            inputmode="decimal"
+                            step="any"
+                            min="-90"
+                            max="90"
+                            placeholder="Example: 22.5726"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="birth-field">
+
+                        <label for="longitude">
+                            Longitude
+                        </label>
+
+                        <input
+                            type="number"
+                            id="longitude"
+                            name="longitude"
+                            inputmode="decimal"
+                            step="any"
+                            min="-180"
+                            max="180"
+                            placeholder="Example: 88.3639"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     TIMEZONE
+                     ================================================= -->
+                <div class="birth-field">
+
+                    <label for="timezone">
+                        Timezone (UTC Offset)
+                    </label>
+
+                    <input
+                        type="text"
+                        id="timezone"
+                        name="timezone"
+                        inputmode="decimal"
+                        value="5.5"
+                        placeholder="Example: 5.5 for India"
+                        required
+                    >
+
+                    <span class="field-help">
+                        India Standard Time = UTC +5.5
+                    </span>
+
+                </div>
+
+
+                <!-- =================================================
+                     MESSAGE
+                     ================================================= -->
+                <div
+                    id="birthMessage"
+                    role="status"
+                    aria-live="polite"
+                ></div>
+
+
+                <!-- =================================================
+                     SUBMIT
+                     ================================================= -->
+                <button
+                    type="submit"
+                    id="generateBtn"
+                >
+                    Generate my Kundli
+                    <span aria-hidden="true">→</span>
+                </button>
+
+
+                <div class="form-footnote">
+
+                    <span
+                        class="form-footnote-icon"
+                        aria-hidden="true"
+                    >
+                        ✦
+                    </span>
+
+                    <span>
+                        Your chart will include the Vedic birth chart,
+                        planetary positions, Nakshatra, Dashas, Yogas and
+                        available detailed analysis.
+                    </span>
+
+                </div>
+
+            </form>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================================================
+         FOOTER
+         ========================================================= -->
+    <footer class="birth-footer">
+
+        <span>
+            © <span id="currentYear"></span> AI Jyotish
+        </span>
+
+        <span>
+            Astrology is for guidance and personal reflection.
+        </span>
+
+    </footer>
+
+</div>
+
+
+<!-- =============================================================
+     APPLICATION SCRIPTS
+     ============================================================= -->
+
+<script>
+    (function () {
+        const year = document.getElementById("currentYear");
+
+        if (year) {
+            year.textContent = new Date().getFullYear();
+        }
+    })();
+</script>
+
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/planets.js"></script>
+<script src="js/nakshatra.js"></script>
+<script src="js/dasha.js"></script>
+<script src="js/yogas.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/kundli.js"></script>
 <script src="js/script.js"></script>
 
 </body>
