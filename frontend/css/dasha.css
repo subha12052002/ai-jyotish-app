@@ -916,3 +916,103 @@
         white-space: normal;
     }
 }
+/* =========================================================
+   MOBILE FIX — MAHADASHA SUMMARY
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    /* Keep the Mahadasha section inside the phone width */
+    .dasha-summary,
+    .mahadasha-summary,
+    .dasha-overview {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+
+    /* Stack Current / Dates / Birth Lord cards */
+    .dasha-summary-grid,
+    .mahadasha-summary-grid,
+    .dasha-overview-grid {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        width: 100%;
+        max-width: 100%;
+        gap: 14px;
+        box-sizing: border-box;
+    }
+
+    /* Individual summary cards */
+    .dasha-summary-card,
+    .mahadasha-summary-card,
+    .dasha-overview-card {
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+
+    /* Prevent long planet/date text from overflowing */
+    .dasha-summary-card *,
+    .mahadasha-summary-card *,
+    .dasha-overview-card * {
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow-wrap: anywhere;
+        word-break: normal;
+    }
+
+    /* Current dasha information */
+    .current-dasha,
+    .current-mahadasha {
+        min-width: 0;
+        width: 100%;
+    }
+
+    /* Date/value rows */
+    .dasha-date-row,
+    .dasha-info-row {
+        width: 100%;
+        min-width: 0;
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    /* Don't allow dates to run outside the card */
+    .dasha-date-row span,
+    .dasha-info-row span {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    /* Mahadasha period cards */
+    .mahadasha-periods,
+    .dasha-periods {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+
+    .mahadasha-card,
+    .dasha-period-card {
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* From / To / Duration inside each period */
+    .mahadasha-card .period-details,
+    .dasha-period-card .period-details {
+        display: grid;
+        grid-template-columns: 1fr !important;
+        gap: 10px;
+        width: 100%;
+    }
+}
