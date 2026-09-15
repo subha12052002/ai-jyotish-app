@@ -4086,3 +4086,23 @@ footer {
         max-width: 440px !important;
     }
 }
+
+@media (max-width: 700px) {
+    .nav-auth {
+        display: flex !important;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .nav-login {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .nav-register {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+    }
+}
